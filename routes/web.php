@@ -12,6 +12,8 @@ use App\Http\Controllers\StokMinimumController;
 use App\Http\Controllers\DeadStockController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ActivityLogController;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -250,6 +252,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dead-stock/export', [LaporanController::class, 'exportDeadStock'])
             ->name('laporan.dead-stock.export');
     });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Superadmin Routes
+    |--------------------------------------------------------------------------
+    */
+    Route::middleware('role:superadmin')->group(function () {
+        // User Management
+        Route::resource('users', UserController::class);
+
+        // Activity Logs
+        Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+    });
+
 });
 
 

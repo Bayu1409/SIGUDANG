@@ -1,5 +1,21 @@
 import React, { useMemo, useState } from "react";
 import NavLink from "./NavLink";
+import { Link, usePage } from "@inertiajs/react";
+import { 
+  Users, 
+  ClipboardList, 
+  LogOut, 
+  LayoutDashboard, 
+  Package, 
+  Layers, 
+  Truck, 
+  ArrowDownToLine, 
+  ArrowUpFromLine, 
+  BarChart3, 
+  AlertTriangle, 
+  FileText,
+  Boxes
+} from "lucide-react";
 
 export default function Sidebar({ className = "" }) {
 
@@ -113,6 +129,32 @@ export default function Sidebar({ className = "" }) {
     []
   );
 
+  // =========================
+  // MENU SUPERADMIN
+  // =========================
+  const superadminItems = useMemo(
+    () => [
+      {
+        label: "Manajemen Pengguna",
+        href: route("users.index"),
+        routeName: "users.index",
+        icon: Users,
+      },
+      {
+        label: "Log Aktivitas",
+        href: route("activity-logs.index"),
+        routeName: "activity-logs.index",
+        icon: ClipboardList,
+      },
+    ],
+    []
+  );
+
+  const { auth } = usePage().props;
+  const isSuperAdmin = auth.user?.role === "superadmin";
+
+  const [openSuperadmin, setOpenSuperadmin] = useState(true);
+
   return (
     <aside
       className={[
@@ -123,16 +165,18 @@ export default function Sidebar({ className = "" }) {
 
       {/* HEADER */}
 
-      <div className="px-4 py-5 border-b border-slate-800">
-
-        <div className="text-lg font-semibold tracking-wide">
-          Sigudang
+      <div className="px-5 py-6 border-b border-slate-800 flex items-center gap-3">
+        <div className="bg-indigo-600 p-2 rounded-lg">
+          <Boxes className="w-6 h-6 text-white" />
         </div>
-
-        <div className="text-xs text-slate-400">
-          Admin Panel
+        <div>
+          <div className="text-base font-bold tracking-tight text-white">
+            Sigudang
+          </div>
+          <div className="text-[10px] font-bold uppercase tracking-widest text-indigo-400">
+            {isSuperAdmin ? "Super Admin" : "Admin Panel"}
+          </div>
         </div>
-
       </div>
 
       <nav className="p-3 space-y-1">
@@ -142,8 +186,9 @@ export default function Sidebar({ className = "" }) {
         <NavLink
           href={route("dashboard")}
           active={route().current("dashboard")}
-          className="block px-3 py-2 rounded-md hover:bg-slate-800"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-slate-300 font-medium transition-colors"
         >
+          <LayoutDashboard className="w-5 h-5" />
           Dashboard
         </NavLink>
 
@@ -154,15 +199,10 @@ export default function Sidebar({ className = "" }) {
         <button
           type="button"
           onClick={() => setOpenManagement(v => !v)}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-slate-800 text-left"
+          className="w-full mt-4 flex items-center justify-between px-3 py-2 rounded-md hover:bg-slate-800 text-left text-slate-500 font-bold uppercase text-[10px] tracking-widest"
         >
-
-          <span>Manajemen</span>
-
-          <span className="text-slate-400 text-sm">
-            {openManagement ? "−" : "+"}
-          </span>
-
+          <span>Inventory</span>
+          <span>{openManagement ? "−" : "+"}</span>
         </button>
 
         {openManagement && (
@@ -193,15 +233,10 @@ export default function Sidebar({ className = "" }) {
         <button
           type="button"
           onClick={() => setOpenTransaksi(v => !v)}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-slate-800 text-left"
+          className="w-full mt-4 flex items-center justify-between px-3 py-2 rounded-md hover:bg-slate-800 text-left text-slate-500 font-bold uppercase text-[10px] tracking-widest"
         >
-
-          <span>Transaksi</span>
-
-          <span className="text-slate-400 text-sm">
-            {openTransaksi ? "−" : "+"}
-          </span>
-
+          <span>Mutasi Barang</span>
+          <span>{openTransaksi ? "−" : "+"}</span>
         </button>
 
         {openTransaksi && (
@@ -232,15 +267,10 @@ export default function Sidebar({ className = "" }) {
         <button
           type="button"
           onClick={() => setOpenMonitoring(v => !v)}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-slate-800 text-left"
+          className="w-full mt-4 flex items-center justify-between px-3 py-2 rounded-md hover:bg-slate-800 text-left text-slate-500 font-bold uppercase text-[10px] tracking-widest"
         >
-
-          <span>Monitoring Stok</span>
-
-          <span className="text-slate-400 text-sm">
-            {openMonitoring ? "−" : "+"}
-          </span>
-
+          <span>Monitoring</span>
+          <span>{openMonitoring ? "−" : "+"}</span>
         </button>
 
         {openMonitoring && (
@@ -271,15 +301,10 @@ export default function Sidebar({ className = "" }) {
         <button
           type="button"
           onClick={() => setOpenLaporan(v => !v)}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-slate-800 text-left"
+          className="w-full mt-4 flex items-center justify-between px-3 py-2 rounded-md hover:bg-slate-800 text-left text-slate-500 font-bold uppercase text-[10px] tracking-widest"
         >
-
-          <span>Laporan</span>
-
-          <span className="text-slate-400 text-sm">
-            {openLaporan ? "−" : "+"}
-          </span>
-
+          <span>Report & Analysis</span>
+          <span>{openLaporan ? "−" : "+"}</span>
         </button>
 
         {openLaporan && (
@@ -302,6 +327,50 @@ export default function Sidebar({ className = "" }) {
           </div>
 
         )}
+
+        {/* ========================= */}
+        {/* SUPERADMIN ONLY */}
+        {/* ========================= */}
+        {isSuperAdmin && (
+          <>
+            <button
+              type="button"
+              onClick={() => setOpenSuperadmin(v => !v)}
+              className="w-full mt-4 flex items-center justify-between px-3 py-2 rounded-md hover:bg-slate-800 text-left text-slate-500 font-bold uppercase text-[10px] tracking-widest"
+            >
+              <span>Administrator</span>
+              <span>{openSuperadmin ? "−" : "+"}</span>
+            </button>
+
+            {openSuperadmin && (
+              <div className="pl-2 flex flex-col gap-1">
+                {superadminItems.map((item) => (
+                  <NavLink
+                    key={item.routeName}
+                    href={item.href}
+                    active={route().current(item.routeName) || route().current(item.routeName + ".*")}
+                    className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 text-slate-300 transition-colors"
+                  >
+                    <item.icon className="w-4 h-4" />
+                    {item.label}
+                  </NavLink>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        <div className="pt-10">
+          <Link
+            href={route("logout")}
+            method="post"
+            as="button"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 font-semibold transition-all border border-transparent hover:border-rose-500/20"
+          >
+            <LogOut className="w-5 h-5" />
+            Logout
+          </Link>
+        </div>
 
       </nav>
 

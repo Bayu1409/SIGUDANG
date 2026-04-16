@@ -6,6 +6,7 @@ use App\Models\Barang;
 use App\Models\BarangMasuk;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Services\LogService;
 
 class BarangMasukController extends Controller
 {
@@ -73,6 +74,8 @@ class BarangMasukController extends Controller
 
         $barang->save();
 
+        LogService::log("Input Barang Masuk: {$barang->nama_barang} ({$request->jumlah})", 'BarangMasuk', $data->id);
+
         return redirect()->route('barang-masuk.index');
 
     }
@@ -132,6 +135,8 @@ class BarangMasukController extends Controller
 
         $barangBaru->save();
 
+        LogService::log("Update Barang Masuk: {$barangBaru->nama_barang} (ID: {$data->id})", 'BarangMasuk', $data->id);
+
         return redirect()->route('barang-masuk.index');
 
     }
@@ -164,7 +169,10 @@ class BarangMasukController extends Controller
     HAPUS DATA
     */
 
+    $namaBarang = $barang->nama_barang ?? 'Unknown';
     $data->delete();
+
+    LogService::log("Hapus Barang Masuk: {$namaBarang} (ID: {$id})", 'BarangMasuk', $id);
 
     return redirect()->route('barang-masuk.index');
 }

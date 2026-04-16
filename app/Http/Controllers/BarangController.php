@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Models\Barang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Services\LogService;
 
 class BarangController extends Controller
 {
@@ -45,13 +46,15 @@ class BarangController extends Controller
     // Generate kode barang otomatis
     $kode = 'BRG-' . strtoupper(Str::random(5));
 
-    Barang::create([
+    $barang = Barang::create([
         'kode_barang' => $kode,
         'nama_barang' => $request->nama_barang,
         'kategori_id' => $request->kategori_id,
         'satuan_id' => $request->satuan_id,
         'supplier_id' => null, // sementara
     ]);
+
+    LogService::log("Menambah barang baru: {$barang->nama_barang}", 'Barang', $barang->id);
 
     return redirect()
         ->route('barang.index')
@@ -89,6 +92,8 @@ class BarangController extends Controller
         'satuan_id' => $request->satuan_id,
     ]);
 
+    LogService::log("Memperbarui data barang: {$barang->nama_barang}", 'Barang', $barang->id);
+
     return redirect()
         ->route('barang.index')
         ->with('success', 'Barang berhasil diupdate');
@@ -96,7 +101,11 @@ class BarangController extends Controller
 
     public function destroy($id)
     {
-        Barang::findOrFail($id)->delete();
+        $barang = Barang::findOrFail($id);
+        $nama = $barang->nama_barang;
+        $barang->delete();
+
+        LogService::log("Menghapus barang: {$nama}", 'Barang', $id);
 
         return redirect()->route('barang.index');
     }
