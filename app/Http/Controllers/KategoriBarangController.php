@@ -65,10 +65,12 @@ class KategoriBarangController extends Controller
     public function destroy($id)
     {
         $kategori = KategoriBarang::findOrFail($id);
-
+        $nama = $kategori->nama_kategori;
         $kategori->delete();
 
-        return redirect()->route('kategori-barang.index');
+        \App\Services\LogService::log("Menghapus kategori barang: {$nama}", 'KategoriBarang', $id);
+
+        return redirect()->route('kategori-barang.index')->with('success', 'Kategori berhasil dihapus');
     }
 
 }

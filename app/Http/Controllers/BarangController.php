@@ -107,7 +107,7 @@ class BarangController extends Controller
 
         LogService::log("Menghapus barang: {$nama}", 'Barang', $id);
 
-        return redirect()->route('barang.index');
+        return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus');
     }
 
 }

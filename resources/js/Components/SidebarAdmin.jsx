@@ -169,12 +169,15 @@ export default function Sidebar({ className = "" }) {
         <div className="bg-indigo-600 p-2 rounded-lg">
           <Boxes className="w-6 h-6 text-white" />
         </div>
-        <div>
-          <div className="text-base font-bold tracking-tight text-white">
+        <div className="overflow-hidden">
+          <div className="text-base font-bold tracking-tight text-white mb-0.5">
             Sigudang
           </div>
-          <div className="text-[10px] font-bold uppercase tracking-widest text-indigo-400">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-1">
             {isSuperAdmin ? "Super Admin" : "Admin Panel"}
+          </div>
+          <div className="text-[10px] font-medium text-slate-500 truncate" title={auth.user?.email}>
+            {auth.user?.email}
           </div>
         </div>
       </div>
@@ -191,6 +194,41 @@ export default function Sidebar({ className = "" }) {
           <LayoutDashboard className="w-5 h-5" />
           Dashboard
         </NavLink>
+
+
+        {/* ========================= */}
+        {/* MONITORING STOK */}
+        {/* ========================= */}
+
+        <button
+          type="button"
+          onClick={() => setOpenMonitoring(v => !v)}
+          className="w-full mt-4 flex items-center justify-between px-3 py-2 rounded-md hover:bg-slate-800 text-left text-slate-500 font-bold uppercase text-[10px] tracking-widest"
+        >
+          <span>Monitoring</span>
+          <span>{openMonitoring ? "−" : "+"}</span>
+        </button>
+
+        {openMonitoring && (
+
+          <div className="pl-2 flex flex-col gap-1">
+
+            {monitoringItems.map((item) => (
+
+              <NavLink
+                key={item.routeName}
+                href={item.href}
+                active={route().current(item.routeName)}
+                className="block w-full px-3 py-2 rounded-md hover:bg-slate-800 text-slate-200"
+              >
+                {item.label}
+              </NavLink>
+
+            ))}
+
+          </div>
+
+        )}
 
         {/* ========================= */}
         {/* MANAJEMEN */}
@@ -260,39 +298,6 @@ export default function Sidebar({ className = "" }) {
 
         )}
 
-        {/* ========================= */}
-        {/* MONITORING STOK */}
-        {/* ========================= */}
-
-        <button
-          type="button"
-          onClick={() => setOpenMonitoring(v => !v)}
-          className="w-full mt-4 flex items-center justify-between px-3 py-2 rounded-md hover:bg-slate-800 text-left text-slate-500 font-bold uppercase text-[10px] tracking-widest"
-        >
-          <span>Monitoring</span>
-          <span>{openMonitoring ? "−" : "+"}</span>
-        </button>
-
-        {openMonitoring && (
-
-          <div className="pl-2 flex flex-col gap-1">
-
-            {monitoringItems.map((item) => (
-
-              <NavLink
-                key={item.routeName}
-                href={item.href}
-                active={route().current(item.routeName)}
-                className="block w-full px-3 py-2 rounded-md hover:bg-slate-800 text-slate-200"
-              >
-                {item.label}
-              </NavLink>
-
-            ))}
-
-          </div>
-
-        )}
 
         {/* ========================= */}
         {/* LAPORAN */}

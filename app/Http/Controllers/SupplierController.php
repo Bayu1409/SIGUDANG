@@ -78,13 +78,13 @@ class SupplierController extends Controller
 
     public function destroy($id)
     {
-
         $supplier = Supplier::findOrFail($id);
-
+        $nama = $supplier->nama_supplier;
         $supplier->delete();
 
-        return redirect()->route('supplier.index');
+        \App\Services\LogService::log("Menghapus supplier: {$nama}", 'Supplier', $id);
 
+        return redirect()->route('supplier.index')->with('success', 'Supplier berhasil dihapus');
     }
 
 }

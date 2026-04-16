@@ -65,10 +65,12 @@ class SatuanController extends Controller
     public function destroy($id)
     {
         $satuan = Satuan::findOrFail($id);
-
+        $nama = $satuan->nama;
         $satuan->delete();
 
-        return redirect()->route('satuan.index');
+        \App\Services\LogService::log("Menghapus satuan barang: {$nama}", 'Satuan', $id);
+
+        return redirect()->route('satuan.index')->with('success', 'Satuan berhasil dihapus');
     }
 
 }

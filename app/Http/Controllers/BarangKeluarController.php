@@ -206,7 +206,6 @@ class BarangKeluarController extends Controller
 
     public function destroy($id)
     {
-
         $data =
             BarangKeluar::findOrFail($id);
 
