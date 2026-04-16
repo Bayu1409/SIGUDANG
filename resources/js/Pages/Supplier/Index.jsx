@@ -1,0 +1,140 @@
+import React from "react";
+import { Link, router } from "@inertiajs/react";
+import AdminLayout from "@/Layouts/AdminLayout";
+
+export default function Index({ supplier }) {
+
+    const handleDelete = (id) => {
+
+        if (confirm("Yakin ingin menghapus supplier ini?")) {
+
+            router.delete(`/supplier/${id}`);
+
+        }
+
+    };
+
+    return (
+
+        <AdminLayout>
+
+            <div className="p-6">
+
+                {/* HEADER */}
+
+                <div className="flex justify-between items-center mb-6">
+
+                    <h2 className="text-2xl font-semibold text-gray-800">
+                        Manajemen Supplier
+                    </h2>
+
+                    <Link
+                        href="/supplier/create"
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
+                    >
+                        + Tambah Supplier
+                    </Link>
+
+                </div>
+
+                {/* GRID SUPPLIER */}
+
+                {supplier.length > 0 ? (
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                        {supplier.map((item) => (
+
+                            <div
+                                key={item.id}
+                                className="bg-white rounded-xl shadow border p-5 hover:shadow-lg transition"
+                            >
+
+                                {/* AVATAR */}
+
+                                <div className="flex flex-col items-center mb-4">
+
+                                    <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-2xl">
+
+                                        👤
+
+                                    </div>
+
+                                    <h3 className="mt-2 font-semibold text-gray-800 text-center">
+
+                                        {item.nama_supplier}
+
+                                    </h3>
+
+                                </div>
+
+                                {/* DETAIL */}
+
+                                <div className="space-y-2 text-sm text-gray-700">
+
+                                    <p className="flex items-center gap-2">
+
+                                        📧 
+                                        {item.email ?? "-"}
+
+                                    </p>
+
+                                    <p className="flex items-center gap-2">
+
+                                        📞 
+                                        {item.telepon ?? "-"}
+
+                                    </p>
+
+                                    <p className="flex items-center gap-2">
+
+                                        📍 
+                                        {item.alamat ?? "-"}
+
+                                    </p>
+
+                                </div>
+
+                                {/* ACTION */}
+
+                                <div className="flex justify-center gap-2 mt-4">
+
+                                    <Link
+                                        href={`/supplier/${item.id}/edit`}
+                                        className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm"
+                                    >
+                                        Edit
+                                    </Link>
+
+                                    <button
+                                        onClick={() => handleDelete(item.id)}
+                                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                                    >
+                                        Hapus
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        ))}
+
+                    </div>
+
+                ) : (
+
+                    <div className="bg-white p-6 rounded shadow text-center">
+
+                        Data supplier belum tersedia
+
+                    </div>
+
+                )}
+
+            </div>
+
+        </AdminLayout>
+
+    );
+
+}
