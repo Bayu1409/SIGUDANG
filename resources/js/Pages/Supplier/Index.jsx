@@ -74,21 +74,21 @@ export default function Index({ supplier }) {
 
                                     <p className="flex items-center gap-2">
 
-                                        📧 
+                                        📧
                                         {item.email ?? "-"}
 
                                     </p>
 
                                     <p className="flex items-center gap-2">
 
-                                        📞 
+                                        📞
                                         {item.telepon ?? "-"}
 
                                     </p>
 
                                     <p className="flex items-center gap-2">
 
-                                        📍 
+                                        📍
                                         {item.alamat ?? "-"}
 
                                     </p>
