@@ -6,6 +6,7 @@ export default function Sidebar({ className = "" }) {
   const [openManagement, setOpenManagement] = useState(true);
   const [openTransaksi, setOpenTransaksi] = useState(true);
   const [openMonitoring, setOpenMonitoring] = useState(true);
+  const [openLaporan, setOpenLaporan] = useState(true);
 
   // =========================
   // MENU MANAJEMEN
@@ -77,6 +78,36 @@ export default function Sidebar({ className = "" }) {
         label: "Dead Stock",
         href: route("dead-stock.index"),
         routeName: "dead-stock.index",
+      },
+    ],
+    []
+  );
+
+  // =========================
+  // MENU LAPORAN
+  // =========================
+
+  const laporanItems = useMemo(
+    () => [
+      {
+        label: "Laporan Barang Masuk",
+        href: route("laporan.barang-masuk"),
+        routeName: "laporan.barang-masuk",
+      },
+      {
+        label: "Laporan Barang Keluar",
+        href: route("laporan.barang-keluar"),
+        routeName: "laporan.barang-keluar",
+      },
+      {
+        label: "Laporan Stok",
+        href: route("laporan.stok"),
+        routeName: "laporan.stok",
+      },
+      {
+        label: "Laporan Dead Stock",
+        href: route("laporan.dead-stock"),
+        routeName: "laporan.dead-stock",
       },
     ],
     []
@@ -222,6 +253,45 @@ export default function Sidebar({ className = "" }) {
                 key={item.routeName}
                 href={item.href}
                 active={route().current(item.routeName)}
+                className="block w-full px-3 py-2 rounded-md hover:bg-slate-800 text-slate-200"
+              >
+                {item.label}
+              </NavLink>
+
+            ))}
+
+          </div>
+
+        )}
+
+        {/* ========================= */}
+        {/* LAPORAN */}
+        {/* ========================= */}
+
+        <button
+          type="button"
+          onClick={() => setOpenLaporan(v => !v)}
+          className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-slate-800 text-left"
+        >
+
+          <span>Laporan</span>
+
+          <span className="text-slate-400 text-sm">
+            {openLaporan ? "−" : "+"}
+          </span>
+
+        </button>
+
+        {openLaporan && (
+
+          <div className="pl-2 flex flex-col gap-1">
+
+            {laporanItems.map((item) => (
+
+              <NavLink
+                key={item.routeName}
+                href={item.href}
+                active={route().current(item.routeName) || route().current(item.routeName + ".export")}
                 className="block w-full px-3 py-2 rounded-md hover:bg-slate-800 text-slate-200"
               >
                 {item.label}

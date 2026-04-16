@@ -10,6 +10,7 @@ use App\Http\Controllers\SatuanController;
 use App\Http\Controllers\StokController;
 use App\Http\Controllers\StokMinimumController;
 use App\Http\Controllers\DeadStockController;
+use App\Http\Controllers\LaporanController;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -214,6 +215,40 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::delete('/{id}', [BarangKeluarController::class, 'destroy'])
             ->name('barang-keluar.destroy');
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | LAPORAN
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('laporan')->group(function () {
+
+        // BARANG MASUK
+        Route::get('/barang-masuk', [LaporanController::class, 'barangMasuk'])
+            ->name('laporan.barang-masuk');
+        Route::get('/barang-masuk/export', [LaporanController::class, 'exportBarangMasuk'])
+            ->name('laporan.barang-masuk.export');
+
+        // BARANG KELUAR
+        Route::get('/barang-keluar', [LaporanController::class, 'barangKeluar'])
+            ->name('laporan.barang-keluar');
+        Route::get('/barang-keluar/export', [LaporanController::class, 'exportBarangKeluar'])
+            ->name('laporan.barang-keluar.export');
+
+        // STOK
+        Route::get('/stok', [LaporanController::class, 'stok'])
+            ->name('laporan.stok');
+        Route::get('/stok/export', [LaporanController::class, 'exportStok'])
+            ->name('laporan.stok.export');
+
+        // DEAD STOCK
+        Route::get('/dead-stock', [LaporanController::class, 'deadStock'])
+            ->name('laporan.dead-stock');
+        Route::get('/dead-stock/export', [LaporanController::class, 'exportDeadStock'])
+            ->name('laporan.dead-stock.export');
     });
 });
 
