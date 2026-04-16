@@ -11,6 +11,7 @@ use App\Http\Controllers\StokController;
 use App\Http\Controllers\StokMinimumController;
 use App\Http\Controllers\DeadStockController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\DashboardController;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -45,9 +46,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
 
 
     /*
