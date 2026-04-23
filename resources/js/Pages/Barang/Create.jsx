@@ -14,8 +14,8 @@ export default function Create({ kategoris = [], satuans = [] }) {
   const { data, setData, post, processing, errors } = useForm({
     nama_barang: "",
     kategori_id: "",
-    satuan_id:   "",
-    stok:        "",
+    satuan_id: "",
+    stok: "",
   });
 
   function handleSubmit(e) {
@@ -45,7 +45,7 @@ export default function Create({ kategoris = [], satuans = [] }) {
                 className={`w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.nama_barang ? "border-red-500" : ""}`}
                 value={data.nama_barang}
                 onChange={(e) => setData("nama_barang", e.target.value)}
-                placeholder="Contoh: Laptop Asus"
+                placeholder="Contoh: Alat Pramuka"
               />
               {errors.nama_barang && (
                 <p className="text-red-500 text-xs mt-1">{errors.nama_barang}</p>

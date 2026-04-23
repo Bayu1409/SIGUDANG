@@ -18,7 +18,7 @@ class LaporanController extends Controller
 
     public function barangMasuk(Request $request)
     {
-        $query = BarangMasuk::with(['barang.kategori', 'barang.satuan']);
+        $query = BarangMasuk::with(['barang.kategori', 'barang.satuan', 'supplier']);
 
         if ($request->dari && $request->sampai) {
             $query->whereBetween('tanggal_masuk', [$request->dari, $request->sampai]);
@@ -34,7 +34,7 @@ class LaporanController extends Controller
 
     public function exportBarangMasuk(Request $request)
     {
-        $query = BarangMasuk::with(['barang.kategori', 'barang.satuan']);
+        $query = BarangMasuk::with(['barang.kategori', 'barang.satuan', 'supplier']);
 
         if ($request->dari && $request->sampai) {
             $query->whereBetween('tanggal_masuk', [$request->dari, $request->sampai]);
@@ -45,7 +45,7 @@ class LaporanController extends Controller
         return $this->generateExcel(
             'Laporan_Barang_Masuk_' . now()->format('YmdHis'),
             'LAPORAN BARANG MASUK',
-            ['No', 'Tanggal', 'Kode Barang', 'Nama Barang', 'Kategori', 'Jumlah', 'Satuan'],
+            ['No', 'Tanggal', 'Kode Barang', 'Nama Barang', 'Kategori', 'Supplier', 'Jumlah', 'Satuan'],
             $data->map(function ($item, $index) {
                 return [
                     $index + 1,
@@ -53,6 +53,7 @@ class LaporanController extends Controller
                     $item->barang->kode_barang ?? '-',
                     $item->barang->nama_barang ?? '-',
                     $item->barang->kategori->nama_kategori ?? '-',
+                    $item->supplier->nama_supplier ?? '-',
                     $item->jumlah,
                     $item->barang->satuan->nama ?? '-',
                 ];

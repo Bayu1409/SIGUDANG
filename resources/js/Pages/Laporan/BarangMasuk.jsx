@@ -87,6 +87,7 @@ export default function BarangMasuk({ data, filters }) {
                                 <th className="px-4 py-2 border">Kode Barang</th>
                                 <th className="px-4 py-2 border">Nama Barang</th>
                                 <th className="px-4 py-2 border">Kategori</th>
+                                <th className="px-4 py-2 border">Supplier</th>
                                 <th className="px-4 py-2 border">Jumlah</th>
                                 <th className="px-4 py-2 border">Satuan</th>
                             </tr>
@@ -100,13 +101,14 @@ export default function BarangMasuk({ data, filters }) {
                                         <td className="border px-4 py-2">{item.barang?.kode_barang}</td>
                                         <td className="border px-4 py-2">{item.barang?.nama_barang}</td>
                                         <td className="border px-4 py-2">{item.barang?.kategori?.nama_kategori || "-"}</td>
+                                        <td className="border px-4 py-2">{item.supplier?.nama_supplier || "-"}</td>
                                         <td className="border px-4 py-2">{item.jumlah}</td>
                                         <td className="border px-4 py-2">{item.barang?.satuan?.nama || "-"}</td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="7" className="text-center py-4">
+                                    <td colSpan="8" className="text-center py-4">
                                         Data tidak ditemukan
                                     </td>
                                 </tr>
