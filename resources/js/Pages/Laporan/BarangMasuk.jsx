@@ -6,6 +6,44 @@ export default function BarangMasuk({ data, filters }) {
     const { auth } = usePage().props;
     const [dari, setDari] = useState(filters.dari || "");
     const [sampai, setSampai] = useState(filters.sampai || "");
+    const [search, setSearch] = useState("");
+
+    const filteredData = data.filter(
+        (item) =>
+            (item.barang?.nama_barang || "").toLowerCase().includes(search.toLowerCase()) ||
+            (item.barang?.kategori?.nama_kategori || "").toLowerCase().includes(search.toLowerCase()) ||
+            (item.supplier?.nama_supplier || "").toLowerCase().includes(search.toLowerCase()) ||
+            (item.barang?.kode_barang || "").toLowerCase().includes(search.toLowerCase())
+    );
+
+    const setQuickDate = (type) => {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = today.getMonth();
+
+        const formatDate = (dateObj) => {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        };
+
+        if (type === 'hari_ini') {
+            const str = formatDate(today);
+            setDari(str);
+            setSampai(str);
+        } else if (type === 'bulan_ini') {
+            const firstDay = new Date(yyyy, mm, 1);
+            const lastDay = new Date(yyyy, mm + 1, 0); // hari terakhir bulan ini
+            setDari(formatDate(firstDay));
+            setSampai(formatDate(lastDay));
+        } else if (type === 'tahun_ini') {
+            const firstDay = new Date(yyyy, 0, 1);
+            const lastDay = new Date(yyyy, 11, 31);
+            setDari(formatDate(firstDay));
+            setSampai(formatDate(lastDay));
+        }
+    };
 
     const handleFilter = (e) => {
         e.preventDefault();
@@ -60,12 +98,24 @@ export default function BarangMasuk({ data, filters }) {
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                             />
                         </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Cari Barang / Supplier
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="Ketik kata kunci..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            />
+                        </div>
                         <div className="flex gap-2">
                             <button
                                 type="submit"
                                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
                             >
-                                Filter
+                                Terapkan Filter
                             </button>
                             <Link
                                 href={route("laporan.barang-masuk")}
@@ -75,6 +125,13 @@ export default function BarangMasuk({ data, filters }) {
                             </Link>
                         </div>
                     </form>
+
+                    <div className="mt-4 flex gap-2">
+                        <span className="text-sm font-medium text-gray-700 self-center">Filter Cepat:</span>
+                        <button type="button" onClick={() => setQuickDate('hari_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Hari Ini</button>
+                        <button type="button" onClick={() => setQuickDate('bulan_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Bulan Ini</button>
+                        <button type="button" onClick={() => setQuickDate('tahun_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Tahun Ini</button>
+                    </div>
                 </div>
 
                 {/* TABLE */}
@@ -93,8 +150,8 @@ export default function BarangMasuk({ data, filters }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {data.length > 0 ? (
-                                data.map((item, index) => (
+                            {filteredData.length > 0 ? (
+                                filteredData.map((item, index) => (
                                     <tr key={item.id} className="text-center">
                                         <td className="border px-4 py-2">{index + 1}</td>
                                         <td className="border px-4 py-2">{item.tanggal_masuk}</td>

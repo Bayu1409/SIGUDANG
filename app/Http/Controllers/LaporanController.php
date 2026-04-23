@@ -113,12 +113,25 @@ class LaporanController extends Controller
     // STOK
     // ==========================================
 
-    public function stok()
+    public function stok(Request $request)
     {
-        $barang = Barang::with(['kategori', 'satuan', 'barangMasuk', 'barangKeluar'])->get()->map(function ($item) {
+        $dari = $request->dari;
+        $sampai = $request->sampai;
+
+        $barang = Barang::with([
+            'kategori',
+            'satuan',
+            'barangMasuk' => function ($q) use ($dari, $sampai) {
+                if ($dari && $sampai) $q->whereBetween('tanggal_masuk', [$dari, $sampai]);
+            },
+            'barangKeluar' => function ($q) use ($dari, $sampai) {
+                if ($dari && $sampai) $q->whereBetween('tanggal_keluar', [$dari, $sampai]);
+            }
+        ])->get()->map(function ($item) {
             $masuk = $item->barangMasuk->sum('jumlah');
             $keluar = $item->barangKeluar->sum('jumlah');
-            $stok = $masuk - $keluar;
+            // Stok tetap menggunakan stok aktual yang ada di database saat ini
+            $stok = $item->stok;
 
             return [
                 'id' => $item->id,
@@ -133,16 +146,29 @@ class LaporanController extends Controller
         });
 
         return Inertia::render('Laporan/Stok', [
-            'barang' => $barang
+            'barang' => $barang,
+            'filters' => $request->only(['dari', 'sampai'])
         ]);
     }
 
-    public function exportStok()
+    public function exportStok(Request $request)
     {
-        $barang = Barang::with(['kategori', 'satuan', 'barangMasuk', 'barangKeluar'])->get()->map(function ($item, $index) {
+        $dari = $request->dari;
+        $sampai = $request->sampai;
+
+        $barang = Barang::with([
+            'kategori',
+            'satuan',
+            'barangMasuk' => function ($q) use ($dari, $sampai) {
+                if ($dari && $sampai) $q->whereBetween('tanggal_masuk', [$dari, $sampai]);
+            },
+            'barangKeluar' => function ($q) use ($dari, $sampai) {
+                if ($dari && $sampai) $q->whereBetween('tanggal_keluar', [$dari, $sampai]);
+            }
+        ])->get()->map(function ($item, $index) {
             $masuk = $item->barangMasuk->sum('jumlah');
             $keluar = $item->barangKeluar->sum('jumlah');
-            $stok = $masuk - $keluar;
+            $stok = $item->stok;
 
             return [
                 $index + 1,
@@ -158,7 +184,7 @@ class LaporanController extends Controller
 
         return $this->generateExcel(
             'Laporan_Stok_' . now()->format('YmdHis'),
-            'LAPORAN STOK BARANG',
+            'LAPORAN STOK BARANG' . ($dari && $sampai ? " DARI $dari S/D $sampai" : ""),
             ['No', 'Kode Barang', 'Nama Barang', 'Kategori', 'Satuan', 'Total Masuk', 'Total Keluar', 'Stok Saat Ini'],
             $barang
         );
@@ -168,11 +194,25 @@ class LaporanController extends Controller
     // DEAD STOCK
     // ==========================================
 
-    public function deadStock()
+    public function deadStock(Request $request)
     {
-        $today = Carbon::now();
-        $barang = Barang::with(['kategori', 'satuan', 'barangMasuk', 'barangKeluar'])->get()
+        // Dead Stock menggunakan satu referensi tanggal: 'sampai' (Atau hari ini jika kosong)
+        // Kita gunakan $request->sampai sebagai "Cut off date".
+        $today = $request->sampai ? Carbon::parse($request->sampai) : Carbon::now();
+
+        $barang = Barang::with([
+            'kategori', 
+            'satuan', 
+            'barangMasuk' => function($q) use ($today) {
+                // Hanya perhitungkan yang sebelum cutoff date
+                $q->whereDate('tanggal_masuk', '<=', $today);
+            }, 
+            'barangKeluar' => function($q) use ($today) {
+                $q->whereDate('tanggal_keluar', '<=', $today);
+            }
+        ])->get()
             ->map(function ($item) use ($today) {
+                // Kalkulasi stok virtual pada tanggal tersebut
                 $masuk = $item->barangMasuk->sum('jumlah');
                 $keluar = $item->barangKeluar->sum('jumlah');
                 $stok = $masuk - $keluar;
@@ -194,14 +234,24 @@ class LaporanController extends Controller
             ->values();
 
         return Inertia::render('Laporan/DeadStock', [
-            'barang' => $barang
+            'barang' => $barang,
+            'filters' => $request->only(['sampai'])
         ]);
     }
 
-    public function exportDeadStock()
+    public function exportDeadStock(Request $request)
     {
-        $today = Carbon::now();
-        $barang = Barang::with(['kategori', 'satuan', 'barangMasuk', 'barangKeluar'])->get()
+        $today = $request->sampai ? Carbon::parse($request->sampai) : Carbon::now();
+        $barang = Barang::with([
+            'kategori', 
+            'satuan', 
+            'barangMasuk' => function($q) use ($today) {
+                $q->whereDate('tanggal_masuk', '<=', $today);
+            }, 
+            'barangKeluar' => function($q) use ($today) {
+                $q->whereDate('tanggal_keluar', '<=', $today);
+            }
+        ])->get()
             ->map(function ($item) use ($today) {
                 $masuk = $item->barangMasuk->sum('jumlah');
                 $keluar = $item->barangKeluar->sum('jumlah');
@@ -236,8 +286,8 @@ class LaporanController extends Controller
 
         return $this->generateExcel(
             'Laporan_Dead_Stock_' . now()->format('YmdHis'),
-            'LAPORAN DEAD STOCK',
-            ['No', 'Kode Barang', 'Nama Barang', 'Kategori', 'Satuan', 'Stok Terakhir', 'Tidak Ada Keluar Selama'],
+            'LAPORAN DEAD STOCK' . ($request->sampai ? " S/D {$request->sampai}" : ""),
+            ['No', 'Kode Barang', 'Nama Barang', 'Kategori', 'Satuan', 'Stok Pada Saat Itu', 'Tidak Ada Keluar Selama'],
             $barang
         );
     }

@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 
 export default function Index({ barangKeluar }) {
+  const [search, setSearch] = useState("");
+
+  const filteredData = barangKeluar.filter(
+    (item) =>
+      (item.barang?.nama_barang || "").toLowerCase().includes(search.toLowerCase()) ||
+      (item.barang?.kategori?.nama_kategori || "").toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <AdminLayout
@@ -22,6 +29,17 @@ export default function Index({ barangKeluar }) {
           Input Barang Keluar
         </Link>
 
+      </div>
+
+      {/* SEARCH */}
+      <div className="mb-4 bg-white p-4 rounded shadow flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <input
+            type="text"
+            placeholder="Cari nama barang atau kategori..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full md:w-1/3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+        />
       </div>
 
       <div className="bg-white rounded shadow overflow-x-auto">
@@ -47,7 +65,7 @@ export default function Index({ barangKeluar }) {
 
           <tbody>
 
-            {barangKeluar.map((item, index) => (
+            {filteredData.map((item, index) => (
 
               <tr key={item.id} className="border-t">
 

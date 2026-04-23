@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, router, usePage } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 
 export default function Index({ barang }) {
+    const [search, setSearch] = useState("");
+
+    const filteredBarang = barang.filter(
+        (item) =>
+            item.nama_barang.toLowerCase().includes(search.toLowerCase()) ||
+            item.kode_barang.toLowerCase().includes(search.toLowerCase()) ||
+            (item.kategori?.nama_kategori || "").toLowerCase().includes(search.toLowerCase())
+    );
 
     const handleDelete = (id) => {
 
@@ -37,6 +45,17 @@ export default function Index({ barang }) {
 
                 </div>
 
+                {/* SEARCH & FILTER */}
+                <div className="mb-4 bg-white p-4 rounded shadow">
+                    <input
+                        type="text"
+                        placeholder="Cari berdasarkan nama, kode, atau kategori..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full md:w-1/3 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    />
+                </div>
+
                 {/* CARD */}
 
                 <div className="bg-white shadow rounded-lg overflow-hidden">
@@ -60,9 +79,9 @@ export default function Index({ barang }) {
 
                         <tbody>
 
-                            {barang.length > 0 ? (
+                            {filteredBarang.length > 0 ? (
 
-                                barang.map((item, index) => (
+                                filteredBarang.map((item, index) => (
 
                                     <tr key={item.id} className="text-center">
 

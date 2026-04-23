@@ -1,9 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link, router } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 
-export default function LaporanStok({ barang }) {
+export default function LaporanStok({ barang, filters = {} }) {
+    const [dari, setDari] = useState(filters.dari || "");
+    const [sampai, setSampai] = useState(filters.sampai || "");
+    const [search, setSearch] = useState("");
+
+    const filteredBarang = barang.filter(
+        (item) =>
+            item.nama_barang.toLowerCase().includes(search.toLowerCase()) ||
+            item.kode_barang.toLowerCase().includes(search.toLowerCase()) ||
+            (item.kategori || "").toLowerCase().includes(search.toLowerCase())
+    );
+
+    const handleFilter = (e) => {
+        e.preventDefault();
+        router.get(route("laporan.stok"), { dari, sampai });
+    };
+
     const handleExport = () => {
-        window.open(route("laporan.stok.export"), "_blank");
+        const url = route("laporan.stok.export", { dari, sampai });
+        window.open(url, "_blank");
+    };
+
+    const setQuickDate = (type) => {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = today.getMonth();
+
+        const formatDate = (dateObj) => {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        };
+
+        if (type === 'hari_ini') {
+            const str = formatDate(today);
+            setDari(str);
+            setSampai(str);
+        } else if (type === 'bulan_ini') {
+            const firstDay = new Date(yyyy, mm, 1);
+            const lastDay = new Date(yyyy, mm + 1, 0); // hari terakhir bulan ini
+            setDari(formatDate(firstDay));
+            setSampai(formatDate(lastDay));
+        } else if (type === 'tahun_ini') {
+            const firstDay = new Date(yyyy, 0, 1);
+            const lastDay = new Date(yyyy, 11, 31);
+            setDari(formatDate(firstDay));
+            setSampai(formatDate(lastDay));
+        }
     };
 
     return (
@@ -21,6 +68,70 @@ export default function LaporanStok({ barang }) {
                     </button>
                 </div>
 
+                {/* FILTER & SEARCH */}
+                <div className="mb-6 bg-white p-4 shadow rounded-lg">
+                    <form
+                        onSubmit={handleFilter}
+                        className="flex flex-wrap items-end gap-4 mb-4"
+                    >
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Dari Tanggal (Opsional)
+                            </label>
+                            <input
+                                type="date"
+                                value={dari}
+                                onChange={(e) => setDari(e.target.value)}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Sampai Tanggal (Opsional)
+                            </label>
+                            <input
+                                type="date"
+                                value={sampai}
+                                onChange={(e) => setSampai(e.target.value)}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="flex-grow">
+                            <label className="block text-sm font-medium text-gray-700">
+                                Cari Barang
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="Ketik nama, kode, atau kategori..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="flex gap-2">
+                            <button
+                                type="submit"
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
+                            >
+                                Terapkan Tanggal
+                            </button>
+                            <Link
+                                href={route("laporan.stok")}
+                                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded shadow"
+                            >
+                                Reset
+                            </Link>
+                        </div>
+                    </form>
+
+                    <div className="flex gap-2 border-t pt-4">
+                        <span className="text-sm font-medium text-gray-700 self-center">Filter Cepat:</span>
+                        <button type="button" onClick={() => setQuickDate('hari_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Hari Ini</button>
+                        <button type="button" onClick={() => setQuickDate('bulan_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Bulan Ini</button>
+                        <button type="button" onClick={() => setQuickDate('tahun_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Tahun Ini</button>
+                    </div>
+                </div>
+
                 <div className="bg-white shadow rounded-lg overflow-hidden">
                     <table className="min-w-full border border-gray-200">
                         <thead className="bg-gray-100">
@@ -36,8 +147,8 @@ export default function LaporanStok({ barang }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {barang.length > 0 ? (
-                                barang.map((item, index) => (
+                            {filteredBarang.length > 0 ? (
+                                filteredBarang.map((item, index) => (
                                     <tr key={item.id} className="text-center">
                                         <td className="border px-4 py-2">{index + 1}</td>
                                         <td className="border px-4 py-2">{item.kode_barang}</td>

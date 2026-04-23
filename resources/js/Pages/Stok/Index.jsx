@@ -1,8 +1,16 @@
 
-import React from "react";
+import React, { useState } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
 
 export default function Index({ barang }) {
+    const [search, setSearch] = useState("");
+
+    const filteredBarang = barang.filter(
+        (item) =>
+            item.nama_barang.toLowerCase().includes(search.toLowerCase()) ||
+            item.kode_barang.toLowerCase().includes(search.toLowerCase()) ||
+            (item.kategori || "").toLowerCase().includes(search.toLowerCase())
+    );
 
   return (
     <AdminLayout
@@ -61,9 +69,9 @@ export default function Index({ barang }) {
 
             <tbody>
 
-              {barang.length > 0 ? (
+              {filteredBarang.length > 0 ? (
 
-                barang.map((item, index) => (
+                filteredBarang.map((item, index) => (
 
                   <tr key={item.id}>
 
