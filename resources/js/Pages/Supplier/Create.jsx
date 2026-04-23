@@ -2,36 +2,36 @@ import React from "react";
 import { useForm, Link } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 
+const Label = ({ children, required }) => (
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    {children}
+    {required && <span className="text-red-500 ml-1">*</span>}
+  </label>
+);
+
 export default function Create() {
 
-    const { data, setData, post, errors } = useForm({
-
+    const { data, setData, post, errors, processing } = useForm({
         nama_supplier: "",
-        email: "",
-        telepon: "",
-        alamat: "",
-
+        email:         "",
+        telepon:       "",
+        alamat:        "",
     });
 
     const submit = (e) => {
-
         e.preventDefault();
-
         post("/supplier");
-
     };
 
     return (
-
         <AdminLayout>
-
             <div className="p-6">
-
                 <div className="max-w-2xl mx-auto">
 
-                    <h2 className="text-2xl font-semibold mb-6">
-                        Tambah Supplier
-                    </h2>
+                    <h2 className="text-2xl font-semibold mb-2">Tambah Supplier</h2>
+                    <p className="text-sm text-gray-500 mb-6">
+                        Kolom bertanda <span className="text-red-500 font-bold">*</span> wajib diisi.
+                    </p>
 
                     <form
                         onSubmit={submit}
@@ -39,109 +39,78 @@ export default function Create() {
                     >
 
                         {/* Nama */}
-
                         <div>
-
-                            <label className="block mb-1">
-                                Nama Supplier
-                            </label>
-
+                            <Label required>Nama Supplier</Label>
                             <input
                                 type="text"
                                 value={data.nama_supplier}
-                                onChange={(e) =>
-                                    setData("nama_supplier", e.target.value)
-                                }
-                                className="w-full border rounded px-3 py-2"
+                                onChange={(e) => setData("nama_supplier", e.target.value)}
+                                className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.nama_supplier ? "border-red-500" : ""}`}
+                                placeholder="Nama perusahaan / supplier"
                             />
-
+                            {errors.nama_supplier && (
+                                <p className="text-red-500 text-xs mt-1">{errors.nama_supplier}</p>
+                            )}
                         </div>
 
                         {/* Email */}
-
                         <div>
-
-                            <label className="block mb-1">
-                                Email
-                            </label>
-
+                            <Label>Email</Label>
                             <input
                                 type="email"
                                 value={data.email}
-                                onChange={(e) =>
-                                    setData("email", e.target.value)
-                                }
-                                className="w-full border rounded px-3 py-2"
+                                onChange={(e) => setData("email", e.target.value)}
+                                className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.email ? "border-red-500" : ""}`}
+                                placeholder="email@supplier.com"
                             />
-
+                            {errors.email && (
+                                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                            )}
                         </div>
 
                         {/* Telepon */}
-
                         <div>
-
-                            <label className="block mb-1">
-                                Telepon
-                            </label>
-
+                            <Label>Telepon</Label>
                             <input
                                 type="text"
                                 value={data.telepon}
-                                onChange={(e) =>
-                                    setData("telepon", e.target.value)
-                                }
-                                className="w-full border rounded px-3 py-2"
+                                onChange={(e) => setData("telepon", e.target.value)}
+                                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                placeholder="08xx-xxxx-xxxx"
                             />
-
                         </div>
 
                         {/* Alamat */}
-
                         <div>
-
-                            <label className="block mb-1">
-                                Alamat
-                            </label>
-
+                            <Label>Alamat</Label>
                             <textarea
                                 value={data.alamat}
-                                onChange={(e) =>
-                                    setData("alamat", e.target.value)
-                                }
-                                className="w-full border rounded px-3 py-2"
+                                onChange={(e) => setData("alamat", e.target.value)}
+                                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
                                 rows="3"
+                                placeholder="Alamat lengkap supplier"
                             />
-
                         </div>
 
-                        {/* BUTTON */}
-
                         <div className="flex justify-end gap-2 pt-2">
-
                             <Link
                                 href="/supplier"
-                                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                                className="bg-gray-500 hover:bg-gray-600 text-white px-5 py-2 rounded font-medium transition"
                             >
                                 Kembali
                             </Link>
-
                             <button
                                 type="submit"
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                                disabled={processing}
+                                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-5 py-2 rounded font-medium transition"
                             >
-                                Simpan
+                                {processing ? "Menyimpan..." : "Simpan"}
                             </button>
-
                         </div>
 
                     </form>
-
                 </div>
-
             </div>
-
         </AdminLayout>
-
     );
-
 }

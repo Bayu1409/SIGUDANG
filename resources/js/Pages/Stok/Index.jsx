@@ -52,7 +52,7 @@ export default function Index({ barang }) {
                 </th>
 
                 <th className="px-4 py-2 border text-center">
-                  Stok
+                  Stok Akhir
                 </th>
 
               </tr>
