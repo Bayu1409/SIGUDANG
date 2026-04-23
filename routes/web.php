@@ -14,6 +14,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\SettingController;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -252,6 +253,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dead-stock/export', [LaporanController::class, 'exportDeadStock'])
             ->name('laporan.dead-stock.export');
     });
+
+    /*
+    |--------------------------------------------------------------------------
+    | PENGATURAN / SETTINGS
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
+    Route::put('/setting', [SettingController::class, 'update'])->name('setting.update');
 
     /*
     |--------------------------------------------------------------------------

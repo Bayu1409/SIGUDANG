@@ -4,8 +4,9 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import { router } from "@inertiajs/react";
 import Pagination from "@/Components/Pagination";
 
-export default function Index({ barang, filters = {} }) {
+export default function Index({ barang, filters = {}, config = {} }) {
     const [search, setSearch] = useState(filters.search || "");
+    const stokLimit = config.stokMinimum || 10;
 
     const isInitialRender = React.useRef(true);
     
@@ -130,13 +131,10 @@ export default function Index({ barang, filters = {} }) {
                     <td className="px-4 py-2 border text-center font-semibold">
 
                       {item.stok <= 0 ? (
-
                         <span className="text-red-600">
                           {item.stok}
                         </span>
-
-                      ) : item.stok <= 10 ? (
-
+                      ) : item.stok <= stokLimit ? (
                         <span className="text-yellow-500">
                           {item.stok}
                         </span>

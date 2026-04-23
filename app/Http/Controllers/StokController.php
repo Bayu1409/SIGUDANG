@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Barang;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\Models\Setting;
 
 class StokController extends Controller
 {
@@ -49,8 +51,21 @@ class StokController extends Controller
             'Stok/Index',
             [
                 'barang' => $barangPaginated,
-                'filters' => $request->only(['search'])
+                'filters' => $request->only(['search']),
+                'config' => [
+                    'stokMinimum' => self::getActiveStokMinimum()
+                ]
             ]
         );
+    }
+
+    private static function getActiveStokMinimum()
+    {
+        $bulan = Carbon::now()->month;
+        $eventMonths = Setting::getSetting('event_months', [6, 7, 8]);
+        
+        return in_array($bulan, $eventMonths)
+            ? Setting::getSetting('limit_stok_event', 50)
+            : Setting::getSetting('limit_stok_normal', 10);
     }
 }

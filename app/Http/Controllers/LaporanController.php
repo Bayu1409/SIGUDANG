@@ -263,6 +263,7 @@ class LaporanController extends Controller
     {
         $today = $request->sampai ? Carbon::parse($request->sampai) : Carbon::now();
         $search = $request->search;
+        $deadStockLimit = \App\Models\Setting::getSetting('limit_dead_stock', 30);
 
         // Note: For custom filtering (like filter by 'hari' > 30 from a collection)
         // We have to either do it entirely in PHP and paginate manually, 
@@ -306,7 +307,7 @@ class LaporanController extends Controller
                     'hari' => $selisihHari,
                 ];
             })
-            ->filter(fn($item) => $item['hari'] > 30 && $item['stok'] > 0)
+            ->filter(fn($item) => $item['hari'] > $deadStockLimit && $item['stok'] > 0)
             ->values();
 
         // Custom Manual Pagination for Collection
@@ -334,6 +335,7 @@ class LaporanController extends Controller
     {
         $today = $request->sampai ? Carbon::parse($request->sampai) : Carbon::now();
         $search = $request->search;
+        $deadStockLimit = \App\Models\Setting::getSetting('limit_dead_stock', 30);
 
         $barang = Barang::with([
             'kategori', 
@@ -371,7 +373,7 @@ class LaporanController extends Controller
                     'hari' => $selisihHari,
                 ];
             })
-            ->filter(fn($item) => $item['hari'] > 30 && $item['stok'] > 0)
+            ->filter(fn($item) => $item['hari'] > $deadStockLimit && $item['stok'] > 0)
             ->values()
             ->map(function ($item, $index) {
                 return [

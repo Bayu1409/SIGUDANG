@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Models\Setting;
 
 class DashboardController extends Controller
 {
@@ -31,7 +32,12 @@ class DashboardController extends Controller
         // STOK RENDAH (LOGIKA DINAMIS)
         // =========================
         $bulan = Carbon::now()->month;
-        $stokMinimum = in_array($bulan, [6, 7, 8]) ? 50 : 10;
+        $eventMonths = Setting::getSetting('event_months', [6, 7, 8]);
+        
+        $isEventMonth = in_array($bulan, $eventMonths);
+        $stokMinimum = $isEventMonth 
+            ? Setting::getSetting('limit_stok_event', 50) 
+            : Setting::getSetting('limit_stok_normal', 10);
 
         $lowStockItems = Barang::with(['satuan', 'kategori'])
             ->get()
@@ -90,7 +96,7 @@ class DashboardController extends Controller
             'activities' => $activities,
             'config' => [
                 'stokMinimum' => $stokMinimum,
-                'isRamai' => in_array($bulan, [6, 7, 8])
+                'isRamai' => $isEventMonth
             ]
         ]);
     }
