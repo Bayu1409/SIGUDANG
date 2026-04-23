@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Supplier;
 
 class BarangMasuk extends Model
 {
@@ -11,6 +12,7 @@ class BarangMasuk extends Model
 
     protected $fillable = [
         'barang_id',
+        'supplier_id',
         'tanggal_masuk',
         'jumlah',
         'dokumen'
@@ -25,6 +27,18 @@ class BarangMasuk extends Model
         return $this->belongsTo(
             Barang::class,
             'barang_id'
+        );
+    }
+
+    /*
+    RELASI KE SUPPLIER
+    */
+
+    public function supplier()
+    {
+        return $this->belongsTo(
+            Supplier::class,
+            'supplier_id'
         );
     }
 
