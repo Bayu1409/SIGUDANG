@@ -69,12 +69,12 @@ export default function Index({ barang, limit_dead_stock }) {
                                             <AlertTriangle className="w-4 h-4 text-rose-500" />
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-6 py-4 text-right">
                                         <Link
-                                            href={`/barang/${item.id}/edit`}
-                                            className="text-xs bg-white text-slate-600 hover:bg-slate-50 px-3 py-1.5 rounded-lg font-bold transition-all border border-slate-200 shadow-sm"
+                                            href={route('barang.edit', item.id)}
+                                            className="inline-flex items-center text-xs bg-slate-30 text-slate-600 hover:bg-slate-100 px-4 py-2 rounded-xl font-bold transition-all border border-slate-200"
                                         >
-                                            Kelola Barang
+                                            KelolaBarang
                                         </Link>
                                     </td>
                                 </tr>

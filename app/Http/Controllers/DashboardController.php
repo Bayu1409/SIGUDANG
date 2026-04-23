@@ -89,10 +89,28 @@ class DashboardController extends Controller
 
         $activities = $recentMasuk->concat($recentKeluar)->sortByDesc('time')->values()->take(8);
 
+        // =========================
+        // DATA GRAFIK SUPPLIER (TOP 5)
+        // =========================
+        $supplierChartData = DB::table('barang_masuk')
+            ->join('suppliers', 'barang_masuk.supplier_id', '=', 'suppliers.id')
+            ->select('suppliers.nama_supplier', DB::raw('SUM(barang_masuk.jumlah) as total'))
+            ->groupBy('suppliers.id', 'suppliers.nama_supplier')
+            ->orderByDesc('total')
+            ->take(5)
+            ->get()
+            ->map(function($item) {
+                return [
+                    'name' => $item->nama_supplier,
+                    'count' => (int)$item->total
+                ];
+            });
+
         return Inertia::render('Dashboard', [
             'stats' => $stats,
             'lowStock' => $lowStockItems,
             'chartData' => $chartData,
+            'supplierChartData' => $supplierChartData,
             'activities' => $activities,
             'config' => [
                 'stokMinimum' => $stokMinimum,
