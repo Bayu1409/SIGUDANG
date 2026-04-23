@@ -1,19 +1,30 @@
-import React, { useState } from "react";
-import { Link, router, usePage } from "@inertiajs/react";
+import React, { useState, useEffect } from "react";
+import { Link, router } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
+import Pagination from "@/Components/Pagination";
 
-export default function BarangKeluar({ data, filters }) {
-    const { auth } = usePage().props;
+export default function BarangKeluar({ data, filters = {} }) {
     const [dari, setDari] = useState(filters.dari || "");
     const [sampai, setSampai] = useState(filters.sampai || "");
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState(filters.search || "");
 
-    const filteredData = data.filter(
-        (item) =>
-            (item.barang?.nama_barang || "").toLowerCase().includes(search.toLowerCase()) ||
-            (item.barang?.kategori?.nama_kategori || "").toLowerCase().includes(search.toLowerCase()) ||
-            (item.barang?.kode_barang || "").toLowerCase().includes(search.toLowerCase())
-    );
+    const isInitialRender = React.useRef(true);
+    
+    useEffect(() => {
+        if (isInitialRender.current) {
+            isInitialRender.current = false;
+            return;
+        }
+
+        const delay = setTimeout(() => {
+            router.get(
+                route("laporan.barang-keluar"),
+                { dari, sampai, search },
+                { preserveState: true, replace: true, preserveScroll: true }
+            );
+        }, 300);
+        return () => clearTimeout(delay);
+    }, [search]);
 
     const setQuickDate = (type) => {
         const today = new Date();
@@ -33,7 +44,7 @@ export default function BarangKeluar({ data, filters }) {
             setSampai(str);
         } else if (type === 'bulan_ini') {
             const firstDay = new Date(yyyy, mm, 1);
-            const lastDay = new Date(yyyy, mm + 1, 0); // hari terakhir bulan ini
+            const lastDay = new Date(yyyy, mm + 1, 0);
             setDari(formatDate(firstDay));
             setSampai(formatDate(lastDay));
         } else if (type === 'tahun_ini') {
@@ -46,11 +57,11 @@ export default function BarangKeluar({ data, filters }) {
 
     const handleFilter = (e) => {
         e.preventDefault();
-        router.get(route("laporan.barang-keluar"), { dari, sampai });
+        router.get(route("laporan.barang-keluar"), { dari, sampai, search });
     };
 
     const handleExport = () => {
-        const url = route("laporan.barang-keluar.export", { dari, sampai });
+        const url = route("laporan.barang-keluar.export", { dari, sampai, search });
         window.open(url, "_blank");
     };
 
@@ -148,10 +159,10 @@ export default function BarangKeluar({ data, filters }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredData.length > 0 ? (
-                                filteredData.map((item, index) => (
-                                    <tr key={item.id} className="text-center">
-                                        <td className="border px-4 py-2">{index + 1}</td>
+                            {data.data && data.data.length > 0 ? (
+                                data.data.map((item, index) => (
+                                    <tr key={item.id} className="border-t hover:bg-gray-50 text-center">
+                                        <td className="px-4 py-2 border">{data.from + index}</td>
                                         <td className="border px-4 py-2">{item.tanggal_keluar}</td>
                                         <td className="border px-4 py-2">{item.barang?.kode_barang}</td>
                                         <td className="border px-4 py-2">{item.barang?.nama_barang}</td>
@@ -170,6 +181,8 @@ export default function BarangKeluar({ data, filters }) {
                         </tbody>
                     </table>
                 </div>
+
+                <Pagination links={data.links} />
             </div>
         </AdminLayout>
     );

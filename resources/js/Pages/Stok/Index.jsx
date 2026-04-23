@@ -1,16 +1,29 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
+import { router } from "@inertiajs/react";
+import Pagination from "@/Components/Pagination";
 
-export default function Index({ barang }) {
-    const [search, setSearch] = useState("");
+export default function Index({ barang, filters = {} }) {
+    const [search, setSearch] = useState(filters.search || "");
 
-    const filteredBarang = barang.filter(
-        (item) =>
-            item.nama_barang.toLowerCase().includes(search.toLowerCase()) ||
-            item.kode_barang.toLowerCase().includes(search.toLowerCase()) ||
-            (item.kategori || "").toLowerCase().includes(search.toLowerCase())
-    );
+    const isInitialRender = React.useRef(true);
+    
+    useEffect(() => {
+        if (isInitialRender.current) {
+            isInitialRender.current = false;
+            return;
+        }
+
+        const delay = setTimeout(() => {
+            router.get(
+                route("stok.index"),
+                { search },
+                { preserveState: true, replace: true, preserveScroll: true }
+            );
+        }, 300);
+        return () => clearTimeout(delay);
+    }, [search]);
 
   return (
     <AdminLayout
@@ -22,6 +35,17 @@ export default function Index({ barang }) {
     >
 
       <div className="bg-white p-6 rounded shadow">
+
+        {/* SEARCH */}
+        <div className="mb-4">
+            <input
+                type="text"
+                placeholder="Cari no/kode barang atau kategori..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full md:w-1/3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+            />
+        </div>
 
         <div className="overflow-x-auto">
 
@@ -69,14 +93,14 @@ export default function Index({ barang }) {
 
             <tbody>
 
-              {filteredBarang.length > 0 ? (
+              {barang.data && barang.data.length > 0 ? (
 
-                filteredBarang.map((item, index) => (
+                barang.data.map((item, index) => (
 
                   <tr key={item.id}>
 
                     <td className="px-4 py-2 border text-center">
-                      {index + 1}
+                      {barang.from + index}
                     </td>
 
                     <td className="px-4 py-2 border">
@@ -151,6 +175,8 @@ export default function Index({ barang }) {
           </table>
 
         </div>
+
+        <Pagination links={barang.links} />
 
       </div>
 

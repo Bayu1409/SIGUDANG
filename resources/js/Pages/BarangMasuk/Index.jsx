@@ -1,16 +1,28 @@
-import React, { useState } from "react";
-import { Link } from "@inertiajs/react";
+import React, { useState, useEffect } from "react";
+import { Link, router } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
+import Pagination from "@/Components/Pagination";
 
-export default function Index({ barangMasuk }) {
-  const [search, setSearch] = useState("");
+export default function Index({ barangMasuk, filters = {} }) {
+  const [search, setSearch] = useState(filters.search || "");
 
-  const filteredData = barangMasuk.filter(
-    (item) =>
-      (item.barang?.nama_barang || "").toLowerCase().includes(search.toLowerCase()) ||
-      (item.barang?.kategori?.nama_kategori || "").toLowerCase().includes(search.toLowerCase()) ||
-      (item.supplier?.nama_supplier || "").toLowerCase().includes(search.toLowerCase())
-  );
+  const isInitialRender = React.useRef(true);
+  
+  useEffect(() => {
+      if (isInitialRender.current) {
+          isInitialRender.current = false;
+          return;
+      }
+
+      const delay = setTimeout(() => {
+          router.get(
+              route("barang-masuk.index"),
+              { search },
+              { preserveState: true, replace: true, preserveScroll: true }
+          );
+      }, 300);
+      return () => clearTimeout(delay);
+  }, [search]);
 
   return (
     <AdminLayout
@@ -62,10 +74,10 @@ export default function Index({ barangMasuk }) {
           </thead>
 
           <tbody>
-            {filteredData.map((item, index) => (
+            {barangMasuk.data && barangMasuk.data.map((item, index) => (
               <tr key={item.id} className="border-t hover:bg-gray-50">
 
-                <td className="px-4 py-2">{index + 1}</td>
+                <td className="px-4 py-2">{barangMasuk.from + index}</td>
 
                 {/* NAMA BARANG */}
                 <td className="px-4 py-2">{item.barang?.nama_barang}</td>
@@ -132,6 +144,8 @@ export default function Index({ barangMasuk }) {
         </table>
 
       </div>
+
+      <Pagination links={barangMasuk.links} />
 
     </AdminLayout>
   );

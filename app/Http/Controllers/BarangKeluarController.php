@@ -11,15 +11,29 @@ use App\Services\LogService;
 class BarangKeluarController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->search;
+
         $barangKeluar = BarangKeluar::with([
             'barang.kategori',
             'barang.satuan'
-        ])->get();
+        ])
+        ->when($search, function ($query, $search) {
+             $query->whereHas('barang', function ($q) use ($search) {
+                 $q->where('nama_barang', 'like', "%{$search}%")
+                   ->orWhereHas('kategori', function ($q2) use ($search) {
+                         $q2->where('nama_kategori', 'like', "%{$search}%");
+                   });
+             });
+        })
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
 
         return Inertia::render('BarangKeluar/Index', [
-            'barangKeluar' => $barangKeluar
+            'barangKeluar' => $barangKeluar,
+            'filters' => $request->only(['search'])
         ]);
     }
 

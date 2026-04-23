@@ -1,8 +1,28 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, router, usePage } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
+import Pagination from "@/Components/Pagination";
 
-export default function Index({ kategori }) {
+export default function Index({ kategori, filters = {} }) {
+    const [search, setSearch] = useState(filters.search || "");
+
+    const isInitialRender = React.useRef(true);
+    
+    useEffect(() => {
+        if (isInitialRender.current) {
+            isInitialRender.current = false;
+            return;
+        }
+
+        const delay = setTimeout(() => {
+            router.get(
+                route("kategori-barang.index"),
+                { search },
+                { preserveState: true, replace: true, preserveScroll: true }
+            );
+        }, 300);
+        return () => clearTimeout(delay);
+    }, [search]);
 
     const handleDelete = (id) => {
 
@@ -37,6 +57,17 @@ export default function Index({ kategori }) {
 
                 </div>
 
+                {/* SEARCH */}
+                <div className="mb-4 bg-white p-4 rounded shadow">
+                    <input
+                        type="text"
+                        placeholder="Cari kategori barang..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full md:w-1/3 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    />
+                </div>
+
                 {/* CARD */}
 
                 <div className="bg-white shadow rounded-lg overflow-hidden">
@@ -58,14 +89,14 @@ export default function Index({ kategori }) {
 
                         <tbody>
 
-                            {kategori.length > 0 ? (
+                            {kategori.data && kategori.data.length > 0 ? (
 
-                                kategori.map((item, index) => (
+                                kategori.data.map((item, index) => (
 
                                     <tr key={item.id} className="text-center">
 
                                         <td className="border px-4 py-2">
-                                            {index + 1}
+                                            {kategori.from + index}
                                         </td>
 
                                         <td className="border px-4 py-2">
@@ -117,6 +148,8 @@ export default function Index({ kategori }) {
                     </table>
 
                 </div>
+                {/* PAGINATION */}
+                <Pagination links={kategori.links} />
 
             </div>
 

@@ -9,14 +9,22 @@ use Inertia\Inertia;
 class SatuanController extends Controller
 {
 
-   public function index()
-{
-    $satuan = Satuan::orderBy('id', 'asc')->get();
+    public function index(Request $request)
+    {
+        $search = $request->search;
 
-    return Inertia::render('Satuan/Index', [
-        'satuan' => $satuan
-    ]);
-}
+        $satuan = Satuan::when($search, function ($query, $search) {
+                $query->where('nama', 'like', "%{$search}%");
+            })
+            ->orderBy('id', 'asc')
+            ->paginate(10)
+            ->withQueryString();
+
+        return Inertia::render('Satuan/Index', [
+            'satuan' => $satuan,
+            'filters' => $request->only(['search'])
+        ]);
+    }
 
     public function create()
     {

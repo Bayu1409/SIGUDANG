@@ -1,26 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, router } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
+import Pagination from "@/Components/Pagination";
 
 export default function LaporanStok({ barang, filters = {} }) {
     const [dari, setDari] = useState(filters.dari || "");
     const [sampai, setSampai] = useState(filters.sampai || "");
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState(filters.search || "");
 
-    const filteredBarang = barang.filter(
-        (item) =>
-            item.nama_barang.toLowerCase().includes(search.toLowerCase()) ||
-            item.kode_barang.toLowerCase().includes(search.toLowerCase()) ||
-            (item.kategori || "").toLowerCase().includes(search.toLowerCase())
-    );
+    const isInitialRender = React.useRef(true);
+    
+    useEffect(() => {
+        if (isInitialRender.current) {
+            isInitialRender.current = false;
+            return;
+        }
+
+        const delay = setTimeout(() => {
+            router.get(
+                route("laporan.stok"),
+                { dari, sampai, search },
+                { preserveState: true, replace: true, preserveScroll: true }
+            );
+        }, 300);
+        return () => clearTimeout(delay);
+    }, [search]);
 
     const handleFilter = (e) => {
         e.preventDefault();
-        router.get(route("laporan.stok"), { dari, sampai });
+        router.get(route("laporan.stok"), { dari, sampai, search });
     };
 
     const handleExport = () => {
-        const url = route("laporan.stok.export", { dari, sampai });
+        const url = route("laporan.stok.export", { dari, sampai, search });
         window.open(url, "_blank");
     };
 
@@ -147,10 +159,10 @@ export default function LaporanStok({ barang, filters = {} }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredBarang.length > 0 ? (
-                                filteredBarang.map((item, index) => (
+                            {barang.data && barang.data.length > 0 ? (
+                                barang.data.map((item, index) => (
                                     <tr key={item.id} className="text-center">
-                                        <td className="border px-4 py-2">{index + 1}</td>
+                                        <td className="border px-4 py-2 text-center">{barang.from + index}</td>
                                         <td className="border px-4 py-2">{item.kode_barang}</td>
                                         <td className="border px-4 py-2">{item.nama_barang}</td>
                                         <td className="border px-4 py-2">{item.kategori}</td>
@@ -170,6 +182,8 @@ export default function LaporanStok({ barang, filters = {} }) {
                         </tbody>
                     </table>
                 </div>
+
+                <Pagination links={barang.links} />
             </div>
         </AdminLayout>
     );

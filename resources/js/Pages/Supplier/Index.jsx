@@ -1,8 +1,28 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, router, usePage } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
+import Pagination from "@/Components/Pagination";
 
-export default function Index({ supplier }) {
+export default function Index({ supplier, filters = {} }) {
+    const [search, setSearch] = useState(filters.search || "");
+
+    const isInitialRender = React.useRef(true);
+    
+    useEffect(() => {
+        if (isInitialRender.current) {
+            isInitialRender.current = false;
+            return;
+        }
+
+        const delay = setTimeout(() => {
+            router.get(
+                route("supplier.index"),
+                { search },
+                { preserveState: true, replace: true, preserveScroll: true }
+            );
+        }, 300);
+        return () => clearTimeout(delay);
+    }, [search]);
 
     const handleDelete = (id) => {
 
@@ -37,13 +57,24 @@ export default function Index({ supplier }) {
 
                 </div>
 
+                {/* SEARCH */}
+                <div className="mb-4 bg-white p-4 rounded shadow">
+                    <input
+                        type="text"
+                        placeholder="Cari nama, email, atau telepon supplier..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="w-full md:w-1/3 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    />
+                </div>
+
                 {/* GRID SUPPLIER */}
 
-                {supplier.length > 0 ? (
+                {supplier.data && supplier.data.length > 0 ? (
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                        {supplier.map((item) => (
+                        {supplier.data.map((item) => (
 
                             <div
                                 key={item.id}
@@ -132,6 +163,8 @@ export default function Index({ supplier }) {
                 )}
 
             </div>
+
+            <Pagination links={supplier.links} />
 
         </AdminLayout>
 

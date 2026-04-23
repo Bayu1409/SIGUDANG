@@ -1,16 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, router, usePage } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
+import Pagination from "@/Components/Pagination";
 
-export default function Index({ barang }) {
-    const [search, setSearch] = useState("");
+export default function Index({ barang, filters = {} }) {
+    const [search, setSearch] = useState(filters.search || "");
 
-    const filteredBarang = barang.filter(
-        (item) =>
-            item.nama_barang.toLowerCase().includes(search.toLowerCase()) ||
-            item.kode_barang.toLowerCase().includes(search.toLowerCase()) ||
-            (item.kategori?.nama_kategori || "").toLowerCase().includes(search.toLowerCase())
-    );
+    const isInitialRender = React.useRef(true);
+    
+    useEffect(() => {
+        if (isInitialRender.current) {
+            isInitialRender.current = false;
+            return;
+        }
+
+        const delay = setTimeout(() => {
+            router.get(
+                route("barang.index"),
+                { search },
+                { preserveState: true, replace: true, preserveScroll: true }
+            );
+        }, 300);
+        return () => clearTimeout(delay);
+    }, [search]);
 
     const handleDelete = (id) => {
 
@@ -79,14 +91,14 @@ export default function Index({ barang }) {
 
                         <tbody>
 
-                            {filteredBarang.length > 0 ? (
+                            {barang.data && barang.data.length > 0 ? (
 
-                                filteredBarang.map((item, index) => (
+                                barang.data.map((item, index) => (
 
                                     <tr key={item.id} className="text-center">
 
                                         <td className="border px-4 py-2">
-                                            {index + 1}
+                                            {barang.from + index}
                                         </td>
 
                                         <td className="border px-4 py-2">
@@ -150,6 +162,8 @@ export default function Index({ barang }) {
                     </table>
 
                 </div>
+                {/* PAGINATION */}
+                <Pagination links={barang.links} />
 
             </div>
 

@@ -18,27 +18,51 @@ class LaporanController extends Controller
 
     public function barangMasuk(Request $request)
     {
+        $search = $request->search;
         $query = BarangMasuk::with(['barang.kategori', 'barang.satuan', 'supplier']);
 
         if ($request->dari && $request->sampai) {
             $query->whereBetween('tanggal_masuk', [$request->dari, $request->sampai]);
         }
 
-        $data = $query->orderBy('tanggal_masuk', 'desc')->get();
+        $query->when($search, function($q, $search) {
+            $q->whereHas('barang', function ($q2) use ($search) {
+                $q2->where('nama_barang', 'like', "%{$search}%")
+                  ->orWhereHas('kategori', function ($q3) use ($search) {
+                        $q3->where('nama_kategori', 'like', "%{$search}%");
+                  });
+            })->orWhereHas('supplier', function ($q2) use ($search) {
+                $q2->where('nama_supplier', 'like', "%{$search}%");
+            });
+       });
+
+        $data = $query->orderBy('tanggal_masuk', 'desc')->paginate(10)->withQueryString();
 
         return Inertia::render('Laporan/BarangMasuk', [
             'data' => $data,
-            'filters' => $request->only(['dari', 'sampai'])
+            'filters' => $request->only(['dari', 'sampai', 'search'])
         ]);
     }
 
     public function exportBarangMasuk(Request $request)
     {
+        $search = $request->search;
         $query = BarangMasuk::with(['barang.kategori', 'barang.satuan', 'supplier']);
 
         if ($request->dari && $request->sampai) {
             $query->whereBetween('tanggal_masuk', [$request->dari, $request->sampai]);
         }
+
+        $query->when($search, function($q, $search) {
+            $q->whereHas('barang', function ($q2) use ($search) {
+                $q2->where('nama_barang', 'like', "%{$search}%")
+                  ->orWhereHas('kategori', function ($q3) use ($search) {
+                        $q3->where('nama_kategori', 'like', "%{$search}%");
+                  });
+            })->orWhereHas('supplier', function ($q2) use ($search) {
+                $q2->where('nama_supplier', 'like', "%{$search}%");
+            });
+       });
 
         $data = $query->orderBy('tanggal_masuk', 'desc')->get();
 
@@ -67,27 +91,47 @@ class LaporanController extends Controller
 
     public function barangKeluar(Request $request)
     {
+        $search = $request->search;
         $query = BarangKeluar::with(['barang.kategori', 'barang.satuan']);
 
         if ($request->dari && $request->sampai) {
             $query->whereBetween('tanggal_keluar', [$request->dari, $request->sampai]);
         }
 
-        $data = $query->orderBy('tanggal_keluar', 'desc')->get();
+        $query->when($search, function($q, $search) {
+            $q->whereHas('barang', function ($q2) use ($search) {
+                $q2->where('nama_barang', 'like', "%{$search}%")
+                  ->orWhereHas('kategori', function ($q3) use ($search) {
+                        $q3->where('nama_kategori', 'like', "%{$search}%");
+                  });
+            });
+       });
+
+        $data = $query->orderBy('tanggal_keluar', 'desc')->paginate(10)->withQueryString();
 
         return Inertia::render('Laporan/BarangKeluar', [
             'data' => $data,
-            'filters' => $request->only(['dari', 'sampai'])
+            'filters' => $request->only(['dari', 'sampai', 'search'])
         ]);
     }
 
     public function exportBarangKeluar(Request $request)
     {
+        $search = $request->search;
         $query = BarangKeluar::with(['barang.kategori', 'barang.satuan']);
 
         if ($request->dari && $request->sampai) {
             $query->whereBetween('tanggal_keluar', [$request->dari, $request->sampai]);
         }
+
+        $query->when($search, function($q, $search) {
+            $q->whereHas('barang', function ($q2) use ($search) {
+                $q2->where('nama_barang', 'like', "%{$search}%")
+                  ->orWhereHas('kategori', function ($q3) use ($search) {
+                        $q3->where('nama_kategori', 'like', "%{$search}%");
+                  });
+            });
+       });
 
         $data = $query->orderBy('tanggal_keluar', 'desc')->get();
 
@@ -117,8 +161,9 @@ class LaporanController extends Controller
     {
         $dari = $request->dari;
         $sampai = $request->sampai;
+        $search = $request->search;
 
-        $barang = Barang::with([
+        $barangPaginated = Barang::with([
             'kategori',
             'satuan',
             'barangMasuk' => function ($q) use ($dari, $sampai) {
@@ -127,7 +172,18 @@ class LaporanController extends Controller
             'barangKeluar' => function ($q) use ($dari, $sampai) {
                 if ($dari && $sampai) $q->whereBetween('tanggal_keluar', [$dari, $sampai]);
             }
-        ])->get()->map(function ($item) {
+        ])
+        ->when($search, function ($query, $search) {
+            $query->where('nama_barang', 'like', "%{$search}%")
+                  ->orWhere('kode_barang', 'like', "%{$search}%")
+                  ->orWhereHas('kategori', function($q) use ($search) {
+                      $q->where('nama_kategori', 'like', "%{$search}%");
+                  });
+        })
+        ->paginate(10)
+        ->withQueryString();
+
+        $barangPaginated->getCollection()->transform(function ($item) {
             $masuk = $item->barangMasuk->sum('jumlah');
             $keluar = $item->barangKeluar->sum('jumlah');
             // Stok tetap menggunakan stok aktual yang ada di database saat ini
@@ -146,8 +202,8 @@ class LaporanController extends Controller
         });
 
         return Inertia::render('Laporan/Stok', [
-            'barang' => $barang,
-            'filters' => $request->only(['dari', 'sampai'])
+            'barang' => $barangPaginated,
+            'filters' => $request->only(['dari', 'sampai', 'search'])
         ]);
     }
 
@@ -155,6 +211,7 @@ class LaporanController extends Controller
     {
         $dari = $request->dari;
         $sampai = $request->sampai;
+        $search = $request->search;
 
         $barang = Barang::with([
             'kategori',
@@ -165,7 +222,15 @@ class LaporanController extends Controller
             'barangKeluar' => function ($q) use ($dari, $sampai) {
                 if ($dari && $sampai) $q->whereBetween('tanggal_keluar', [$dari, $sampai]);
             }
-        ])->get()->map(function ($item, $index) {
+        ])
+        ->when($search, function ($query, $search) {
+            $query->where('nama_barang', 'like', "%{$search}%")
+                  ->orWhere('kode_barang', 'like', "%{$search}%")
+                  ->orWhereHas('kategori', function($q) use ($search) {
+                      $q->where('nama_kategori', 'like', "%{$search}%");
+                  });
+        })
+        ->get()->map(function ($item, $index) {
             $masuk = $item->barangMasuk->sum('jumlah');
             $keluar = $item->barangKeluar->sum('jumlah');
             $stok = $item->stok;
@@ -196,23 +261,34 @@ class LaporanController extends Controller
 
     public function deadStock(Request $request)
     {
-        // Dead Stock menggunakan satu referensi tanggal: 'sampai' (Atau hari ini jika kosong)
-        // Kita gunakan $request->sampai sebagai "Cut off date".
         $today = $request->sampai ? Carbon::parse($request->sampai) : Carbon::now();
+        $search = $request->search;
 
-        $barang = Barang::with([
+        // Note: For custom filtering (like filter by 'hari' > 30 from a collection)
+        // We have to either do it entirely in PHP and paginate manually, 
+        // OR do it on Database. It is extremely complex to do the 30-day check on DB directly without raw queries.
+        // Therefore, we will fetch ALL matching items, map them, filter them, THEN create a custom LengthAwarePaginator!
+
+        $semuaBarang = Barang::with([
             'kategori', 
             'satuan', 
             'barangMasuk' => function($q) use ($today) {
-                // Hanya perhitungkan yang sebelum cutoff date
                 $q->whereDate('tanggal_masuk', '<=', $today);
             }, 
             'barangKeluar' => function($q) use ($today) {
                 $q->whereDate('tanggal_keluar', '<=', $today);
             }
-        ])->get()
-            ->map(function ($item) use ($today) {
-                // Kalkulasi stok virtual pada tanggal tersebut
+        ])
+        ->when($search, function ($query, $search) {
+            $query->where('nama_barang', 'like', "%{$search}%")
+                  ->orWhere('kode_barang', 'like', "%{$search}%")
+                  ->orWhereHas('kategori', function($q) use ($search) {
+                      $q->where('nama_kategori', 'like', "%{$search}%");
+                  });
+        })
+        ->get();
+
+        $filteredCollection = $semuaBarang->map(function ($item) use ($today) {
                 $masuk = $item->barangMasuk->sum('jumlah');
                 $keluar = $item->barangKeluar->sum('jumlah');
                 $stok = $masuk - $keluar;
@@ -233,15 +309,32 @@ class LaporanController extends Controller
             ->filter(fn($item) => $item['hari'] > 30 && $item['stok'] > 0)
             ->values();
 
+        // Custom Manual Pagination for Collection
+        $perPage = 10;
+        $page = \Illuminate\Pagination\Paginator::resolveCurrentPage() ?: 1;
+        
+        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $filteredCollection->forPage($page, $perPage)->values(),
+            $filteredCollection->count(),
+            $perPage,
+            $page,
+            [
+                'path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(),
+                'query' => $request->query()
+            ]
+        );
+
         return Inertia::render('Laporan/DeadStock', [
-            'barang' => $barang,
-            'filters' => $request->only(['sampai'])
+            'barang' => $paginated,
+            'filters' => $request->only(['sampai', 'search'])
         ]);
     }
 
     public function exportDeadStock(Request $request)
     {
         $today = $request->sampai ? Carbon::parse($request->sampai) : Carbon::now();
+        $search = $request->search;
+
         $barang = Barang::with([
             'kategori', 
             'satuan', 
@@ -251,7 +344,15 @@ class LaporanController extends Controller
             'barangKeluar' => function($q) use ($today) {
                 $q->whereDate('tanggal_keluar', '<=', $today);
             }
-        ])->get()
+        ])
+        ->when($search, function ($query, $search) {
+            $query->where('nama_barang', 'like', "%{$search}%")
+                  ->orWhere('kode_barang', 'like', "%{$search}%")
+                  ->orWhereHas('kategori', function($q) use ($search) {
+                      $q->where('nama_kategori', 'like', "%{$search}%");
+                  });
+        })
+        ->get()
             ->map(function ($item) use ($today) {
                 $masuk = $item->barangMasuk->sum('jumlah');
                 $keluar = $item->barangKeluar->sum('jumlah');

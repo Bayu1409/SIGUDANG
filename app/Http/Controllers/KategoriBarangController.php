@@ -9,12 +9,18 @@ use Inertia\Inertia;
 class KategoriBarangController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $kategori = KategoriBarang::all();
+        $search = $request->search;
+
+        $kategori = KategoriBarang::when($search, function ($query, $search) {
+            $query->where('nama_kategori', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+        })->paginate(10)->withQueryString();
 
         return Inertia::render('KategoriBarang/Index', [
-            'kategori' => $kategori
+            'kategori' => $kategori,
+            'filters' => $request->only(['search'])
         ]);
     }
 

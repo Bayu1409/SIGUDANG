@@ -1,15 +1,28 @@
-import React, { useState } from "react";
-import { Link, usePage } from "@inertiajs/react";
+import React, { useState, useEffect } from "react";
+import { Link, router, usePage } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
+import Pagination from "@/Components/Pagination";
 
-export default function Index({ barangKeluar }) {
-  const [search, setSearch] = useState("");
+export default function Index({ barangKeluar, filters = {} }) {
+  const [search, setSearch] = useState(filters.search || "");
 
-  const filteredData = barangKeluar.filter(
-    (item) =>
-      (item.barang?.nama_barang || "").toLowerCase().includes(search.toLowerCase()) ||
-      (item.barang?.kategori?.nama_kategori || "").toLowerCase().includes(search.toLowerCase())
-  );
+  const isInitialRender = React.useRef(true);
+  
+  useEffect(() => {
+      if (isInitialRender.current) {
+          isInitialRender.current = false;
+          return;
+      }
+
+      const delay = setTimeout(() => {
+          router.get(
+              route("barang-keluar.index"),
+              { search },
+              { preserveState: true, replace: true, preserveScroll: true }
+          );
+      }, 300);
+      return () => clearTimeout(delay);
+  }, [search]);
 
   return (
     <AdminLayout
@@ -65,12 +78,12 @@ export default function Index({ barangKeluar }) {
 
           <tbody>
 
-            {filteredData.map((item, index) => (
+            {barangKeluar.data && barangKeluar.data.map((item, index) => (
 
               <tr key={item.id} className="border-t">
 
                 <td className="px-4 py-2">
-                  {index + 1}
+                  {barangKeluar.from + index}
                 </td>
 
                 <td className="px-4 py-2">
@@ -134,6 +147,8 @@ export default function Index({ barangKeluar }) {
         </table>
 
       </div>
+
+      <Pagination links={barangKeluar.links} />
 
     </AdminLayout>
   );

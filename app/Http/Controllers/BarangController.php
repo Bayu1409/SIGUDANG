@@ -13,17 +13,30 @@ use App\Services\LogService;
 class BarangController extends Controller
 {
 
-    public function index()
-{
-    $barang = Barang::with([
-        'kategori',
-        'satuan'
-    ])->get();
+    public function index(Request $request)
+    {
+        $search = $request->search;
 
-    return Inertia::render('Barang/Index', [
-        'barang' => $barang
-    ]);
-}
+        $barang = Barang::with([
+            'kategori',
+            'satuan'
+        ])
+        ->when($search, function ($query, $search) {
+            $query->where('nama_barang', 'like', "%{$search}%")
+                  ->orWhere('kode_barang', 'like', "%{$search}%")
+                  ->orWhereHas('kategori', function($q) use ($search) {
+                      $q->where('nama_kategori', 'like', "%{$search}%");
+                  });
+        })
+        ->orderBy('id', 'desc')
+        ->paginate(10)
+        ->withQueryString();
+
+        return Inertia::render('Barang/Index', [
+            'barang' => $barang,
+            'filters' => $request->only(['search'])
+        ]);
+    }
 
     public function create()
 {
