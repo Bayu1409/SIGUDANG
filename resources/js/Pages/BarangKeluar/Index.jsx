@@ -4,153 +4,153 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
 
 export default function Index({ barangKeluar, filters = {} }) {
-  const [search, setSearch] = useState(filters.search || "");
+    const [search, setSearch] = useState(filters.search || "");
 
-  const isInitialRender = React.useRef(true);
-  
-  useEffect(() => {
-      if (isInitialRender.current) {
-          isInitialRender.current = false;
-          return;
-      }
+    const isInitialRender = React.useRef(true);
 
-      const delay = setTimeout(() => {
-          router.get(
-              route("barang-keluar.index"),
-              { search },
-              { preserveState: true, replace: true, preserveScroll: true }
-          );
-      }, 300);
-      return () => clearTimeout(delay);
-  }, [search]);
+    useEffect(() => {
+        if (isInitialRender.current) {
+            isInitialRender.current = false;
+            return;
+        }
 
-  return (
-    <AdminLayout
-      header="Barang Keluar"
-    >
+        const delay = setTimeout(() => {
+            router.get(
+                route("barang-keluar.index"),
+                { search },
+                { preserveState: true, replace: true, preserveScroll: true }
+            );
+        }, 300);
+        return () => clearTimeout(delay);
+    }, [search]);
 
-      <div className="flex justify-between mb-4">
-
-        <h2 className="text-xl font-semibold">
-          Data Barang Keluar
-        </h2>
-
-        <Link
-          href={route("barang-keluar.create")}
-          className="bg-red-600 text-white px-4 py-2 rounded"
+    return (
+        <AdminLayout
+            header="Barang Keluar"
         >
-          Input Barang Keluar
-        </Link>
 
-      </div>
+            <div className="flex justify-between mb-4">
 
-      {/* SEARCH */}
-      <div className="mb-4 bg-white p-4 rounded shadow flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <input
-            type="text"
-            placeholder="Cari nama barang atau kategori..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full md:w-1/3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
-        />
-      </div>
+                <h2 className="text-xl font-semibold">
+                    Data Barang Keluar
+                </h2>
 
-      <div className="bg-white rounded shadow overflow-x-auto">
+                <Link
+                    href={route("barang-keluar.create")}
+                    className="bg-red-600 text-white px-4 py-2 rounded"
+                >
+                    Input Barang Keluar
+                </Link>
 
-        <table className="min-w-full">
+            </div>
 
-          <thead className="bg-gray-100">
+            {/* SEARCH */}
+            <div className="mb-4 bg-white p-4 rounded shadow flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <input
+                    type="text"
+                    placeholder="Cari nama barang atau kategori..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full md:w-1/3 rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
+            </div>
 
-            <tr>
+            <div className="bg-white rounded shadow overflow-x-auto">
 
-              <th className="px-4 py-2">No</th>
-              <th className="px-4 py-2">Barang</th>
-              <th className="px-4 py-2">Kategori</th>
-              <th className="px-4 py-2">Satuan</th>
-              <th className="px-4 py-2">Tanggal</th>
-              <th className="px-4 py-2">Jumlah</th>
-              <th className="px-4 py-2">Dokumen</th>
-              <th className="px-4 py-2">Aksi</th>
+                <table className="min-w-full">
 
-            </tr>
+                    <thead className="bg-gray-100">
 
-          </thead>
+                        <tr>
 
-          <tbody>
+                            <th className="px-4 py-2">No</th>
+                            <th className="px-4 py-2">Barang</th>
+                            <th className="px-4 py-2">Kategori</th>
+                            <th className="px-4 py-2">Satuan</th>
+                            <th className="px-4 py-2">Tanggal</th>
+                            <th className="px-4 py-2">Jumlah</th>
+                            <th className="px-4 py-2">Dokumen</th>
+                            <th className="px-4 py-2">Aksi</th>
 
-            {barangKeluar.data && barangKeluar.data.map((item, index) => (
+                        </tr>
 
-              <tr key={item.id} className="border-t">
+                    </thead>
 
-                <td className="px-4 py-2">
-                  {barangKeluar.from + index}
-                </td>
+                    <tbody>
 
-                <td className="px-4 py-2">
-                  {item.barang?.nama_barang}
-                </td>
+                        {barangKeluar.data && barangKeluar.data.map((item, index) => (
 
-                <td className="px-4 py-2">
-                  {item.barang?.kategori?.nama_kategori || "-"}
-                </td>
+                            <tr key={item.id} className="border-t">
 
-                <td className="px-4 py-2">
-                  {item.barang?.satuan?.nama || "-"}
-                </td>
+                                <td className="px-4 py-2">
+                                    {barangKeluar.from + index}
+                                </td>
 
-                <td className="px-4 py-2">
-                  {item.tanggal_keluar}
-                </td>
+                                <td className="px-4 py-2">
+                                    {item.barang?.nama_barang}
+                                </td>
 
-                <td className="px-4 py-2">
-                  {item.jumlah}
-                </td>
+                                <td className="px-4 py-2">
+                                    {item.barang?.kategori?.nama_kategori || "-"}
+                                </td>
 
-                <td className="px-4 py-2">
+                                <td className="px-4 py-2">
+                                    {item.barang?.satuan?.nama || "-"}
+                                </td>
 
-                  {item.dokumen && (
+                                <td className="px-4 py-2">
+                                    {item.tanggal_keluar}
+                                </td>
 
-                    <a
-                      href={`/storage/${item.dokumen}`}
-                      target="_blank"
-                      className="text-blue-600 underline"
-                    >
-                      Lihat
-                    </a>
+                                <td className="px-4 py-2">
+                                    {item.jumlah}
+                                </td>
 
-                  )}
+                                <td className="px-4 py-2">
 
-                </td>
+                                    {item.dokumen && (
 
-                <td className="px-4 py-2">
+                                        <a
+                                            href={`/storage/${item.dokumen}`}
+                                            target="_blank"
+                                            className="text-blue-600 underline"
+                                        >
+                                            Lihat
+                                        </a>
 
-                  <Link
-                    href={route(
-                      "barang-keluar.destroy",
-                      item.id
-                    )}
-                    method="delete"
-                    as="button"
-                    className="bg-red-600 text-white px-2 py-1 rounded"
-                  >
-                    Hapus
-                  </Link>
+                                    )}
 
-                </td>
+                                </td>
 
-              </tr>
+                                <td className="px-4 py-2">
 
-            ))}
+                                    <Link
+                                        href={route(
+                                            "barang-keluar.destroy",
+                                            item.id
+                                        )}
+                                        method="delete"
+                                        as="button"
+                                        className="bg-red-600 text-white px-2 py-1 rounded"
+                                    >
+                                        Hapus
+                                    </Link>
 
-          </tbody>
+                                </td>
 
-        </table>
+                            </tr>
 
-      </div>
+                        ))}
 
-      <Pagination links={barangKeluar.links} />
+                    </tbody>
 
-    </AdminLayout>
-  );
+                </table>
+
+            </div>
+
+            <Pagination links={barangKeluar.links} />
+
+        </AdminLayout>
+    );
 
 }

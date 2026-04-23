@@ -25,7 +25,7 @@ export default function AdminLayout({ children, header }) {
             <div className="flex items-center gap-3">
               <AlertCircle className="w-5 h-5" />
               <span className="text-sm font-semibold">
-                Peringatan: Saat ini memasuki bulan {event.current_month} (Musim Ramai). 
+                Peringatan: Saat ini memasuki bulan {event.current_month} (Musim Ramai).
                 Stok minimum akan ditingkatkan secara otomatis!
               </span>
             </div>
@@ -35,18 +35,17 @@ export default function AdminLayout({ children, header }) {
         {/* FLASH MESSAGES */}
         {showFlash && flash && (flash.message || flash.error) && (
           <div className="fixed top-4 right-4 z-[9999] animate-bounce-in">
-             <div className={`p-4 rounded-xl shadow-2xl border-l-4 flex items-center gap-3 min-w-[300px] ${
-               flash.message ? 'bg-white border-emerald-500 text-emerald-800' : 'bg-white border-rose-500 text-rose-800'
-             }`}>
-                {flash.message ? <CheckCircle className="w-5 h-5 text-emerald-500" /> : <AlertCircle className="w-5 h-5 text-rose-500" />}
-                <div className="flex-1">
-                  <p className="text-sm font-bold">{flash.message ? 'Berhasil!' : 'Terjadi Kesalahan'}</p>
-                  <p className="text-xs opacity-80">{flash.message || flash.error}</p>
-                </div>
-                <button onClick={() => setShowFlash(false)} className="hover:bg-slate-100 p-1 rounded-full transition-colors">
-                  <Info className="w-4 h-4 opacity-50" />
-                </button>
-             </div>
+            <div className={`p-4 rounded-xl shadow-2xl border-l-4 flex items-center gap-3 min-w-[300px] ${flash.message ? 'bg-white border-emerald-500 text-emerald-800' : 'bg-white border-rose-500 text-rose-800'
+              }`}>
+              {flash.message ? <CheckCircle className="w-5 h-5 text-emerald-500" /> : <AlertCircle className="w-5 h-5 text-rose-500" />}
+              <div className="flex-1">
+                <p className="text-sm font-bold">{flash.message ? 'Berhasil!' : 'Terjadi Kesalahan'}</p>
+                <p className="text-xs opacity-80">{flash.message || flash.error}</p>
+              </div>
+              <button onClick={() => setShowFlash(false)} className="hover:bg-slate-100 p-1 rounded-full transition-colors">
+                <Info className="w-4 h-4 opacity-50" />
+              </button>
+            </div>
           </div>
         )}
 
@@ -79,4 +78,4 @@ export default function AdminLayout({ children, header }) {
     </div>
   );
 }
-
+

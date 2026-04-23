@@ -9,7 +9,7 @@ export default function Index({ kategori, filters = {} }) {
     const [confirmDelete, setConfirmDelete] = useState({ show: false, id: null });
 
     const isInitialRender = React.useRef(true);
-    
+
     useEffect(() => {
         if (isInitialRender.current) {
             isInitialRender.current = false;
@@ -116,12 +116,12 @@ export default function Index({ kategori, filters = {} }) {
                                                 Edit
                                             </Link>
 
-                                             <button
-                                                 onClick={() => setConfirmDelete({ show: true, id: item.id })}
-                                                 className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                                             >
-                                                 Hapus
-                                             </button>
+                                            <button
+                                                onClick={() => setConfirmDelete({ show: true, id: item.id })}
+                                                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                                            >
+                                                Hapus
+                                            </button>
 
                                         </td>
 

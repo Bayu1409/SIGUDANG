@@ -7,7 +7,7 @@ export default function Pagination({ links }) {
     }
 
     return (
-        <div className="flex flex-wrap -mb-1 mt-6 justify-center">
+        <div className="flex flex-wrap -mb-1 mt-6 justify-end space-x-1">
             {links.map((link, index) => {
                 const label = link.label
                     .replace("&laquo; Previous", "«")

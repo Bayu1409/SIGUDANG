@@ -9,7 +9,7 @@ export default function Index({ supplier, filters = {} }) {
     const [confirmDelete, setConfirmDelete] = useState({ show: false, id: null });
 
     const isInitialRender = React.useRef(true);
-    
+
     useEffect(() => {
         if (isInitialRender.current) {
             isInitialRender.current = false;

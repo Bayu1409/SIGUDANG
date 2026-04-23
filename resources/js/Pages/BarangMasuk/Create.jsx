@@ -13,20 +13,20 @@ const Label = ({ children, required }) => (
 export default function Create({ barang, suppliers }) {
 
   const { data, setData, post, processing, errors } = useForm({
-    barang_id:     "",
-    supplier_id:   "",
+    barang_id: "",
+    supplier_id: "",
     tanggal_masuk: "",
-    jumlah:        "",
-    dokumen:       null,
+    jumlah: "",
+    dokumen: null,
   });
 
   // Cari stok barang yang dipilih
   const selectedBarang = barang.find(
     (item) => String(item.id) === String(data.barang_id)
   );
-  const stokSaatIni   = selectedBarang ? Number(selectedBarang.stok) : null;
-  const jumlahInput   = Number(data.jumlah) || 0;
-  const stokAkhir     = stokSaatIni !== null ? stokSaatIni + jumlahInput : null;
+  const stokSaatIni = selectedBarang ? Number(selectedBarang.stok) : null;
+  const jumlahInput = Number(data.jumlah) || 0;
+  const stokAkhir = stokSaatIni !== null ? stokSaatIni + jumlahInput : null;
 
   function handleSubmit(e) {
     e.preventDefault();

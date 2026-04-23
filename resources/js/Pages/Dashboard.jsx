@@ -22,10 +22,10 @@ import {
 } from "lucide-react";
 
 export default function Dashboard({ stats, lowStock, chartData, activities, config }) {
-    
+
     // Stats Card Component
     const StatCard = ({ title, value, icon: Icon, color, href }) => (
-        <Link 
+        <Link
             href={href}
             className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-center gap-4 hover:shadow-md transition-all group cursor-pointer"
         >
@@ -58,42 +58,42 @@ export default function Dashboard({ stats, lowStock, chartData, activities, conf
             <Head title="Dashboard" />
 
             <div className="space-y-6">
-                
+
                 {/* 1. STATS GRID */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <StatCard 
-                        title="Total Barang" 
-                        value={stats.total_barang} 
-                        icon={Package} 
-                        color="bg-indigo-600" 
+                    <StatCard
+                        title="Total Barang"
+                        value={stats.total_barang}
+                        icon={Package}
+                        color="bg-indigo-600"
                         href="/barang"
                     />
-                    <StatCard 
-                        title="Kategori" 
-                        value={stats.total_kategori} 
-                        icon={Layers} 
-                        color="bg-blue-600" 
+                    <StatCard
+                        title="Kategori"
+                        value={stats.total_kategori}
+                        icon={Layers}
+                        color="bg-blue-600"
                         href="/kategori-barang"
                     />
-                    <StatCard 
-                        title="Masuk Hari Ini" 
-                        value={stats.masuk_today} 
-                        icon={ArrowUpCircle} 
-                        color="bg-emerald-600" 
+                    <StatCard
+                        title="Masuk Hari Ini"
+                        value={stats.masuk_today}
+                        icon={ArrowUpCircle}
+                        color="bg-emerald-600"
                         href="/barang-masuk"
                     />
-                    <StatCard 
-                        title="Keluar Hari Ini" 
-                        value={stats.keluar_today} 
-                        icon={ArrowDownCircle} 
-                        color="bg-rose-600" 
+                    <StatCard
+                        title="Keluar Hari Ini"
+                        value={stats.keluar_today}
+                        icon={ArrowDownCircle}
+                        color="bg-rose-600"
                         href="/barang-keluar"
                     />
                 </div>
 
                 {/* 2. CHARTS & ACTIVITY */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    
+
                     {/* CHART */}
                     <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
                         <div className="flex items-center justify-between mb-6">
@@ -107,38 +107,38 @@ export default function Dashboard({ stats, lowStock, chartData, activities, conf
                                 <AreaChart data={chartData}>
                                     <defs>
                                         <linearGradient id="colorMasuk" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.1}/>
-                                            <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
+                                            <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.1} />
+                                            <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
                                         </linearGradient>
                                         <linearGradient id="colorKeluar" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.1}/>
-                                            <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
+                                            <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.1} />
+                                            <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                    <XAxis dataKey="name" fontSize={11} tickLine={false} axisLine={false} tick={{fill: '#94a3b8'}} dy={10} />
-                                    <YAxis fontSize={11} tickLine={false} axisLine={false} tick={{fill: '#94a3b8'}} />
-                                    <Tooltip 
+                                    <XAxis dataKey="name" fontSize={11} tickLine={false} axisLine={false} tick={{ fill: '#94a3b8' }} dy={10} />
+                                    <YAxis fontSize={11} tickLine={false} axisLine={false} tick={{ fill: '#94a3b8' }} />
+                                    <Tooltip
                                         contentStyle={{ borderRadius: '12px', border: '1px solid #f1f5f9', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                                     />
-                                    <Legend iconType="circle" wrapperStyle={{paddingTop: '20px'}} />
-                                    <Area 
-                                        type="monotone" 
-                                        dataKey="masuk" 
-                                        name="Barang Masuk" 
-                                        stroke="#4f46e5" 
+                                    <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="masuk"
+                                        name="Barang Masuk"
+                                        stroke="#4f46e5"
                                         strokeWidth={3}
-                                        fillOpacity={1} 
-                                        fill="url(#colorMasuk)" 
+                                        fillOpacity={1}
+                                        fill="url(#colorMasuk)"
                                     />
-                                    <Area 
-                                        type="monotone" 
-                                        dataKey="keluar" 
-                                        name="Barang Keluar" 
-                                        stroke="#f43f5e" 
+                                    <Area
+                                        type="monotone"
+                                        dataKey="keluar"
+                                        name="Barang Keluar"
+                                        stroke="#f43f5e"
                                         strokeWidth={3}
-                                        fillOpacity={1} 
-                                        fill="url(#colorKeluar)" 
+                                        fillOpacity={1}
+                                        fill="url(#colorKeluar)"
                                     />
                                 </AreaChart>
                             </ResponsiveContainer>
@@ -205,7 +205,7 @@ export default function Dashboard({ stats, lowStock, chartData, activities, conf
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <button 
+                                            <button
                                                 onClick={() => window.location.href = `/barang-masuk/create?barang_id=${item.id}`}
                                                 className="text-xs bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg font-bold transition-all border border-indigo-100"
                                             >

@@ -9,7 +9,7 @@ export default function LaporanStok({ barang, filters = {} }) {
     const [search, setSearch] = useState(filters.search || "");
 
     const isInitialRender = React.useRef(true);
-    
+
     useEffect(() => {
         if (isInitialRender.current) {
             isInitialRender.current = false;

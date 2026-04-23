@@ -9,7 +9,7 @@ export default function Index({ barang, filters = {} }) {
     const [confirmDelete, setConfirmDelete] = useState({ show: false, id: null });
 
     const isInitialRender = React.useRef(true);
-    
+
     useEffect(() => {
         if (isInitialRender.current) {
             isInitialRender.current = false;
@@ -121,7 +121,7 @@ export default function Index({ barang, filters = {} }) {
                                                 : "-"}
                                         </td>
 
-                                           <td className="border px-4 py-2 space-x-2">
+                                        <td className="border px-4 py-2 space-x-2">
 
                                             <Link
                                                 href={`/barang/${item.id}/edit`}
@@ -130,12 +130,12 @@ export default function Index({ barang, filters = {} }) {
                                                 Edit
                                             </Link>
 
-                                             <button
-                                                 onClick={() => setConfirmDelete({ show: true, id: item.id })}
-                                                 className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                                             >
-                                                 Hapus
-                                             </button>
+                                            <button
+                                                onClick={() => setConfirmDelete({ show: true, id: item.id })}
+                                                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                                            >
+                                                Hapus
+                                            </button>
 
                                         </td>
 

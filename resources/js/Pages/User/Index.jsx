@@ -39,15 +39,14 @@ export default function Index({ users }) {
                                 <div className={`p-2.5 rounded-xl ${user.role === 'superadmin' ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-600'}`}>
                                     {user.role === 'superadmin' ? <ShieldCheck className="w-6 h-6" /> : <ShieldAlert className="w-6 h-6" />}
                                 </div>
-                                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md border ${
-                                    user.role === 'superadmin' 
-                                    ? 'bg-indigo-50 text-indigo-700 border-indigo-100' 
-                                    : 'bg-slate-50 text-slate-700 border-slate-200'
-                                }`}>
+                                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-md border ${user.role === 'superadmin'
+                                        ? 'bg-indigo-50 text-indigo-700 border-indigo-100'
+                                        : 'bg-slate-50 text-slate-700 border-slate-200'
+                                    }`}>
                                     {user.role}
                                 </span>
                             </div>
-                            
+
                             <h3 className="text-lg font-bold text-slate-900">{user.name}</h3>
                             <div className="flex items-center gap-2 text-sm text-slate-500 mt-1">
                                 <Mail className="w-3.5 h-3.5" />

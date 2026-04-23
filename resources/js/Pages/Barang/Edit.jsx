@@ -4,10 +4,10 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import ConfirmationModal from "@/Components/ConfirmationModal";
 
 const Label = ({ children, required }) => (
-  <label className="block text-sm font-medium text-gray-700 mb-1">
-    {children}
-    {required && <span className="text-red-500 ml-1">*</span>}
-  </label>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+        {children}
+        {required && <span className="text-red-500 ml-1">*</span>}
+    </label>
 );
 
 export default function Edit({ barang, kategori, satuan }) {
@@ -16,9 +16,9 @@ export default function Edit({ barang, kategori, satuan }) {
     const { data, setData, put, processing, errors } = useForm({
         kode_barang: barang.kode_barang || "",
         nama_barang: barang.nama_barang || "",
-        stok:        barang.stok || "",
+        stok: barang.stok || "",
         kategori_id: barang.kategori_id || "",
-        satuan_id:   barang.satuan_id || "",
+        satuan_id: barang.satuan_id || "",
     });
 
     const submit = (e) => {

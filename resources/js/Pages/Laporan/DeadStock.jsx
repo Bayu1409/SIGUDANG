@@ -8,7 +8,7 @@ export default function LaporanDeadStock({ barang, filters = {} }) {
     const [search, setSearch] = useState(filters.search || "");
 
     const isInitialRender = React.useRef(true);
-    
+
     useEffect(() => {
         if (isInitialRender.current) {
             isInitialRender.current = false;
@@ -123,10 +123,10 @@ export default function LaporanDeadStock({ barang, filters = {} }) {
                     </form>
 
                     <div className="flex gap-2 border-t pt-4 mt-4">
-                         <span className="text-sm font-medium text-gray-700 self-center">Filter Waktu Cepat:</span>
-                         <button type="button" onClick={() => setQuickDate('hari_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Hari Ini (Sekarang)</button>
-                         <button type="button" onClick={() => setQuickDate('bulan_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Akhir Bulan Ini</button>
-                         <button type="button" onClick={() => setQuickDate('tahun_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Akhir Tahun Ini</button>
+                        <span className="text-sm font-medium text-gray-700 self-center">Filter Waktu Cepat:</span>
+                        <button type="button" onClick={() => setQuickDate('hari_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Hari Ini (Sekarang)</button>
+                        <button type="button" onClick={() => setQuickDate('bulan_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Akhir Bulan Ini</button>
+                        <button type="button" onClick={() => setQuickDate('tahun_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Akhir Tahun Ini</button>
                     </div>
                 </div>
 

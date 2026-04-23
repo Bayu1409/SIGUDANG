@@ -21,7 +21,7 @@ export default function Index({ barang, limit_dead_stock }) {
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
                 <div className="p-6 bg-slate-50/50 border-b border-slate-100">
                     <p className="text-sm text-slate-600 max-w-2xl">
-                        Daftar barang di bawah ini adalah barang yang tidak memiliki aktivitas Keluar selama lebih dari 
+                        Daftar barang di bawah ini adalah barang yang tidak memiliki aktivitas Keluar selama lebih dari
                         <strong> {limit_dead_stock} hari</strong> namun masih memiliki sisa stok di gudang.
                     </p>
                 </div>
@@ -70,7 +70,7 @@ export default function Index({ barang, limit_dead_stock }) {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <Link 
+                                        <Link
                                             href={`/barang/${item.id}/edit`}
                                             className="text-xs bg-white text-slate-600 hover:bg-slate-50 px-3 py-1.5 rounded-lg font-bold transition-all border border-slate-200 shadow-sm"
                                         >
