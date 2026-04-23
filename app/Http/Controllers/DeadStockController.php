@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
+use App\Models\Setting;
 use Inertia\Inertia;
 use Carbon\Carbon;
 
@@ -11,6 +12,7 @@ class DeadStockController extends Controller
     public function index()
     {
         $today = Carbon::now();
+        $limitDeadStock = Setting::getSetting('limit_dead_stock', 30);
 
         $barang = Barang::with([
             'kategori',
@@ -19,7 +21,7 @@ class DeadStockController extends Controller
             'barangKeluar'
         ])
         ->get()
-        ->map(function ($item) use ($today) {
+        ->map(function ($item) use ($today, $limitDeadStock) {
 
             // =========================
             // HITUNG STOK
@@ -49,8 +51,8 @@ class DeadStockController extends Controller
 
             } else {
 
-                // Jika belum pernah keluar
-                $selisihHari = 999;
+                // Jika belum pernah keluar, anggap sudah melampaui limit agar muncul di list
+                $selisihHari = $limitDeadStock + 1;
 
             }
 
@@ -62,7 +64,7 @@ class DeadStockController extends Controller
                 // PERBAIKAN NAMA FIELD
                 'kategori' => $item->kategori->nama_kategori ?? '-',
 
-                'satuan' => $item->satuan->nama_satuan ?? '-',
+                'satuan' => $item->satuan->nama ?? '-',
 
                 // TAMBAHAN STOK
                 'stok' => $stok,
@@ -70,12 +72,12 @@ class DeadStockController extends Controller
                 'hari' => $selisihHari,
             ];
         })
-        ->filter(function ($item) {
+        ->filter(function ($item) use ($limitDeadStock) {
 
             // Dead Stock:
-            // > 30 hari dan stok masih ada
+            // > limit_dead_stock hari dan stok masih ada
 
-            return $item['hari'] > 30
+            return $item['hari'] > $limitDeadStock
                 && $item['stok'] > 0;
 
         })
@@ -84,8 +86,9 @@ class DeadStockController extends Controller
         return Inertia::render(
             'DeadStock/Index',
             [
-                'barang' => $barang
+                'barang' => $barang,
+                'limit_dead_stock' => $limitDeadStock
             ]
         );
     }
-}
+}

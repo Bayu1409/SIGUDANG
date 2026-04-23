@@ -1,18 +1,18 @@
 import React, { useMemo, useState } from "react";
 import NavLink from "./NavLink";
 import { Link, usePage } from "@inertiajs/react";
-import { 
-  Users, 
-  ClipboardList, 
-  LogOut, 
-  LayoutDashboard, 
-  Package, 
-  Layers, 
-  Truck, 
-  ArrowDownToLine, 
-  ArrowUpFromLine, 
-  BarChart3, 
-  AlertTriangle, 
+import {
+  Users,
+  ClipboardList,
+  LogOut,
+  LayoutDashboard,
+  Package,
+  Layers,
+  Truck,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  BarChart3,
+  AlertTriangle,
   FileText,
   Boxes
 } from "lucide-react";
@@ -371,9 +371,9 @@ export default function Sidebar({ className = "" }) {
             className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-300 hover:bg-slate-800 font-medium transition-all"
           >
             <AlertTriangle className="w-5 h-5 -mt-0.5" />
-            Pengaturan Sistem
+            Konfigurasi Stok & Event
           </Link>
-          
+
           <Link
             href={route("logout")}
             method="post"

@@ -45,12 +45,12 @@ export default function SettingIndex({ settings }) {
         <AdminLayout
             header={
                 <h2 className="text-xl font-semibold text-gray-800">
-                    Pengaturan Sistem
+                    Monitoring Stok dan Penjadwalan Event
                 </h2>
             }
         >
             <div className="max-w-4xl bg-white p-8 rounded-xl shadow-md">
-                
+
                 {flash?.success && (
                     <div className="mb-6 p-4 bg-green-100 text-green-700 rounded border border-green-200">
                         {flash.success}
@@ -58,7 +58,7 @@ export default function SettingIndex({ settings }) {
                 )}
 
                 <form onSubmit={submit} className="space-y-8">
-                    
+
                     {/* Event Months */}
                     <div>
                         <h3 className="text-lg font-medium text-gray-900 border-b pb-2 mb-4">
@@ -68,7 +68,7 @@ export default function SettingIndex({ settings }) {
                             Pilih bulan-bulan di mana terjadi lonjakan permintaan (musim sibuk).
                             Bulan ini akan menggunakan "Limit Stok Kelangkaan Event".
                         </p>
-                        
+
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {MONTHS.map((m) => {
                                 const isSelected = data.event_months.includes(m.value);
@@ -77,11 +77,10 @@ export default function SettingIndex({ settings }) {
                                         type="button"
                                         key={m.value}
                                         onClick={() => toggleMonth(m.value)}
-                                        className={`px-4 py-2 text-sm rounded-lg border flex items-center justify-between transition-colors ${
-                                            isSelected 
-                                            ? 'bg-blue-600 border-blue-600 text-white shadow-md' 
+                                        className={`px-4 py-2 text-sm rounded-lg border flex items-center justify-between transition-colors ${isSelected
+                                            ? 'bg-blue-600 border-blue-600 text-white shadow-md'
                                             : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                                        }`}
+                                            }`}
                                     >
                                         {m.label}
                                         {isSelected && (
@@ -100,9 +99,9 @@ export default function SettingIndex({ settings }) {
                         <h3 className="text-lg font-medium text-gray-900 border-b pb-2 mb-4">
                             Konfigurasi Batas Stok
                         </h3>
-                        
+
                         <div className="grid md:grid-cols-2 gap-6">
-                            
+
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Batas Stok Darurat (Bulan Normal)
