@@ -7,17 +7,17 @@ export default function Pagination({ links }) {
     }
 
     return (
-        <div className="flex flex-wrap -mb-1 mt-6 justify-end space-x-1">
+        <div className="flex flex-wrap items-center mt-8 gap-2 justify-center sm:justify-end">
             {links.map((link, index) => {
                 const label = link.label
-                    .replace("&laquo; Previous", "«")
-                    .replace("Next &raquo;", "»");
+                    .replace("&laquo; Previous", "←")
+                    .replace("Next &raquo;", "→");
 
                 if (link.url === null) {
                     return (
                         <div
                             key={index}
-                            className="mr-1 mb-1 px-4 py-3 text-sm leading-4 text-gray-400 border rounded"
+                            className="px-4 py-2 text-sm font-medium text-slate-300 border border-slate-100 rounded-xl bg-slate-50/50"
                             dangerouslySetInnerHTML={{ __html: label }}
                         />
                     );
@@ -26,10 +26,10 @@ export default function Pagination({ links }) {
                 return (
                     <Link
                         key={index}
-                        className={`mr-1 mb-1 px-4 py-3 text-sm leading-4 border rounded hover:bg-white focus:border-blue-500 focus:text-blue-500 ${
+                        className={`px-4 py-2 text-sm font-semibold rounded-xl border transition-all duration-200 active:scale-95 ${
                             link.active
-                                ? "bg-blue-600 text-white hover:bg-blue-700"
-                                : "bg-white text-gray-800"
+                                ? "bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-200"
+                                : "bg-white text-slate-600 border-slate-200 hover:border-indigo-300 hover:text-indigo-600 hover:bg-indigo-50"
                         }`}
                         href={link.url}
                         dangerouslySetInnerHTML={{ __html: label }}

@@ -35,8 +35,17 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'event' => [
-                'is_event_month' => \App\Models\Setting::isEventMonth(),
+                'is_event_month' => ($isEvent = \App\Models\Setting::isEventMonth()),
                 'current_month' => \Carbon\Carbon::now()->translatedFormat('F'),
+                'is_all_stock_fulfilled' => (function() use ($isEvent) {
+                    $limit = $isEvent 
+                        ? \App\Models\Setting::getSetting('limit_stok_event', 50) 
+                        : \App\Models\Setting::getSetting('limit_stok_normal', 10);
+                    
+                    // Check if there are ANY items below the limit
+                    $lowStockCount = \App\Models\Barang::where('stok', '<', $limit)->count();
+                    return $lowStockCount === 0;
+                })(),
             ],
             'flash' => [
                 'message' => $request->session()->get('message'),
