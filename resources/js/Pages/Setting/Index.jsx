@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useForm, usePage } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
+import ConfirmationModal from "@/Components/ConfirmationModal";
 
 const MONTHS = [
     { value: 1, label: "Januari" },
@@ -19,6 +20,7 @@ const MONTHS = [
 
 export default function SettingIndex({ settings }) {
     const { flash } = usePage().props;
+    const [showConfirm, setShowConfirm] = useState(false);
 
     const { data, setData, put, processing, errors } = useForm({
         event_months: Array.isArray(settings.event_months) ? settings.event_months : [],
@@ -37,8 +39,15 @@ export default function SettingIndex({ settings }) {
     };
 
     const submit = (e) => {
+        if (e) e.preventDefault();
+        put(route("setting.update"), {
+            onSuccess: () => setShowConfirm(false),
+        });
+    };
+
+    const triggerConfirm = (e) => {
         e.preventDefault();
-        put(route("setting.update"));
+        setShowConfirm(true);
     };
 
     return (
@@ -57,7 +66,7 @@ export default function SettingIndex({ settings }) {
                     </div>
                 )}
 
-                <form onSubmit={submit} className="space-y-8">
+                <form onSubmit={triggerConfirm} className="space-y-8">
 
                     {/* Event Months */}
                     <div>
@@ -174,6 +183,15 @@ export default function SettingIndex({ settings }) {
                 </form>
 
             </div>
+            <ConfirmationModal
+                show={showConfirm}
+                onClose={() => setShowConfirm(false)}
+                onConfirm={submit}
+                title="Simpan Pengaturan"
+                message="Apakah Anda yakin ingin memperbarui konfigurasi stok dan event? Perubahan ini akan langsung berdampak pada seluruh sistem."
+                type="info"
+                confirmText="Ya, Simpan"
+            />
         </AdminLayout>
     );
 }

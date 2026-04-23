@@ -356,7 +356,10 @@ export default function Sidebar({ className = "" }) {
                     active={route().current(item.routeName) || route().current(item.routeName + ".*")}
                     className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-800 text-slate-300 transition-colors"
                   >
-                    <item.icon className="w-4 h-4" />
+                {(() => {
+                  const Icon = item.icon;
+                  return <Icon className="w-4 h-4" />;
+                })()}
                     {item.label}
                   </NavLink>
                 ))}

@@ -31,8 +31,16 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            'auth' => [
+                        'auth' => [
                 'user' => $request->user(),
+            ],
+            'event' => [
+                'is_event_month' => \App\Models\Setting::isEventMonth(),
+                'current_month' => \Carbon\Carbon::now()->translatedFormat('F'),
+            ],
+            'flash' => [
+                'message' => $request->session()->get('message'),
+                'error' => $request->session()->get('error'),
             ],
         ];
     }

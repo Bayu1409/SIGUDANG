@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Link } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
+import ConfirmationModal from "@/Components/ConfirmationModal";
 
 const Label = ({ children, required }) => (
   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -10,6 +11,7 @@ const Label = ({ children, required }) => (
 );
 
 export default function Create({ kategoris = [], satuans = [] }) {
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const { data, setData, post, processing, errors } = useForm({
     nama_barang: "",
@@ -19,13 +21,18 @@ export default function Create({ kategoris = [], satuans = [] }) {
   });
 
   function handleSubmit(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
     post(route("barang.store"));
   }
 
+  const triggerConfirm = (e) => {
+    e.preventDefault();
+    setShowConfirm(true);
+  };
+
   return (
     <AdminLayout>
-      <div className="p-6">
+      <div className="">
 
         <div className="mb-6">
           <h2 className="text-2xl font-semibold mt-2">Tambah Barang</h2>
@@ -35,7 +42,7 @@ export default function Create({ kategoris = [], satuans = [] }) {
         </div>
 
         <div className="bg-white p-6 rounded shadow max-w-lg">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={triggerConfirm} className="space-y-4">
 
             {/* Nama */}
             <div>
@@ -106,6 +113,18 @@ export default function Create({ kategoris = [], satuans = [] }) {
         </div>
 
       </div>
+      <ConfirmationModal
+        show={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        onConfirm={() => {
+            setShowConfirm(false);
+            handleSubmit();
+        }}
+        title="Konfirmasi Simpan"
+        message="Apakah Anda yakin ingin menyimpan data barang baru ini?"
+        type="success"
+        confirmText="Ya, Simpan"
+      />
     </AdminLayout>
   );
 }

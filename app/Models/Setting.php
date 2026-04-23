@@ -39,4 +39,16 @@ class Setting extends Model
             ['value' => $value, 'type' => $type]
         );
     }
+
+    /**
+     * Cek apakah bulan sekarang adalah bulan event (Ramai).
+     */
+    public static function isEventMonth()
+    {
+        $eventMonths = self::getSetting('event_months', []);
+        $currentMonth = (int) date('n'); // 1-12
+
+        return in_array($currentMonth, $eventMonths);
+    }
 }
+

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link, router, usePage } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
+import ConfirmationModal from "@/Components/ConfirmationModal";
 
 export default function Index({ supplier, filters = {} }) {
     const [search, setSearch] = useState(filters.search || "");
+    const [confirmDelete, setConfirmDelete] = useState({ show: false, id: null });
 
     const isInitialRender = React.useRef(true);
     
@@ -24,21 +26,19 @@ export default function Index({ supplier, filters = {} }) {
         return () => clearTimeout(delay);
     }, [search]);
 
-    const handleDelete = (id) => {
-
-        if (confirm("Yakin ingin menghapus supplier ini?")) {
-
-            router.delete(`/supplier/${id}`);
-
+    const handleDelete = () => {
+        if (confirmDelete.id) {
+            router.delete(`/supplier/${confirmDelete.id}`, {
+                onSuccess: () => setConfirmDelete({ show: false, id: null }),
+            });
         }
-
     };
 
     return (
 
         <AdminLayout>
 
-            <div className="p-6">
+            <div className="">
 
                 {/* HEADER */}
 
@@ -138,7 +138,7 @@ export default function Index({ supplier, filters = {} }) {
                                     </Link>
 
                                     <button
-                                        onClick={() => handleDelete(item.id)}
+                                        onClick={() => setConfirmDelete({ show: true, id: item.id })}
                                         className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
                                     >
                                         Hapus
@@ -166,8 +166,15 @@ export default function Index({ supplier, filters = {} }) {
 
             <Pagination links={supplier.links} />
 
+            <ConfirmationModal
+                show={confirmDelete.show}
+                onClose={() => setConfirmDelete({ show: false, id: null })}
+                onConfirm={handleDelete}
+                title="Hapus Supplier"
+                message="Apakah Anda yakin ingin menghapus supplier ini? Semua data terkait supplier ini akan tetap ada namun supplier tidak dapat ditemukan lagi di masa mendatang."
+                type="danger"
+                confirmText="Hapus Sekarang"
+            />
         </AdminLayout>
-
     );
-
 }

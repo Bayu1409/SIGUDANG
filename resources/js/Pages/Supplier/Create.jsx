@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Link } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
+import ConfirmationModal from "@/Components/ConfirmationModal";
 
 const Label = ({ children, required }) => (
   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -10,6 +11,7 @@ const Label = ({ children, required }) => (
 );
 
 export default function Create() {
+    const [showConfirm, setShowConfirm] = useState(false);
 
     const { data, setData, post, errors, processing } = useForm({
         nama_supplier: "",
@@ -19,13 +21,18 @@ export default function Create() {
     });
 
     const submit = (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         post("/supplier");
+    };
+
+    const triggerConfirm = (e) => {
+        e.preventDefault();
+        setShowConfirm(true);
     };
 
     return (
         <AdminLayout>
-            <div className="p-6">
+            <div className="">
                 <div className="max-w-2xl mx-auto">
 
                     <h2 className="text-2xl font-semibold mb-2">Tambah Supplier</h2>
@@ -34,7 +41,7 @@ export default function Create() {
                     </p>
 
                     <form
-                        onSubmit={submit}
+                        onSubmit={triggerConfirm}
                         className="bg-white shadow rounded-lg p-6 space-y-4"
                     >
 
@@ -111,6 +118,18 @@ export default function Create() {
                     </form>
                 </div>
             </div>
+            <ConfirmationModal
+                show={showConfirm}
+                onClose={() => setShowConfirm(false)}
+                onConfirm={() => {
+                    setShowConfirm(false);
+                    submit();
+                }}
+                title="Simpan Supplier"
+                message="Apakah Anda yakin ingin menambahkan supplier baru ini?"
+                type="success"
+                confirmText="Ya, Simpan"
+            />
         </AdminLayout>
     );
 }

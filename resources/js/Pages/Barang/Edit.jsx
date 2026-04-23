@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Link } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
+import ConfirmationModal from "@/Components/ConfirmationModal";
 
 const Label = ({ children, required }) => (
   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -10,6 +11,7 @@ const Label = ({ children, required }) => (
 );
 
 export default function Edit({ barang, kategori, satuan }) {
+    const [showConfirm, setShowConfirm] = useState(false);
 
     const { data, setData, put, processing, errors } = useForm({
         kode_barang: barang.kode_barang || "",
@@ -20,8 +22,13 @@ export default function Edit({ barang, kategori, satuan }) {
     });
 
     const submit = (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         put(route("barang.update", barang.id));
+    };
+
+    const triggerConfirm = (e) => {
+        e.preventDefault();
+        setShowConfirm(true);
     };
 
     return (
@@ -36,7 +43,7 @@ export default function Edit({ barang, kategori, satuan }) {
                 </div>
 
                 <div className="bg-white p-6 rounded shadow">
-                    <form onSubmit={submit} className="space-y-4">
+                    <form onSubmit={triggerConfirm} className="space-y-4">
 
                         {/* KODE BARANG */}
                         <div>
@@ -132,6 +139,18 @@ export default function Edit({ barang, kategori, satuan }) {
                 </div>
 
             </div>
+            <ConfirmationModal
+                show={showConfirm}
+                onClose={() => setShowConfirm(false)}
+                onConfirm={() => {
+                    setShowConfirm(false);
+                    submit();
+                }}
+                title="Konfirmasi Perubahan"
+                message="Apakah Anda yakin ingin menyimpan perubahan pada data barang ini?"
+                type="info"
+                confirmText="Ya, Perbarui"
+            />
         </AdminLayout>
     );
 }

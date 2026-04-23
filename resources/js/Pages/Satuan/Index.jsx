@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link, router, usePage } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
+import ConfirmationModal from "@/Components/ConfirmationModal";
 
 export default function Index({ satuan, filters = {} }) {
     const [search, setSearch] = useState(filters.search || "");
+    const [confirmDelete, setConfirmDelete] = useState({ show: false, id: null });
 
     const isInitialRender = React.useRef(true);
     
@@ -23,6 +25,14 @@ export default function Index({ satuan, filters = {} }) {
         }, 300);
         return () => clearTimeout(delay);
     }, [search]);
+
+    const handleDelete = () => {
+        if (confirmDelete.id) {
+            router.delete(route("satuan.destroy", confirmDelete.id), {
+                onSuccess: () => setConfirmDelete({ show: false, id: null }),
+            });
+        }
+    };
 
   return (
     <AdminLayout
@@ -97,15 +107,12 @@ export default function Index({ satuan, filters = {} }) {
 
         {/* BUTTON HAPUS */}
 
-        <Link
-          href={route("satuan.destroy", item.id)}
-          method="delete"
-          as="button"
-          onBefore={() => confirm("Yakin ingin menghapus data?")}
+        <button
+          onClick={() => setConfirmDelete({ show: true, id: item.id })}
           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
         >
           Hapus
-        </Link>
+        </button>
 
       </td>
 
@@ -120,7 +127,15 @@ export default function Index({ satuan, filters = {} }) {
       </div>
 
       <Pagination links={satuan.links} />
-
+      <ConfirmationModal
+        show={confirmDelete.show}
+        onClose={() => setConfirmDelete({ show: false, id: null })}
+        onConfirm={handleDelete}
+        title="Hapus Satuan"
+        message="Apakah Anda yakin ingin menghapus satuan ini? Data yang sudah menggunakan satuan ini mungkin akan terpengaruh."
+        type="danger"
+        confirmText="Hapus Sekarang"
+      />
     </AdminLayout>
   );
 }

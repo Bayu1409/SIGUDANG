@@ -91,4 +91,4 @@ class DeadStockController extends Controller
             ]
         );
     }
-}
+}

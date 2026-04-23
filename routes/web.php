@@ -300,33 +300,11 @@ Route::middleware('auth')->group(function () {
 */
 
     // =========================
-    // STOK BARANG
+    // MONITORING
     // =========================
-
-    Route::get('/stok', [StokController::class, 'index'])
-        ->name('stok.index');
-
-    Route::get('/stok-minimum', function () {
-        return inertia('StokMinimum/Index');
-    })->name('stok-minimum.index');
-
-    Route::get('/dead-stock', function () {
-        return inertia('DeadStock/Index');
-    })->name('dead-stock.index');
-
-    // =========================
-    // STOK MINIMUM
-    // =========================
-
-    Route::get('/stok-minimum', [StokMinimumController::class, 'index'])
-        ->name('stok-minimum.index');
-
-    // =========================
-    // DEAD STOCK
-    // =========================
-
-    Route::get('/dead-stock', [DeadStockController::class, 'index'])
-        ->name('dead-stock.index');
+    Route::get('/stok', [StokController::class, 'index'])->name('stok.index');
+    Route::get('/stok-minimum', [StokMinimumController::class, 'index'])->name('stok-minimum.index');
+    Route::get('/dead-stock', [DeadStockController::class, 'index'])->name('dead-stock.index');
 
 
 

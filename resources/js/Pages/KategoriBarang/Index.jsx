@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link, router, usePage } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
+import ConfirmationModal from "@/Components/ConfirmationModal";
 
 export default function Index({ kategori, filters = {} }) {
     const [search, setSearch] = useState(filters.search || "");
+    const [confirmDelete, setConfirmDelete] = useState({ show: false, id: null });
 
     const isInitialRender = React.useRef(true);
     
@@ -24,21 +26,19 @@ export default function Index({ kategori, filters = {} }) {
         return () => clearTimeout(delay);
     }, [search]);
 
-    const handleDelete = (id) => {
-
-        if (confirm("Yakin ingin menghapus kategori ini?")) {
-
-            router.delete(`/kategori-barang/${id}`);
-
+    const handleDelete = () => {
+        if (confirmDelete.id) {
+            router.delete(`/kategori-barang/${confirmDelete.id}`, {
+                onSuccess: () => setConfirmDelete({ show: false, id: null }),
+            });
         }
-
     };
 
     return (
 
         <AdminLayout>
 
-            <div className="p-6">
+            <div className="">
 
                 {/* HEADER */}
 
@@ -116,12 +116,12 @@ export default function Index({ kategori, filters = {} }) {
                                                 Edit
                                             </Link>
 
-                                            <button
-                                                onClick={() => handleDelete(item.id)}
-                                                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                                            >
-                                                Hapus
-                                            </button>
+                                             <button
+                                                 onClick={() => setConfirmDelete({ show: true, id: item.id })}
+                                                 className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                                             >
+                                                 Hapus
+                                             </button>
 
                                         </td>
 
@@ -153,8 +153,15 @@ export default function Index({ kategori, filters = {} }) {
 
             </div>
 
+            <ConfirmationModal
+                show={confirmDelete.show}
+                onClose={() => setConfirmDelete({ show: false, id: null })}
+                onConfirm={handleDelete}
+                title="Hapus Kategori"
+                message="Apakah Anda yakin ingin menghapus kategori ini? Data yang dihapus tidak dapat dikembalikan."
+                type="danger"
+                confirmText="Hapus Sekarang"
+            />
         </AdminLayout>
-
     );
-
 }
