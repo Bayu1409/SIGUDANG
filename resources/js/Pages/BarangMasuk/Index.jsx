@@ -65,7 +65,7 @@ export default function Index({ barangMasuk, filters = {} }) {
                             <th className="px-4 py-2 text-left">Kategori</th>
                             <th className="px-4 py-2 text-left">Satuan</th>
                             <th className="px-4 py-2 text-left">Supplier</th>
-                            <th className="px-4 py-2 text-left">Tanggal</th>
+                            <th className="px-4 py-2 text-left">Tanggal & Waktu</th>
                             <th className="px-4 py-2 text-left">Jumlah</th>
                             <th className="px-4 py-2 text-left">Dokumen</th>
                             <th className="px-4 py-2 text-left">Aksi</th>
@@ -97,8 +97,13 @@ export default function Index({ barangMasuk, filters = {} }) {
                                     {item.supplier?.nama_supplier || "-"}
                                 </td>
 
-                                {/* TANGGAL */}
-                                <td className="px-4 py-2">{item.tanggal_masuk}</td>
+                                {/* TANGGAL & WAKTU */}
+                                <td className="px-4 py-2">
+                                    {new Date(item.created_at).toLocaleString("id-ID", {
+                                        dateStyle: "medium",
+                                        timeStyle: "short",
+                                    })}
+                                </td>
 
                                 {/* JUMLAH */}
                                 <td className="px-4 py-2">{item.jumlah}</td>

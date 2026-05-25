@@ -67,7 +67,7 @@ export default function Index({ barangKeluar, filters = {} }) {
                             <th className="px-4 py-2">Barang</th>
                             <th className="px-4 py-2">Kategori</th>
                             <th className="px-4 py-2">Satuan</th>
-                            <th className="px-4 py-2">Tanggal</th>
+                            <th className="px-4 py-2">Tanggal & Waktu</th>
                             <th className="px-4 py-2">Jumlah</th>
                             <th className="px-4 py-2">Dokumen</th>
                             <th className="px-4 py-2">Aksi</th>
@@ -99,7 +99,10 @@ export default function Index({ barangKeluar, filters = {} }) {
                                 </td>
 
                                 <td className="px-4 py-2">
-                                    {item.tanggal_keluar}
+                                    {new Date(item.created_at).toLocaleString("id-ID", {
+                                        dateStyle: "medium",
+                                        timeStyle: "short",
+                                    })}
                                 </td>
 
                                 <td className="px-4 py-2">

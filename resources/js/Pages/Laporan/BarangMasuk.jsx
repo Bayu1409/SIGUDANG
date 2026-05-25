@@ -150,7 +150,7 @@ export default function BarangMasuk({ data, filters = {} }) {
                         <thead className="bg-gray-100">
                             <tr>
                                 <th className="px-4 py-2 border">No</th>
-                                <th className="px-4 py-2 border">Tanggal</th>
+                                <th className="px-4 py-2 border">Tanggal & Waktu</th>
                                 <th className="px-4 py-2 border">Kode Barang</th>
                                 <th className="px-4 py-2 border">Nama Barang</th>
                                 <th className="px-4 py-2 border">Kategori</th>
@@ -164,7 +164,12 @@ export default function BarangMasuk({ data, filters = {} }) {
                                 data.data.map((item, index) => (
                                     <tr key={item.id} className="border-t hover:bg-gray-50 text-center">
                                         <td className="px-4 py-2 border">{data.from + index}</td>
-                                        <td className="border px-4 py-2">{item.tanggal_masuk}</td>
+                                        <td className="border px-4 py-2">
+                                            {new Date(item.created_at).toLocaleString("id-ID", {
+                                                dateStyle: "medium",
+                                                timeStyle: "short",
+                                            })}
+                                        </td>
                                         <td className="border px-4 py-2">{item.barang?.kode_barang}</td>
                                         <td className="border px-4 py-2">{item.barang?.nama_barang}</td>
                                         <td className="border px-4 py-2">{item.barang?.kategori?.nama_kategori || "-"}</td>
