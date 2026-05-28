@@ -10,10 +10,10 @@ const Label = ({ children, required }) => (
   </label>
 );
 
-export default function Create({ barang, suppliers }) {
+export default function Create({ barang, suppliers, selectedBarangId }) {
 
   const { data, setData, post, processing, errors } = useForm({
-    barang_id: "",
+    barang_id: selectedBarangId || "",
     supplier_id: "",
     tanggal_masuk: "",
     jumlah: "",
@@ -64,21 +64,23 @@ export default function Create({ barang, suppliers }) {
           )}
         </div>
 
-        {/* Supplier */}
         <div>
-          <Label>Supplier (Asal Barang)</Label>
+          <Label required>Supplier (Asal Barang)</Label>
           <select
-            className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className={`w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.supplier_id ? "border-red-500" : ""}`}
             value={data.supplier_id}
             onChange={(e) => setData("supplier_id", e.target.value)}
           >
-            <option value="">-- Pilih Supplier (Opsional) --</option>
+            <option value="">-- Pilih Supplier --</option>
             {suppliers.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.nama_supplier}
               </option>
             ))}
           </select>
+          {errors.supplier_id && (
+            <p className="text-red-500 text-xs mt-1">{errors.supplier_id}</p>
+          )}
         </div>
 
         {/* Tanggal */}
@@ -130,15 +132,17 @@ export default function Create({ barang, suppliers }) {
           </div>
         )}
 
-        {/* Dokumen */}
         <div>
-          <Label>Upload Dokumen</Label>
+          <Label required>Upload Dokumen</Label>
           <input
             type="file"
-            className="w-full border p-2 rounded text-sm"
+            className={`w-full border p-2 rounded text-sm ${errors.dokumen ? "border-red-500" : ""}`}
             onChange={(e) => setData("dokumen", e.target.files[0])}
           />
           <p className="text-xs text-gray-400 mt-1">Format: PDF, JPG, PNG (maks 2MB)</p>
+          {errors.dokumen && (
+            <p className="text-red-500 text-xs mt-1">{errors.dokumen}</p>
+          )}
         </div>
 
         {/* Button */}

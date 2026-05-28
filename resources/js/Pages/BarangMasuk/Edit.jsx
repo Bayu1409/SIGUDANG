@@ -1,6 +1,6 @@
-import { useState } from "react";
+import React from "react";
+import { useForm, Link } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { router, Link } from "@inertiajs/react";
 
 // Komponen label dengan tanda wajib
 const Label = ({ children, required }) => (
@@ -12,28 +12,27 @@ const Label = ({ children, required }) => (
 
 export default function Edit({ barangMasuk, barang, suppliers }) {
 
-    const [values, setValues] = useState({
+    const { data, setData, post, processing, errors } = useForm({
+        _method: 'put',
         barang_id:     barangMasuk.barang_id,
         supplier_id:   barangMasuk.supplier_id ?? "",
         tanggal_masuk: barangMasuk.tanggal_masuk,
         jumlah:        barangMasuk.jumlah,
+        dokumen:       null,
     });
-
-    const handleChange = (e) => {
-        setValues({ ...values, [e.target.name]: e.target.value });
-    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        router.put(route("barang-masuk.update", barangMasuk.id), values);
+        // Gunakan post dengan _method put agar upload file bekerja di Laravel
+        post(route("barang-masuk.update", barangMasuk.id));
     };
 
     // Preview stok akhir
-    const selectedBarang  = barang.find((item) => String(item.id) === String(values.barang_id));
+    const selectedBarang  = barang.find((item) => String(item.id) === String(data.barang_id));
     const stokSaatIni     = selectedBarang ? Number(selectedBarang.stok) : null;
     // Saat edit: stok saat ini sudah termasuk jumlah lama, jadi kita hitung dari stok - jumlah lama + jumlah baru
     const jumlahLama      = Number(barangMasuk.jumlah) || 0;
-    const jumlahBaru      = Number(values.jumlah) || 0;
+    const jumlahBaru      = Number(data.jumlah) || 0;
     const stokAkhir       = stokSaatIni !== null ? stokSaatIni - jumlahLama + jumlahBaru : null;
 
     return (
@@ -50,10 +49,9 @@ export default function Edit({ barangMasuk, barang, suppliers }) {
                 <div>
                     <Label required>Barang</Label>
                     <select
-                        name="barang_id"
-                        className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        value={values.barang_id}
-                        onChange={handleChange}
+                        className={`w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.barang_id ? "border-red-500" : ""}`}
+                        value={data.barang_id}
+                        onChange={(e) => setData("barang_id", e.target.value)}
                     >
                         {barang.map((item) => (
                             <option key={item.id} value={item.id}>
@@ -61,24 +59,29 @@ export default function Edit({ barangMasuk, barang, suppliers }) {
                             </option>
                         ))}
                     </select>
+                    {errors.barang_id && (
+                        <p className="text-red-500 text-xs mt-1">{errors.barang_id}</p>
+                    )}
                 </div>
 
                 {/* Supplier */}
                 <div>
-                    <Label>Supplier (Asal Barang)</Label>
+                    <Label required>Supplier (Asal Barang)</Label>
                     <select
-                        name="supplier_id"
-                        className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        value={values.supplier_id}
-                        onChange={handleChange}
+                        className={`w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.supplier_id ? "border-red-500" : ""}`}
+                        value={data.supplier_id}
+                        onChange={(e) => setData("supplier_id", e.target.value)}
                     >
-                        <option value="">-- Pilih Supplier (Opsional) --</option>
+                        <option value="">-- Pilih Supplier --</option>
                         {suppliers.map((item) => (
                             <option key={item.id} value={item.id}>
                                 {item.nama_supplier}
                             </option>
                         ))}
                     </select>
+                    {errors.supplier_id && (
+                        <p className="text-red-500 text-xs mt-1">{errors.supplier_id}</p>
+                    )}
                 </div>
 
                 {/* Tanggal */}
@@ -86,11 +89,13 @@ export default function Edit({ barangMasuk, barang, suppliers }) {
                     <Label required>Tanggal Masuk</Label>
                     <input
                         type="date"
-                        name="tanggal_masuk"
-                        className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        value={values.tanggal_masuk}
-                        onChange={handleChange}
+                        className={`w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.tanggal_masuk ? "border-red-500" : ""}`}
+                        value={data.tanggal_masuk}
+                        onChange={(e) => setData("tanggal_masuk", e.target.value)}
                     />
+                    {errors.tanggal_masuk && (
+                        <p className="text-red-500 text-xs mt-1">{errors.tanggal_masuk}</p>
+                    )}
                 </div>
 
                 {/* Jumlah */}
@@ -98,12 +103,14 @@ export default function Edit({ barangMasuk, barang, suppliers }) {
                     <Label required>Jumlah</Label>
                     <input
                         type="number"
-                        name="jumlah"
                         min="1"
-                        className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        value={values.jumlah}
-                        onChange={handleChange}
+                        className={`w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.jumlah ? "border-red-500" : ""}`}
+                        value={data.jumlah}
+                        onChange={(e) => setData("jumlah", e.target.value)}
                     />
+                    {errors.jumlah && (
+                        <p className="text-red-500 text-xs mt-1">{errors.jumlah}</p>
+                    )}
                 </div>
 
                 {/* Preview Stok Akhir */}
@@ -131,13 +138,28 @@ export default function Edit({ barangMasuk, barang, suppliers }) {
                     </div>
                 )}
 
+                {/* Dokumen */}
+                <div>
+                    <Label>Ganti Dokumen (Opsional)</Label>
+                    <input
+                        type="file"
+                        className={`w-full border p-2 rounded text-sm ${errors.dokumen ? "border-red-500" : ""}`}
+                        onChange={(e) => setData("dokumen", e.target.files[0])}
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Format: PDF, JPG, PNG (maks 2MB). Biarkan kosong jika tidak ingin mengubah.</p>
+                    {errors.dokumen && (
+                        <p className="text-red-500 text-xs mt-1">{errors.dokumen}</p>
+                    )}
+                </div>
+
                 {/* Buttons */}
                 <div className="flex gap-2 pt-2">
                     <button
                         type="submit"
-                        className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded font-medium transition"
+                        disabled={processing}
+                        className="bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white px-5 py-2 rounded font-medium transition"
                     >
-                        Update
+                        {processing ? "Memproses..." : "Update"}
                     </button>
                     <Link
                         href={route("barang-masuk.index")}

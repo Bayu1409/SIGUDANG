@@ -8,6 +8,7 @@ use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Services\LogService;
+use Illuminate\Support\Facades\Storage;
 
 class BarangMasukController extends Controller
 {
@@ -41,7 +42,7 @@ class BarangMasukController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $barang = Barang::all();
         $suppliers = Supplier::all();
@@ -49,6 +50,7 @@ class BarangMasukController extends Controller
         return Inertia::render('BarangMasuk/Create', [
             'barang'    => $barang,
             'suppliers' => $suppliers,
+            'selectedBarangId' => $request->barang_id,
         ]);
     }
 
@@ -56,10 +58,10 @@ class BarangMasukController extends Controller
     {
         $request->validate([
             'barang_id'    => 'required',
-            'supplier_id'  => 'nullable|exists:suppliers,id',
+            'supplier_id'  => 'required|exists:suppliers,id',
             'tanggal_masuk'=> 'required',
             'jumlah'       => 'required|integer',
-            'dokumen'      => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048'
+            'dokumen'      => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048'
         ]);
 
         $dokumenPath = null;
@@ -108,12 +110,23 @@ class BarangMasukController extends Controller
     {
         $request->validate([
             'barang_id'    => 'required',
-            'supplier_id'  => 'nullable|exists:suppliers,id',
+            'supplier_id'  => 'required|exists:suppliers,id',
             'tanggal_masuk'=> 'required',
-            'jumlah'       => 'required|integer'
+            'jumlah'       => 'required|integer',
+            'dokumen'      => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048'
         ]);
 
         $data = BarangMasuk::findOrFail($id);
+
+        if ($request->hasFile('dokumen')) {
+            // Hapus file lama jika ada
+            if ($data->dokumen) {
+                Storage::disk('public')->delete($data->dokumen);
+            }
+            $dokumenPath = $request->file('dokumen')->store('dokumen-masuk', 'public');
+            $data->dokumen = $dokumenPath;
+            $data->save();
+        }
 
         /*
         KURANGI STOK LAMA

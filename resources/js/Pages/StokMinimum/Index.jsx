@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { Head, router } from "@inertiajs/react";
+import { Head, router, Link } from "@inertiajs/react";
 import { AlertTriangle, Package, Search } from "lucide-react";
 
 export default function Index({ barang, limit, is_event_month, filters = {} }) {
@@ -93,13 +93,13 @@ export default function Index({ barang, limit, is_event_month, filters = {} }) {
                                             Limit Stok
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <button 
-                                            onClick={() => window.location.href = `/barang-masuk/create?barang_id=${item.id}`}
-                                            className="text-xs bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-1.5 rounded-lg font-bold transition-all shadow-sm"
+                                    <td className="px-6 py-4 text-center">
+                                        <Link 
+                                            href={route('barang-masuk.create', { barang_id: item.id })}
+                                            className="inline-block text-xs bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-1.5 rounded-lg font-bold transition-all shadow-sm"
                                         >
                                             Restock
-                                        </button>
+                                        </Link>
                                     </td>
                                 </tr>
                             )) : (
