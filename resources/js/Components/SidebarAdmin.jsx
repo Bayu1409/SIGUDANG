@@ -21,10 +21,45 @@ import {
 
 export default function Sidebar({ className = "", isOpen, onClose }) {
 
-  const [openManagement, setOpenManagement] = useState(true);
-  const [openTransaksi, setOpenTransaksi] = useState(true);
-  const [openMonitoring, setOpenMonitoring] = useState(true);
-  const [openLaporan, setOpenLaporan] = useState(true);
+  const [openManagement, setOpenManagement] = useState(() => localStorage.getItem('sb-management') !== 'false');
+  const [openTransaksi, setOpenTransaksi] = useState(() => localStorage.getItem('sb-transaksi') !== 'false');
+  const [openMonitoring, setOpenMonitoring] = useState(() => localStorage.getItem('sb-monitoring') !== 'false');
+  const [openLaporan, setOpenLaporan] = useState(() => localStorage.getItem('sb-laporan') !== 'false');
+
+  React.useEffect(() => {
+    localStorage.setItem('sb-management', openManagement);
+  }, [openManagement]);
+
+  React.useEffect(() => {
+    localStorage.setItem('sb-transaksi', openTransaksi);
+  }, [openTransaksi]);
+
+  React.useEffect(() => {
+    localStorage.setItem('sb-monitoring', openMonitoring);
+  }, [openMonitoring]);
+
+  React.useEffect(() => {
+    localStorage.setItem('sb-laporan', openLaporan);
+  }, [openLaporan]);
+
+  // Preserve scroll position
+  const navRef = React.useRef(null);
+  React.useEffect(() => {
+    const nav = navRef.current;
+    if (nav) {
+      const scrollPos = localStorage.getItem('sb-scroll');
+      if (scrollPos) {
+        nav.scrollTop = parseInt(scrollPos, 10);
+      }
+
+      const handleScroll = () => {
+        localStorage.setItem('sb-scroll', nav.scrollTop);
+      };
+
+      nav.addEventListener('scroll', handleScroll);
+      return () => nav.removeEventListener('scroll', handleScroll);
+    }
+  }, []);
 
   const managementItems = useMemo(
     () => [
@@ -149,7 +184,11 @@ export default function Sidebar({ className = "", isOpen, onClose }) {
   const { auth } = usePage().props;
   const isSuperAdmin = auth.user?.role === "superadmin";
 
-  const [openSuperadmin, setOpenSuperadmin] = useState(true);
+  const [openSuperadmin, setOpenSuperadmin] = useState(() => localStorage.getItem('sb-superadmin') !== 'false');
+
+  React.useEffect(() => {
+    localStorage.setItem('sb-superadmin', openSuperadmin);
+  }, [openSuperadmin]);
 
   return (
     <>
@@ -193,7 +232,7 @@ export default function Sidebar({ className = "", isOpen, onClose }) {
           </div>
 
           {/* Navigation with Custom Scrollbar */}
-          <nav className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
+          <nav ref={navRef} className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
             
             {/* DASHBOARD */}
             <div>

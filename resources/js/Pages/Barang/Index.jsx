@@ -35,9 +35,7 @@ export default function Index({ barang, filters = {} }) {
     };
 
     return (
-
-        <AdminLayout>
-
+        <>
             <div className="">
 
                 {/* HEADER */}
@@ -176,6 +174,8 @@ export default function Index({ barang, filters = {} }) {
                 type="danger"
                 confirmText="Hapus Sekarang"
             />
-        </AdminLayout>
+        </>
     );
 }
+
+Index.layout = (page) => <AdminLayout children={page} />;

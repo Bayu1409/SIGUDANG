@@ -44,22 +44,21 @@ export default function Dashboard({ stats, lowStock, chartData, supplierChartDat
     );
 
     return (
-        <AdminLayout
-            header={
-                <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                        Dashboard Utama
-                    </h2>
-                    <div className="text-sm text-slate-500 flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        Status Gudang: <span className={`font-bold ${config.isRamai ? 'text-orange-500' : 'text-green-500'}`}>
-                            {config.isRamai ? 'Musim Ramai' : 'Musim Normal'}
-                        </span>
-                    </div>
-                </div>
-            }
-        >
+        <>
             <Head title="Dashboard" />
+
+            {/* Header Section */}
+            <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                <h2 className="text-xl font-bold leading-tight text-slate-800">
+                    Dashboard Utama
+                </h2>
+                <div className="text-sm text-slate-500 flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-indigo-500" />
+                    Status Gudang: <span className={`font-bold ${config.isRamai ? 'text-orange-500' : 'text-green-500'}`}>
+                        {config.isRamai ? 'Musim Ramai' : 'Musim Normal'}
+                    </span>
+                </div>
+            </div>
 
             <div className="space-y-6">
 
@@ -255,12 +254,12 @@ export default function Dashboard({ stats, lowStock, chartData, supplierChartDat
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <button
-                                                onClick={() => window.location.href = `/barang-masuk/create?barang_id=${item.id}`}
+                                            <Link
+                                                href={`/barang-masuk/create?barang_id=${item.id}`}
                                                 className="text-xs bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg font-bold transition-all border border-indigo-100"
                                             >
                                                 Restock
-                                            </button>
+                                            </Link>
                                         </td>
                                     </tr>
                                 )) : (
@@ -276,6 +275,8 @@ export default function Dashboard({ stats, lowStock, chartData, supplierChartDat
                 </div>
 
             </div>
-        </AdminLayout>
+        </>
     );
 }
+
+Dashboard.layout = (page) => <AdminLayout children={page} />;

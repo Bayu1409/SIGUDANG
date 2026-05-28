@@ -18,21 +18,19 @@ export default function Index({ barang, limit, is_event_month, filters = {} }) {
     }, [search]);
 
     return (
-        <AdminLayout
-            header={
-                <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-bold text-slate-800">Monitoring Stok Minimum</h2>
-                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold border ${
-                        is_event_month 
-                        ? 'bg-orange-100 text-orange-700 border-orange-200' 
-                        : 'bg-blue-100 text-blue-700 border-blue-200'
-                    }`}>
-                        Threshold: {limit} Unit ({is_event_month ? 'Bulan Event' : 'Bulan Normal'})
-                    </div>
-                </div>
-            }
-        >
+        <>
             <Head title="Stok Minimum" />
+
+            <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                <h2 className="text-xl font-bold text-slate-800">Monitoring Stok Minimum</h2>
+                <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold border ${
+                    is_event_month 
+                    ? 'bg-orange-100 text-orange-700 border-orange-200' 
+                    : 'bg-blue-100 text-blue-700 border-blue-200'
+                }`}>
+                    Threshold: {limit} Unit ({is_event_month ? 'Bulan Event' : 'Bulan Normal'})
+                </div>
+            </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
                 <div className="p-4 bg-slate-50/50 border-b border-slate-100">
@@ -59,7 +57,7 @@ export default function Index({ barang, limit, is_event_month, filters = {} }) {
                                 <th className="px-6 py-3">Kategori</th>
                                 <th className="px-6 py-3">Stok</th>
                                 <th className="px-6 py-3">Status</th>
-                                <th className="px-6 py-3">Aksi</th>
+                                <th className="px-6 py-3 text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
@@ -116,6 +114,8 @@ export default function Index({ barang, limit, is_event_month, filters = {} }) {
                     </table>
                 </div>
             </div>
-        </AdminLayout>
+        </>
     );
 }
+
+Index.layout = (page) => <AdminLayout children={page} />;
