@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Link, router } from "@inertiajs/react";
+import { Link, router, Head } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
 import ConfirmationModal from "@/Components/ConfirmationModal";
+import { Edit3, Package, Plus, Search, Trash2, Box } from "lucide-react";
 
 export default function Index({ barang, filters = {} }) {
     const [search, setSearch] = useState(filters.search || "");
@@ -36,134 +37,116 @@ export default function Index({ barang, filters = {} }) {
 
     return (
         <>
-            <div className="">
+            <Head title="Manajemen Barang" />
 
-                {/* HEADER */}
-
-                <div className="flex justify-between items-center mb-6">
-
-                    <h2 className="text-2xl font-semibold text-gray-800">
-                        Manajemen Barang
+            <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                <div>
+                    <h2 className="text-xl font-bold leading-tight text-slate-800">
+                        Katalog Master Barang
                     </h2>
-
-                    <Link
-                        href="/barang/create"
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
-                    >
-                        + Tambah Barang
-                    </Link>
-
+                    <p className="text-xs text-slate-500 mt-1">Kelola data induk barang, kategori, dan satuan stok.</p>
                 </div>
 
-                {/* SEARCH & FILTER */}
-                <div className="mb-4 bg-white p-4 rounded shadow">
+                <Link
+                    href={route("barang.create")}
+                    className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 transition-all flex items-center gap-2"
+                >
+                    <Plus className="w-4 h-4" />
+                    Tambah Barang
+                </Link>
+            </div>
+
+            {/* SEARCH */}
+            <div className="mb-6 bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
+                <div className="relative max-w-sm">
+                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                        <Search className="w-4 h-4" />
+                    </span>
                     <input
                         type="text"
-                        placeholder="Cari berdasarkan nama, kode, atau kategori..."
+                        placeholder="Cari nama, kode, atau kategori..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full md:w-1/3 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        className="w-full rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-10 pr-4 py-2 text-sm transition-all"
                     />
                 </div>
+            </div>
 
-                {/* CARD */}
-
-                <div className="bg-white shadow rounded-lg overflow-hidden">
-
-                    <table className="min-w-full border border-gray-200">
-
-                        <thead className="bg-gray-100">
-
+            <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-slate-100">
+                        <thead className="bg-slate-50">
                             <tr>
-
-                                <th className="px-4 py-2 border">No</th>
-                                <th className="px-4 py-2 border">Kode</th>
-                                <th className="px-4 py-2 border">Nama</th>
-                                <th className="px-4 py-2 border">Kategori</th>
-                                <th className="px-4 py-2 border">Satuan</th>
-                                <th className="px-4 py-2 border">Aksi</th>
-
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">No</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Informasi Barang</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Satuan</th>
+                                <th className="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
                             </tr>
-
                         </thead>
 
-                        <tbody>
-
+                        <tbody className="divide-y divide-slate-100 bg-white">
                             {barang.data && barang.data.length > 0 ? (
-
                                 barang.data.map((item, index) => (
-
-                                    <tr key={item.id} className="text-center">
-
-                                        <td className="border px-4 py-2">
+                                    <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-medium">
                                             {barang.from + index}
                                         </td>
-
-                                        <td className="border px-4 py-2">
-                                            {item.kode_barang}
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center gap-3">
+                                                <div className="bg-slate-100 p-2 rounded-lg text-slate-400">
+                                                    <Box className="w-5 h-5" />
+                                                </div>
+                                                <div>
+                                                    <div className="text-sm font-bold text-slate-900">{item.nama_barang}</div>
+                                                    <div className="text-[10px] text-slate-400 uppercase tracking-tight font-medium">{item.kode_barang}</div>
+                                                </div>
+                                            </div>
                                         </td>
-
-                                        <td className="border px-4 py-2">
-                                            {item.nama_barang}
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className="px-2.5 py-1 text-[10px] font-bold uppercase rounded-md bg-slate-100 text-slate-600 border border-slate-200">
+                                                {item.kategori?.nama_kategori || "-"}
+                                            </span>
                                         </td>
-
-                                        <td className="border px-4 py-2">
-                                            {item.kategori
-                                                ? item.kategori.nama_kategori
-                                                : "-"}
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                            {item.satuan?.nama || "-"}
                                         </td>
-
-                                        <td className="border px-4 py-2">
-                                            {item.satuan
-                                                ? item.satuan.nama
-                                                : "-"}
+                                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                                            <div className="flex items-center justify-center gap-2">
+                                                <Link
+                                                    href={route("barang.edit", item.id)}
+                                                    className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                                                    title="Edit Barang"
+                                                >
+                                                    <Edit3 className="w-5 h-5" />
+                                                </Link>
+                                                <button
+                                                    onClick={() => setConfirmDelete({ show: true, id: item.id })}
+                                                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                                                    title="Hapus Barang"
+                                                >
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
+                                            </div>
                                         </td>
-
-                                        <td className="border px-4 py-2 space-x-2">
-
-                                            <Link
-                                                href={`/barang/${item.id}/edit`}
-                                                className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded"
-                                            >
-                                                Edit
-                                            </Link>
-
-                                            <button
-                                                onClick={() => setConfirmDelete({ show: true, id: item.id })}
-                                                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                                            >
-                                                Hapus
-                                            </button>
-
-                                        </td>
-
                                     </tr>
-
                                 ))
-
                             ) : (
-
                                 <tr>
-
-                                    <td colSpan="7" className="text-center py-4">
-
-                                        Data barang belum tersedia
-
+                                    <td colSpan="5" className="px-6 py-12 text-center text-slate-400">
+                                        <div className="flex flex-col items-center gap-2">
+                                            <Package className="w-10 h-10 opacity-20" />
+                                            <p className="text-sm font-medium">Daftar barang masih kosong.</p>
+                                        </div>
                                     </td>
-
                                 </tr>
-
                             )}
-
                         </tbody>
-
                     </table>
-
                 </div>
-                {/* PAGINATION */}
-                <Pagination links={barang.links} />
-
             </div>
+
+            <Pagination links={barang.links} />
 
             <ConfirmationModal
                 show={confirmDelete.show}

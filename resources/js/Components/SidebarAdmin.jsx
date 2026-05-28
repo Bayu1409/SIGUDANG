@@ -215,7 +215,7 @@ export default function Sidebar({ className = "", isOpen, onClose }) {
                 <Boxes className="w-6 h-6 text-white" />
               </div>
               <div className="overflow-hidden">
-                <div className="text-lg font-bold tracking-tight text-white leading-tight">
+                <div className="text-lg font-display font-bold tracking-tight text-white leading-tight">
                   Sigudang
                 </div>
                 <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-400 mt-0.5">
