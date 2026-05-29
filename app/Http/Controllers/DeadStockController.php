@@ -6,10 +6,11 @@ use App\Models\Barang;
 use App\Models\Setting;
 use Inertia\Inertia;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class DeadStockController extends Controller
 {
-    public function index(Illuminate\Http\Request $request)
+    public function index(Request $request)
     {
         $today = Carbon::now();
         $limitDeadStock = Setting::getSetting('limit_dead_stock', 30);
