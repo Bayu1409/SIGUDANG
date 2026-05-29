@@ -13,7 +13,8 @@ class BarangKeluarController extends Controller
 
     public function index(Request $request)
     {
-        $search = $request->search;
+        $search   = $request->search;
+        $barangId = $request->barang_id;
 
         $barangKeluar = BarangKeluar::with([
             'barang.kategori',
@@ -27,15 +28,18 @@ class BarangKeluarController extends Controller
                    });
              });
         })
+        ->when($barangId, fn($q) => $q->where('barang_id', $barangId))
         ->latest()
         ->paginate(10)
         ->withQueryString();
 
         return Inertia::render('BarangKeluar/Index', [
             'barangKeluar' => $barangKeluar,
-            'filters' => $request->only(['search'])
+            'filters'      => $request->only(['search', 'barang_id']),
+            'barangs'      => Barang::orderBy('nama_barang')->get(['id', 'nama_barang']),
         ]);
     }
+
 
     public function create()
     {

@@ -15,12 +15,10 @@ class BarangController extends Controller
 
     public function index(Request $request)
     {
-        $search = $request->search;
+        $search     = $request->search;
+        $kategoriId = $request->kategori_id;
 
-        $barang = Barang::with([
-            'kategori',
-            'satuan'
-        ])
+        $barang = Barang::with(['kategori', 'satuan'])
         ->when($search, function ($query, $search) {
             $query->where('nama_barang', 'like', "%{$search}%")
                   ->orWhere('kode_barang', 'like', "%{$search}%")
@@ -28,15 +26,18 @@ class BarangController extends Controller
                       $q->where('nama_kategori', 'like', "%{$search}%");
                   });
         })
+        ->when($kategoriId, fn($q) => $q->where('kategori_id', $kategoriId))
         ->orderBy('id', 'desc')
         ->paginate(10)
         ->withQueryString();
 
         return Inertia::render('Barang/Index', [
-            'barang' => $barang,
-            'filters' => $request->only(['search'])
+            'barang'    => $barang,
+            'filters'   => $request->only(['search', 'kategori_id']),
+            'kategoris' => Kategori::orderBy('nama_kategori')->get(['id', 'nama_kategori']),
         ]);
     }
+
 
     public function create()
 {

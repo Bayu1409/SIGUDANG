@@ -225,7 +225,7 @@ export default function Dashboard({ stats, lowStock, chartData, supplierChartDat
                             Peringatan Stok Rendah
                         </h3>
                         <span className="text-xs font-medium bg-orange-100 text-orange-700 px-2.5 py-0.5 rounded-full border border-orange-200">
-                            Threshold: {config.stokMinimum} Unit
+                            Batas Minimum: {config.stokMinimum} Unit
                         </span>
                     </div>
                     <div className="overflow-x-auto">

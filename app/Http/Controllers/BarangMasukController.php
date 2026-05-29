@@ -15,7 +15,9 @@ class BarangMasukController extends Controller
 
     public function index(Request $request)
     {
-        $search = $request->search;
+        $search     = $request->search;
+        $supplierId = $request->supplier_id;
+        $barangId   = $request->barang_id;
 
         $barangMasuk = BarangMasuk::with([
             'barang.kategori',
@@ -32,15 +34,20 @@ class BarangMasukController extends Controller
                  $q->where('nama_supplier', 'like', "%{$search}%");
              });
         })
+        ->when($supplierId, fn($q) => $q->where('supplier_id', $supplierId))
+        ->when($barangId,   fn($q) => $q->where('barang_id', $barangId))
         ->latest()
         ->paginate(10)
         ->withQueryString();
 
         return Inertia::render('BarangMasuk/Index', [
             'barangMasuk' => $barangMasuk,
-            'filters' => $request->only(['search'])
+            'filters'     => $request->only(['search', 'supplier_id', 'barang_id']),
+            'suppliers'   => Supplier::orderBy('nama_supplier')->get(['id', 'nama_supplier']),
+            'barangs'     => Barang::orderBy('nama_barang')->get(['id', 'nama_barang']),
         ]);
     }
+
 
     public function create(Request $request)
     {
