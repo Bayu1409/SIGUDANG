@@ -65,8 +65,17 @@ export default function Index({ barang, limit_dead_stock }) {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-sm font-extrabold text-rose-600">{item.hari} Hari</span>
-                                            <AlertTriangle className="w-4 h-4 text-rose-500" />
+                                            {item.hari >= 999 ? (
+                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700 border border-rose-200">
+                                                    <AlertTriangle className="w-3 h-3" />
+                                                    Belum Pernah Keluar
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                    <Calendar className="w-3 h-3" />
+                                                    {item.hari} Hari
+                                                </span>
+                                            )}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-right">

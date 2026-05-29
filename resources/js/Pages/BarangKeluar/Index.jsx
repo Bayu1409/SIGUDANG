@@ -2,25 +2,24 @@ import React, { useState, useEffect } from "react";
 import { Link, router, Head } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
-import { ArrowUpFromLine, FileText, Package, Search, Trash2, ChevronDown, X } from "lucide-react";
+import { ArrowUpFromLine, FileText, Package, Search, Trash2, X } from "lucide-react";
 
-export default function Index({ barangKeluar, filters = {}, barangs = [] }) {
-    const [search, setSearch]     = useState(filters.search || "");
-    const [barangId, setBarangId] = useState(filters.barang_id || "");
+export default function Index({ barangKeluar, filters = {} }) {
+    const [search, setSearch] = useState(filters.search || "");
     const isInitialRender = React.useRef(true);
 
     useEffect(() => {
         if (isInitialRender.current) { isInitialRender.current = false; return; }
         const delay = setTimeout(() => {
             router.get(route("barang-keluar.index"),
-                { search, barang_id: barangId },
+                { search },
                 { preserveState: true, replace: true, preserveScroll: true });
         }, 300);
         return () => clearTimeout(delay);
-    }, [search, barangId]);
+    }, [search]);
 
-    const resetFilters = () => { setSearch(""); setBarangId(""); };
-    const hasFilter = search || barangId;
+    const resetFilters = () => { setSearch(""); };
+    const hasFilter = search;
 
     return (
         <>
@@ -48,18 +47,6 @@ export default function Index({ barangKeluar, filters = {}, barangs = [] }) {
                         <input type="text" placeholder="Cari nama barang atau kategori..."
                             value={search} onChange={(e) => setSearch(e.target.value)}
                             className="w-full rounded-lg border border-slate-200 focus:border-rose-500 focus:ring-rose-500 pl-10 pr-4 py-2 text-sm transition-all" />
-                    </div>
-
-                    {/* Dropdown Barang */}
-                    <div className="relative min-w-[180px]">
-                        <select value={barangId} onChange={(e) => setBarangId(e.target.value)}
-                            className="w-full appearance-none rounded-lg border border-slate-200 focus:border-rose-500 focus:ring-rose-500 pl-4 pr-10 py-2 text-sm transition-all bg-white text-slate-700 shadow-sm font-medium">
-                            <option value="">Semua Barang</option>
-                            {barangs.map((b) => (
-                                <option key={b.id} value={b.id}>{b.nama_barang}</option>
-                            ))}
-                        </select>
-                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                     </div>
 
                     {/* Reset */}

@@ -4,24 +4,23 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
 import { FileText, Package, Plus, Search, Trash2, Edit3, ChevronDown, X } from "lucide-react";
 
-export default function Index({ barangMasuk, filters = {}, suppliers = [], barangs = [] }) {
+export default function Index({ barangMasuk, filters = {}, suppliers = [] }) {
     const [search, setSearch]         = useState(filters.search || "");
     const [supplierId, setSupplierId] = useState(filters.supplier_id || "");
-    const [barangId, setBarangId]     = useState(filters.barang_id || "");
     const isInitialRender = React.useRef(true);
 
     useEffect(() => {
         if (isInitialRender.current) { isInitialRender.current = false; return; }
         const delay = setTimeout(() => {
             router.get(route("barang-masuk.index"),
-                { search, supplier_id: supplierId, barang_id: barangId },
+                { search, supplier_id: supplierId },
                 { preserveState: true, replace: true, preserveScroll: true });
         }, 300);
         return () => clearTimeout(delay);
-    }, [search, supplierId, barangId]);
+    }, [search, supplierId]);
 
-    const resetFilters = () => { setSearch(""); setSupplierId(""); setBarangId(""); };
-    const hasFilter = search || supplierId || barangId;
+    const resetFilters = () => { setSearch(""); setSupplierId(""); };
+    const hasFilter = search || supplierId;
 
     return (
         <>
@@ -58,18 +57,6 @@ export default function Index({ barangMasuk, filters = {}, suppliers = [], baran
                             <option value="">Semua Supplier</option>
                             {suppliers.map((s) => (
                                 <option key={s.id} value={s.id}>{s.nama_supplier}</option>
-                            ))}
-                        </select>
-                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    </div>
-
-                    {/* Dropdown Barang */}
-                    <div className="relative min-w-[180px]">
-                        <select value={barangId} onChange={(e) => setBarangId(e.target.value)}
-                            className="w-full appearance-none rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-4 pr-10 py-2 text-sm transition-all bg-white text-slate-700 shadow-sm font-medium">
-                            <option value="">Semua Barang</option>
-                            {barangs.map((b) => (
-                                <option key={b.id} value={b.id}>{b.nama_barang}</option>
                             ))}
                         </select>
                         <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />

@@ -1,21 +1,15 @@
 import React, { useState } from "react";
-import { useForm, usePage } from "@inertiajs/react";
+import { useForm, usePage, Head } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
-import ConfirmationModal from "@/Components/ConfirmationModal";
+import { Settings, Save, Calendar, BarChart3, Clock, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 const MONTHS = [
-    { value: 1, label: "Januari" },
-    { value: 2, label: "Februari" },
-    { value: 3, label: "Maret" },
-    { value: 4, label: "April" },
-    { value: 5, label: "Mei" },
-    { value: 6, label: "Juni" },
-    { value: 7, label: "Juli" },
-    { value: 8, label: "Agustus" },
-    { value: 9, label: "September" },
-    { value: 10, label: "Oktober" },
-    { value: 11, label: "November" },
-    { value: 12, label: "Desember" }
+    { value: 1, label: "Januari" }, { value: 2, label: "Februari" },
+    { value: 3, label: "Maret" }, { value: 4, label: "April" },
+    { value: 5, label: "Mei" }, { value: 6, label: "Juni" },
+    { value: 7, label: "Juli" }, { value: 8, label: "Agustus" },
+    { value: 9, label: "September" }, { value: 10, label: "Oktober" },
+    { value: 11, label: "November" }, { value: 12, label: "Desember" }
 ];
 
 export default function SettingIndex({ settings }) {
@@ -45,153 +39,172 @@ export default function SettingIndex({ settings }) {
         });
     };
 
-    const triggerConfirm = (e) => {
-        e.preventDefault();
-        setShowConfirm(true);
-    };
-
     return (
-        <AdminLayout
-            header={
-                <h2 className="text-xl font-semibold text-gray-800">
-                    Monitoring Stok dan Penjadwalan Event
-                </h2>
-            }
-        >
-            <div className="max-w-4xl bg-white p-8 rounded-xl shadow-md">
+        <AdminLayout>
+            <Head title="Pengaturan Sistem" />
+            
+            <div className="max-w-4xl mx-auto p-2">
+                <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                    <div>
+                        <h2 className="text-xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
+                            <Settings className="w-5 h-5 text-indigo-500" />
+                            Pengaturan Sistem
+                        </h2>
+                        <p className="text-xs text-slate-500 mt-1">Konfigurasi ambang batas stok dan penjadwalan bulan event.</p>
+                    </div>
+                </div>
 
                 {flash?.success && (
-                    <div className="mb-6 p-4 bg-green-100 text-green-700 rounded border border-green-200">
-                        {flash.success}
+                    <div className="mb-6 p-4 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 flex items-center gap-3 animate-in fade-in slide-in-from-top-2">
+                        <CheckCircle2 className="w-5 h-5" />
+                        <span className="text-sm font-medium">{flash.success}</span>
                     </div>
                 )}
 
-                <form onSubmit={triggerConfirm} className="space-y-8">
-
-                    {/* Event Months */}
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900 border-b pb-2 mb-4">
-                            Konfigurasi Bulan Event (Pramuka)
-                        </h3>
-                        <p className="text-sm text-gray-500 mb-4">
-                            Pilih bulan-bulan di mana terjadi lonjakan permintaan (musim sibuk).
-                            Bulan ini akan menggunakan "Limit Stok Kelangkaan Event".
-                        </p>
-
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {MONTHS.map((m) => {
-                                const isSelected = data.event_months.includes(m.value);
-                                return (
-                                    <button
-                                        type="button"
-                                        key={m.value}
-                                        onClick={() => toggleMonth(m.value)}
-                                        className={`px-4 py-2 text-sm rounded-lg border flex items-center justify-between transition-colors ${isSelected
-                                            ? 'bg-blue-600 border-blue-600 text-white shadow-md'
-                                            : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                                            }`}
-                                    >
-                                        {m.label}
-                                        {isSelected && (
-                                            <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                                            </svg>
-                                        )}
-                                    </button>
-                                );
-                            })}
+                <form onSubmit={(e) => { e.preventDefault(); setShowConfirm(true); }} className="space-y-6">
+                    
+                    {/* Event Configuration */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div className="p-6 border-b border-slate-50 bg-slate-50/30">
+                            <h3 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                <Calendar className="w-4 h-4 text-indigo-500" />
+                                Kalender Event (Bulan Sibuk)
+                            </h3>
+                            <p className="text-[11px] text-slate-500 mt-1">
+                                Pilih bulan-bulan dengan lonjakan permintaan tinggi. Stok minimum akan otomatis meningkat pada bulan tersebut.
+                            </p>
+                        </div>
+                        <div className="p-6">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                                {MONTHS.map((m) => {
+                                    const isSelected = data.event_months.includes(m.value);
+                                    return (
+                                        <button
+                                            type="button" key={m.value}
+                                            onClick={() => toggleMonth(m.value)}
+                                            className={`px-4 py-2 text-xs font-bold rounded-xl border transition-all flex items-center justify-center gap-2 ${isSelected
+                                                ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-200'
+                                                : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                                                }`}
+                                        >
+                                            {m.label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
 
-                    {/* Stock Limits */}
-                    <div>
-                        <h3 className="text-lg font-medium text-gray-900 border-b pb-2 mb-4">
-                            Konfigurasi Batas Stok
-                        </h3>
-
-                        <div className="grid md:grid-cols-2 gap-6">
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Batas Stok Darurat (Bulan Normal)
+                    {/* Stock Thresholds */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div className="p-6 border-b border-slate-50 bg-slate-50/30">
+                            <h3 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                <BarChart3 className="w-4 h-4 text-indigo-500" />
+                                Ambang Batas Stok (Alert Thresholds)
+                            </h3>
+                        </div>
+                        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                                    Limit Stok Normal
                                 </label>
                                 <input
                                     type="number"
                                     value={data.limit_stok_normal}
                                     onChange={e => setData('limit_stok_normal', e.target.value)}
-                                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500"
                                     min="0"
                                 />
-                                <p className="text-xs text-gray-500 mt-1">
-                                    Peringatan muncul jika stok di bawah angka ini pada bulan biasa.
-                                </p>
-                                {errors.limit_stok_normal && <div className="text-red-500 text-xs mt-1">{errors.limit_stok_normal}</div>}
+                                <p className="text-[10px] text-slate-400 italic">Peringatan muncul jika stok di bawah angka ini pada bulan normal.</p>
+                                {errors.limit_stok_normal && <div className="text-rose-500 text-xs mt-1">{errors.limit_stok_normal}</div>}
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Batas Stok Darurat (Bulan Event)
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                                    Limit Stok Bulan Event
                                 </label>
                                 <input
                                     type="number"
                                     value={data.limit_stok_event}
                                     onChange={e => setData('limit_stok_event', e.target.value)}
-                                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    className="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500"
                                     min="0"
                                 />
-                                <p className="text-xs text-gray-500 mt-1">
-                                    Peringatan muncul lebih awal jika di bawah angka ini pada bulan event.
-                                </p>
-                                {errors.limit_stok_event && <div className="text-red-500 text-xs mt-1">{errors.limit_stok_event}</div>}
+                                <p className="text-[10px] text-slate-400 italic">Peringatan stok kritis muncul lebih awal pada bulan yang ditandai sebagai 'Event'.</p>
+                                {errors.limit_stok_event && <div className="text-rose-500 text-xs mt-1">{errors.limit_stok_event}</div>}
                             </div>
+                        </div>
+                    </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Batas Dead Stock (Hari)
+                    {/* Dead Stock Threshold */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                        <div className="p-6 border-b border-slate-50 bg-slate-50/30">
+                            <h3 className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                <Clock className="w-4 h-4 text-amber-500" />
+                                Kriteria Dead Stock (Barang Mengendap)
+                            </h3>
+                        </div>
+                        <div className="p-6">
+                            <div className="space-y-1.5 max-w-sm">
+                                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                                    Batas Maksimal Inaktif (Hari)
                                 </label>
                                 <div className="relative">
                                     <input
                                         type="number"
                                         value={data.limit_dead_stock}
                                         onChange={e => setData('limit_dead_stock', e.target.value)}
-                                        className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 pr-12"
+                                        className="w-full rounded-xl border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500 pr-12"
                                         min="1"
                                     />
-                                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500 text-sm">
-                                        Hari
+                                    <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400 text-xs font-bold">
+                                        HARI
                                     </div>
                                 </div>
-                                <p className="text-xs text-gray-500 mt-1">
-                                    Barang dianggap terhenti perputaran stoknya jika tidak ada aktivitas keluar melampaui jumlah hari ini.
-                                </p>
-                                {errors.limit_dead_stock && <div className="text-red-500 text-xs mt-1">{errors.limit_dead_stock}</div>}
+                                <p className="text-[10px] text-slate-400 italic">Barang dianggap 'Dead Stock' jika tidak ada aktivitas keluar melampaui angka ini.</p>
+                                {errors.limit_dead_stock && <div className="text-rose-500 text-xs mt-1">{errors.limit_dead_stock}</div>}
                             </div>
-
                         </div>
                     </div>
 
-                    <div className="pt-4 flex justify-end">
+                    <div className="flex justify-end pt-4">
                         <button
-                            type="submit"
-                            disabled={processing}
-                            className={`px-6 py-2 bg-blue-600 text-white rounded-md font-semibold tracking-wide hover:bg-blue-700 shadow-md transition ${processing ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            type="submit" disabled={processing}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-indigo-500/20 transition-all flex items-center gap-2 disabled:opacity-50"
                         >
-                            {processing ? 'Menyimpan...' : 'Simpan Pengaturan'}
+                            <Save className="w-4 h-4" />
+                            {processing ? 'Menyimpan...' : 'Simpan Perubahan'}
                         </button>
                     </div>
-
                 </form>
 
+                {/* Confirmation Overlay */}
+                {showConfirm && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
+                        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full animate-in zoom-in-95">
+                            <div className="flex justify-center mb-6">
+                                <div className="bg-indigo-100 p-4 rounded-full">
+                                    <AlertTriangle className="w-8 h-8 text-indigo-600" />
+                                </div>
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-900 text-center mb-2">Simpan Pengaturan?</h3>
+                            <p className="text-sm text-slate-500 text-center mb-8">
+                                Perubahan ini akan segera berdampak pada kriteria laporan dan notifikasi stok di seluruh sistem.
+                            </p>
+                            <div className="flex gap-3">
+                                <button onClick={() => setShowConfirm(false)}
+                                    className="flex-1 px-5 py-2.5 rounded-lg border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-all text-sm">
+                                    Batal
+                                </button>
+                                <button onClick={submit}
+                                    className="flex-1 px-5 py-2.5 rounded-lg bg-indigo-600 text-white font-bold hover:bg-indigo-700 transition-all text-sm shadow-lg shadow-indigo-500/20">
+                                    Ya, Simpan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
-            <ConfirmationModal
-                show={showConfirm}
-                onClose={() => setShowConfirm(false)}
-                onConfirm={submit}
-                title="Simpan Pengaturan"
-                message="Apakah Anda yakin ingin memperbarui konfigurasi stok dan event? Perubahan ini akan langsung berdampak pada seluruh sistem."
-                type="info"
-                confirmText="Ya, Simpan"
-            />
         </AdminLayout>
     );
 }

@@ -370,6 +370,7 @@ class LaporanController extends Controller
             'barang' => $paginated,
             'filters' => $request->only(['sampai', 'search', 'kategori_id']),
             'kategoris' => \App\Models\Kategori::all(),
+            'limit_dead_stock' => $deadStockLimit,
         ]);
     }
 

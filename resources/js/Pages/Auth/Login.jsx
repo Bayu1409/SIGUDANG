@@ -1,10 +1,6 @@
-import Checkbox from '@/Components/Checkbox';
 import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
+import { Lock, Mail, Package, ShieldCheck, User } from 'lucide-react';
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -15,86 +11,159 @@ export default function Login({ status, canResetPassword }) {
 
     const submit = (e) => {
         e.preventDefault();
+        post(route('login'), { onFinish: () => reset('password') });
+    };
 
-        post(route('login'), {
-            onFinish: () => reset('password'),
-        });
+    const quickLogin = (role) => {
+        if (role === 'superadmin') {
+            setData({ email: 'superadmin@sigudang.com', password: 'superadmin123', remember: false });
+        } else {
+            setData({ email: 'admin@sigudang.com', password: 'admin123', remember: false });
+        }
     };
 
     return (
-        <GuestLayout>
-            <Head title="Log in" />
+        <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4"
+            style={{ fontFamily: "'Inter', sans-serif" }}>
+            <Head title="Masuk – Sigudang" />
 
-            {status && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
+            <div className="w-full max-w-sm">
 
-            <form onSubmit={submit}>
-                <div>
-                    <InputLabel htmlFor="email" value="Email" />
-
-                    <TextInput
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        className="mt-1 block w-full"
-                        autoComplete="username"
-                        isFocused={true}
-                        onChange={(e) => setData('email', e.target.value)}
-                    />
-
-                    <InputError message={errors.email} className="mt-2" />
+                {/* Logo */}
+                <div className="flex flex-col items-center mb-8">
+                    <div className="bg-indigo-600 p-3 rounded-2xl shadow-lg shadow-indigo-200 mb-4">
+                        <Package className="w-8 h-8 text-white" />
+                    </div>
+                    <h1 className="text-2xl font-bold text-slate-800">SIGUDANG</h1>
+                    <p className="text-sm text-slate-500 mt-1">Sistem Informasi Gudang Pramuka</p>
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
+                {/* Card */}
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
 
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        autoComplete="current-password"
-                        onChange={(e) => setData('password', e.target.value)}
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4 block">
-                    <label className="flex items-center">
-                        <Checkbox
-                            name="remember"
-                            checked={data.remember}
-                            onChange={(e) =>
-                                setData('remember', e.target.checked)
-                            }
-                        />
-                        <span className="ms-2 text-sm text-gray-600">
-                            Remember me
-                        </span>
-                    </label>
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    {canResetPassword && (
-                        <Link
-                            href={route('password.request')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                        >
-                            Forgot your password?
-                        </Link>
+                    {status && (
+                        <div className="mb-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-sm text-emerald-700">
+                            {status}
+                        </div>
                     )}
 
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Log in
-                    </PrimaryButton>
+                    {/* Quick Login */}
+                    <div className="mb-6">
+                        <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                            Masuk cepat sebagai:
+                        </p>
+                        <div className="grid grid-cols-2 gap-2">
+                            <button type="button" onClick={() => quickLogin('admin')}
+                                className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-all group text-left">
+                                <User className="w-4 h-4 text-slate-400 group-hover:text-indigo-500" />
+                                <div>
+                                    <div className="text-xs font-bold text-slate-700">Admin</div>
+                                    <div className="text-[10px] text-slate-400">Akses Standar</div>
+                                </div>
+                            </button>
+                            <button type="button" onClick={() => quickLogin('superadmin')}
+                                className="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-slate-200 hover:border-violet-300 hover:bg-violet-50 transition-all group text-left">
+                                <ShieldCheck className="w-4 h-4 text-slate-400 group-hover:text-violet-500" />
+                                <div>
+                                    <div className="text-xs font-bold text-slate-700">Super Admin</div>
+                                    <div className="text-[10px] text-slate-400">Akses Penuh</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="flex items-center gap-3 mb-5">
+                        <div className="flex-1 h-px bg-slate-100" />
+                        <span className="text-[11px] text-slate-400">atau masuk manual</span>
+                        <div className="flex-1 h-px bg-slate-100" />
+                    </div>
+
+                    {/* Form */}
+                    <form onSubmit={submit} className="space-y-4">
+                        {/* Email */}
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+                            <div className="relative">
+                                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                <input
+                                    id="email" type="email" name="email" autoComplete="username" autoFocus
+                                    value={data.email} onChange={(e) => setData('email', e.target.value)}
+                                    placeholder="email@contoh.com"
+                                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                />
+                            </div>
+                            <InputError message={errors.email} className="mt-1" />
+                        </div>
+
+                        {/* Password */}
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+                            <div className="relative">
+                                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                <input
+                                    id="password" type="password" name="password" autoComplete="current-password"
+                                    value={data.password} onChange={(e) => setData('password', e.target.value)}
+                                    placeholder="••••••••"
+                                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                                />
+                            </div>
+                            <InputError message={errors.password} className="mt-1" />
+                        </div>
+
+                        {/* Remember + Forgot */}
+                        <div className="flex items-center justify-between">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox"
+                                    checked={data.remember}
+                                    onChange={(e) => setData('remember', e.target.checked)}
+                                    className="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                                <span className="text-sm text-slate-600">Ingat Saya</span>
+                            </label>
+                            {canResetPassword && (
+                                <Link href={route('password.request')}
+                                    className="text-sm text-indigo-600 hover:text-indigo-800 transition-colors">
+                                    Lupa password?
+                                </Link>
+                            )}
+                        </div>
+
+                        {/* Submit */}
+                        <button type="submit" disabled={processing}
+                            className="w-full py-2.5 rounded-xl font-bold text-sm text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 transition-all flex items-center justify-center gap-2">
+                            {processing ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    Memproses...
+                                </>
+                            ) : 'Masuk'}
+                        </button>
+                    </form>
                 </div>
-            </form>
-        </GuestLayout>
+
+                {/* Credentials hint */}
+                <div className="mt-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Kredensial Demo</p>
+                    <div className="space-y-1.5 text-[11px]">
+                        <div className="flex justify-between">
+                            <span className="flex items-center gap-1 text-slate-500">
+                                <ShieldCheck className="w-3 h-3 text-violet-500" /> Super Admin
+                            </span>
+                            <span className="text-slate-400 font-mono">superadmin@sigudang.com / superadmin123</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="flex items-center gap-1 text-slate-500">
+                                <User className="w-3 h-3 text-indigo-500" /> Admin
+                            </span>
+                            <span className="text-slate-400 font-mono">admin@sigudang.com / admin123</span>
+                        </div>
+                    </div>
+                </div>
+
+                <p className="text-center text-xs text-slate-400 mt-5">
+                    © 2026 Sigudang – Gudang Pramuka
+                </p>
+            </div>
+        </div>
     );
 }

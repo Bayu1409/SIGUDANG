@@ -55,23 +55,18 @@ export default function Create({ barang }) {
                         {/* BARANG */}
                         <div className="space-y-1">
                             <Label required>Pilih Barang</Label>
-                            <div className="relative">
-                                <select
-                                    value={data.barang_id}
-                                    onChange={e => setData("barang_id", e.target.value)}
-                                    className={`w-full bg-slate-50 border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 appearance-none transition-all ${errors.barang_id ? "border-rose-500" : ""}`}
-                                >
-                                    <option value="">-- Pilih Barang --</option>
-                                    {barang.map(item => (
-                                        <option key={item.id} value={item.id}>
-                                            {item.nama_barang} (Stok: {item.stok} {item.satuan?.nama})
-                                        </option>
-                                    ))}
-                                </select>
-                                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                                    <ChevronDown className="w-4 h-4 text-slate-400" />
-                                </div>
-                            </div>
+                            <select
+                                value={data.barang_id}
+                                onChange={e => setData("barang_id", e.target.value)}
+                                className={`w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all ${errors.barang_id ? "border-rose-500" : ""}`}
+                            >
+                                <option value="">-- Pilih Barang --</option>
+                                {barang.map(item => (
+                                    <option key={item.id} value={item.id}>
+                                        {item.nama_barang} (Stok: {item.stok} {item.satuan?.nama})
+                                    </option>
+                                ))}
+                            </select>
                             {errors.barang_id && (
                                 <p className="text-rose-500 text-[10px] font-bold uppercase mt-1 ml-1">{errors.barang_id}</p>
                             )}
@@ -206,4 +201,3 @@ export default function Create({ barang }) {
 }
 
 Create.layout = (page) => <AdminLayout children={page} />;
-}

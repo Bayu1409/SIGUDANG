@@ -54,9 +54,8 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
             {/* Barang */}
             <div className="space-y-1">
               <Label required>Barang</Label>
-              <div className="relative">
-                <select
-                  className={`w-full bg-slate-50 border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none transition-all ${errors.barang_id ? "border-rose-500" : ""}`}
+              <select
+                  className={`w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all ${errors.barang_id ? "border-rose-500" : ""}`}
                   value={data.barang_id}
                   onChange={(e) => setData("barang_id", e.target.value)}
                 >
@@ -67,10 +66,6 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
                     </option>
                   ))}
                 </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <ChevronDown className="w-4 h-4 text-slate-400" />
-                </div>
-              </div>
               {errors.barang_id && (
                 <p className="text-rose-500 text-[10px] font-bold uppercase mt-1 ml-1">{errors.barang_id}</p>
               )}
@@ -79,9 +74,8 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
             {/* Supplier */}
             <div className="space-y-1">
               <Label required>Supplier (Asal Barang)</Label>
-              <div className="relative">
                 <select
-                  className={`w-full bg-slate-50 border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none transition-all ${errors.supplier_id ? "border-rose-500" : ""}`}
+                  className={`w-full bg-slate-50 border border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all ${errors.supplier_id ? "border-rose-500" : ""}`}
                   value={data.supplier_id}
                   onChange={(e) => setData("supplier_id", e.target.value)}
                 >
@@ -92,10 +86,6 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
                     </option>
                   ))}
                 </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <ChevronDown className="w-4 h-4 text-slate-400" />
-                </div>
-              </div>
               {errors.supplier_id && (
                 <p className="text-rose-500 text-[10px] font-bold uppercase mt-1 ml-1">{errors.supplier_id}</p>
               )}
