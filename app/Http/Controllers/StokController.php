@@ -13,6 +13,7 @@ class StokController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
+        $kategoriId = $request->kategori_id;
 
         $barangPaginated = Barang::with([
             'kategori',
@@ -26,6 +27,9 @@ class StokController extends Controller
                   ->orWhereHas('kategori', function($q) use ($search) {
                       $q->where('nama_kategori', 'like', "%{$search}%");
                   });
+        })
+        ->when($kategoriId, function ($query, $kategoriId) {
+            $query->where('kategori_id', $kategoriId);
         })
         ->paginate(10)
         ->withQueryString();
@@ -66,7 +70,8 @@ class StokController extends Controller
             'Stok/Index',
             [
                 'barang'  => $barangPaginated,
-                'filters' => $request->only(['search']),
+                'filters' => $request->only(['search', 'kategori_id']),
+                'kategoris' => \App\Models\Kategori::all(),
                 'config'  => [
                     'stokMinimum' => self::getActiveStokMinimum()
                 ]

@@ -1,172 +1,150 @@
 import React, { useState, useEffect } from "react";
-import { Link, router } from "@inertiajs/react";
+import { router, Head } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
+import { Search, ChevronDown, Download, RotateCcw, Calendar, Folder, Clock } from "lucide-react";
 
-export default function LaporanDeadStock({ barang, filters = {} }) {
-    const [sampai, setSampai] = useState(filters.sampai || "");
-    const [search, setSearch] = useState(filters.search || "");
+export default function DeadStock({ barang, filters = {}, kategoris = [] }) {
+    const [sampai, setSampai]     = useState(filters.sampai || "");
+    const [search, setSearch]     = useState(filters.search || "");
+    const [kategoriId, setKategoriId] = useState(filters.kategori_id || "");
 
     const isInitialRender = React.useRef(true);
-
+    
     useEffect(() => {
-        if (isInitialRender.current) {
-            isInitialRender.current = false;
-            return;
-        }
-
+        if (isInitialRender.current) { isInitialRender.current = false; return; }
         const delay = setTimeout(() => {
-            router.get(
-                route("laporan.dead-stock"),
-                { sampai, search },
-                { preserveState: true, replace: true, preserveScroll: true }
-            );
-        }, 300);
+            router.get(route("laporan.dead-stock"),
+                { sampai, search, kategori_id: kategoriId },
+                { preserveState: true, replace: true, preserveScroll: true });
+        }, 500);
         return () => clearTimeout(delay);
-    }, [search]);
-
-    const handleFilter = (e) => {
-        e.preventDefault();
-        router.get(route("laporan.dead-stock"), { sampai, search });
-    };
+    }, [search, sampai, kategoriId]);
 
     const handleExport = () => {
-        const url = route("laporan.dead-stock.export", { sampai, search });
+        const url = route("laporan.dead-stock.export", { sampai, search, kategori_id: kategoriId });
         window.open(url, "_blank");
     };
 
-    const setQuickDate = (type) => {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = today.getMonth();
-
-        const formatDate = (dateObj) => {
-            const y = dateObj.getFullYear();
-            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const d = String(dateObj.getDate()).padStart(2, '0');
-            return `${y}-${m}-${d}`;
-        };
-
-        if (type === 'hari_ini') {
-            setSampai(formatDate(today));
-        } else if (type === 'bulan_ini') {
-            const lastDay = new Date(yyyy, mm + 1, 0);
-            setSampai(formatDate(lastDay));
-        } else if (type === 'tahun_ini') {
-            const lastDay = new Date(yyyy, 11, 31);
-            setSampai(formatDate(lastDay));
-        }
+    const resetFilters = () => {
+        setSampai(""); setSearch(""); setKategoriId("");
     };
 
     return (
         <AdminLayout>
+            <Head title="Laporan Dead Stock" />
             <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-semibold text-gray-800">
-                        Laporan Dead Stock
-                    </h2>
-                    <button
-                        onClick={handleExport}
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow flex items-center gap-2"
-                    >
-                        <span>Unduh Excel</span>
+                <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                    <div>
+                        <h2 className="text-xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
+                            Laporan Dead Stock
+                        </h2>
+                        <p className="text-xs text-slate-500 mt-1">Daftar barang yang tidak ada pergerakan keluar dalam jangka waktu lama.</p>
+                    </div>
+                    <button onClick={handleExport}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2">
+                        <Download className="w-4 h-4" /> Unduh Excel
                     </button>
                 </div>
 
-                <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6" role="alert">
-                    <p className="font-bold">Informasi: Dead stock dihitung berdasarkan Tanggal Referensi Akhir (Default: Hari ini)</p>
-                    <p>Halaman ini menampilkan barang yang <strong>tidak memiliki transaksi keluar (barang keluar)</strong> selama lebih dari 30 hari terakhir terhitung dari Batas Waktu Tanggal, namun masih memiliki stok secara total pada saat itu.</p>
-                </div>
-
-                <div className="mb-6 bg-white p-4 shadow rounded-lg">
-                    <form
-                        onSubmit={handleFilter}
-                        className="flex flex-wrap items-end gap-4 mb-4"
-                    >
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">
-                                Dihitung sampai tanggal
+                {/* FILTER CARD */}
+                <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
+                        {/* Sampai */}
+                        <div className="space-y-1.5">
+                            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                                <Calendar className="w-3 h-3" /> Tanggal Referensi
                             </label>
-                            <input
-                                type="date"
-                                value={sampai}
-                                onChange={(e) => setSampai(e.target.value)}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                            />
+                            <input type="date" value={sampai} onChange={(e) => setSampai(e.target.value)}
+                                className="w-full rounded-lg border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all" />
                         </div>
-                        <div className="flex-grow">
-                            <label className="block text-sm font-medium text-gray-700">
-                                Cari Barang
+                        {/* Kategori */}
+                        <div className="space-y-1.5">
+                            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                                <Folder className="w-3 h-3" /> Kategori
                             </label>
-                            <input
-                                type="text"
-                                placeholder="Cari..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                            />
+                            <div className="relative">
+                                <select value={kategoriId} onChange={(e) => setKategoriId(e.target.value)}
+                                    className="w-full rounded-lg border-slate-200 text-sm appearance-none pr-10 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                                    <option value="">Semua Kategori</option>
+                                    {kategoris.map(k => <option key={k.id} value={k.id}>{k.nama_kategori}</option>)}
+                                </select>
+                                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            </div>
                         </div>
-                        <div className="flex gap-2">
-                            <button
-                                type="submit"
-                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
-                            >
-                                Terapkan Tanggal
-                            </button>
-                            <Link
-                                href={route("laporan.dead-stock")}
-                                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded shadow"
-                            >
-                                Reset
-                            </Link>
+                        {/* Search */}
+                        <div className="space-y-1.5">
+                            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                                <Search className="w-3 h-3" /> Cari Barang
+                            </label>
+                            <div className="flex gap-2">
+                                <input type="text" placeholder="Ketik kode/nama..." value={search} onChange={(e) => setSearch(e.target.value)}
+                                    className="flex-1 rounded-lg border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all" />
+                                <button onClick={resetFilters}
+                                    className="px-4 py-2 rounded-lg text-slate-500 hover:bg-slate-50 text-xs font-bold transition-all border border-slate-200 flex items-center gap-1.5">
+                                    <RotateCcw className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
                         </div>
-                    </form>
-
-                    <div className="flex gap-2 border-t pt-4 mt-4">
-                        <span className="text-sm font-medium text-gray-700 self-center">Filter Waktu Cepat:</span>
-                        <button type="button" onClick={() => setQuickDate('hari_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Hari Ini (Sekarang)</button>
-                        <button type="button" onClick={() => setQuickDate('bulan_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Akhir Bulan Ini</button>
-                        <button type="button" onClick={() => setQuickDate('tahun_ini')} className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 px-3 py-1 rounded-full font-medium transition">Akhir Tahun Ini</button>
+                    </div>
+                    <div className="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-100 flex items-center gap-3">
+                        <Clock className="w-4 h-4 text-amber-500" />
+                        <p className="text-[11px] text-amber-700 font-medium font-sans">
+                            Kriteria: Barang dengan stok {'>'} 0 yang tidak pernah keluar lebih dari 30 hari/tidak ada transaksi keluar.
+                        </p>
                     </div>
                 </div>
 
-                <div className="bg-white shadow rounded-lg overflow-hidden">
-                    <table className="min-w-full border border-gray-200">
-                        <thead className="bg-gray-100">
-                            <tr>
-                                <th className="px-4 py-2 border">No</th>
-                                <th className="px-4 py-2 border">Kode Barang</th>
-                                <th className="px-4 py-2 border">Nama Barang</th>
-                                <th className="px-4 py-2 border">Kategori</th>
-                                <th className="px-4 py-2 border">Stok</th>
-                                <th className="px-4 py-2 border">Satuan</th>
-                                <th className="px-4 py-2 border">Lama Mengendap</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {barang.data && barang.data.length > 0 ? (
-                                barang.data.map((item, index) => (
-                                    <tr key={item.id} className="text-center">
-                                        <td className="border px-4 py-2 text-center">{barang.from + index}</td>
-                                        <td className="border px-4 py-2">{item.kode_barang}</td>
-                                        <td className="border px-4 py-2">{item.nama_barang}</td>
-                                        <td className="border px-4 py-2">{item.kategori}</td>
-                                        <td className="border px-4 py-2 font-bold">{item.stok}</td>
-                                        <td className="border px-4 py-2">{item.satuan}</td>
-                                        <td className="border px-4 py-2 text-red-600 font-semibold text-sm">
-                                            {item.hari === 999 ? "Belum pernah ada transaksi keluar" : `${item.hari} Hari`}
+                {/* TABLE */}
+                <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-6">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-slate-100">
+                            <thead className="bg-slate-50">
+                                <tr>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">No</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">Informasi Barang</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">Kategori</th>
+                                    <th className="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase">Stok Tersisa</th>
+                                    <th className="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase">Lama Mengendap</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {barang.data && barang.data.length > 0 ? (
+                                    barang.data.map((item, index) => (
+                                        <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                                            <td className="px-6 py-4 text-sm text-slate-500 font-medium">{barang.from + index}</td>
+                                            <td className="px-6 py-4">
+                                                <div className="text-sm font-bold text-slate-900">{item.nama_barang}</div>
+                                                <div className="text-[10px] text-slate-400 font-mono uppercase">{item.kode_barang}</div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className="px-2 py-0.5 bg-slate-100 rounded text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
+                                                    {item.kategori}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 text-center font-bold text-slate-700 text-sm">
+                                                {item.stok} <span className="text-[10px] text-slate-400 font-normal">{item.satuan}</span>
+                                            </td>
+                                            <td className="px-6 py-4 text-center">
+                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-100 uppercase">
+                                                    {item.hari === 999 ? "Belum Pernah Keluar" : `${item.hari} Hari`}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="5" className="text-center py-16">
+                                            <div className="flex flex-col items-center gap-2 text-slate-300">
+                                                <Clock className="w-12 h-12 opacity-20" />
+                                                <p className="text-sm font-medium">Tidak ada barang dead stock saat ini.</p>
+                                            </div>
                                         </td>
                                     </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="7" className="text-center py-4">
-                                        Tidak ada barang kategori dead stock (semua barang aktif bergerak)
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <Pagination links={barang.links} />

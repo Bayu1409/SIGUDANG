@@ -19,6 +19,9 @@ class LaporanController extends Controller
     public function barangMasuk(Request $request)
     {
         $search = $request->search;
+        $supplierId = $request->supplier_id;
+        $barangId = $request->barang_id;
+        
         $query = BarangMasuk::with(['barang.kategori', 'barang.satuan', 'supplier']);
 
         if ($request->dari && $request->sampai) {
@@ -36,17 +39,25 @@ class LaporanController extends Controller
             });
        });
 
+       $query->when($supplierId, fn($q) => $q->where('supplier_id', $supplierId));
+       $query->when($barangId, fn($q) => $q->where('barang_id', $barangId));
+
         $data = $query->orderBy('tanggal_masuk', 'desc')->paginate(10)->withQueryString();
 
         return Inertia::render('Laporan/BarangMasuk', [
             'data' => $data,
-            'filters' => $request->only(['dari', 'sampai', 'search'])
+            'filters' => $request->only(['dari', 'sampai', 'search', 'supplier_id', 'barang_id']),
+            'suppliers' => \App\Models\Supplier::all(),
+            'barangs' => \App\Models\Barang::all(),
         ]);
     }
 
     public function exportBarangMasuk(Request $request)
     {
         $search = $request->search;
+        $supplierId = $request->supplier_id;
+        $barangId = $request->barang_id;
+
         $query = BarangMasuk::with(['barang.kategori', 'barang.satuan', 'supplier']);
 
         if ($request->dari && $request->sampai) {
@@ -63,6 +74,9 @@ class LaporanController extends Controller
                 $q2->where('nama_supplier', 'like', "%{$search}%");
             });
        });
+
+       $query->when($supplierId, fn($q) => $q->where('supplier_id', $supplierId));
+       $query->when($barangId, fn($q) => $q->where('barang_id', $barangId));
 
         $data = $query->orderBy('tanggal_masuk', 'desc')->get();
 
@@ -92,6 +106,8 @@ class LaporanController extends Controller
     public function barangKeluar(Request $request)
     {
         $search = $request->search;
+        $barangId = $request->barang_id;
+
         $query = BarangKeluar::with(['barang.kategori', 'barang.satuan']);
 
         if ($request->dari && $request->sampai) {
@@ -107,17 +123,22 @@ class LaporanController extends Controller
             });
        });
 
+       $query->when($barangId, fn($q) => $q->where('barang_id', $barangId));
+
         $data = $query->orderBy('tanggal_keluar', 'desc')->paginate(10)->withQueryString();
 
         return Inertia::render('Laporan/BarangKeluar', [
             'data' => $data,
-            'filters' => $request->only(['dari', 'sampai', 'search'])
+            'filters' => $request->only(['dari', 'sampai', 'search', 'barang_id']),
+            'barangs' => \App\Models\Barang::all(),
         ]);
     }
 
     public function exportBarangKeluar(Request $request)
     {
         $search = $request->search;
+        $barangId = $request->barang_id;
+
         $query = BarangKeluar::with(['barang.kategori', 'barang.satuan']);
 
         if ($request->dari && $request->sampai) {
@@ -132,6 +153,8 @@ class LaporanController extends Controller
                   });
             });
        });
+
+       $query->when($barangId, fn($q) => $q->where('barang_id', $barangId));
 
         $data = $query->orderBy('tanggal_keluar', 'desc')->get();
 
@@ -162,6 +185,7 @@ class LaporanController extends Controller
         $dari = $request->dari;
         $sampai = $request->sampai;
         $search = $request->search;
+        $kategoriId = $request->kategori_id;
 
         $barangPaginated = Barang::with([
             'kategori',
@@ -180,6 +204,7 @@ class LaporanController extends Controller
                       $q->where('nama_kategori', 'like', "%{$search}%");
                   });
         })
+        ->when($kategoriId, fn($q) => $q->where('kategori_id', $kategoriId))
         ->paginate(10)
         ->withQueryString();
 
@@ -203,7 +228,8 @@ class LaporanController extends Controller
 
         return Inertia::render('Laporan/Stok', [
             'barang' => $barangPaginated,
-            'filters' => $request->only(['dari', 'sampai', 'search'])
+            'filters' => $request->only(['dari', 'sampai', 'search', 'kategori_id']),
+            'kategoris' => \App\Models\Kategori::all(),
         ]);
     }
 
@@ -212,6 +238,7 @@ class LaporanController extends Controller
         $dari = $request->dari;
         $sampai = $request->sampai;
         $search = $request->search;
+        $kategoriId = $request->kategori_id;
 
         $barang = Barang::with([
             'kategori',
@@ -230,6 +257,7 @@ class LaporanController extends Controller
                       $q->where('nama_kategori', 'like', "%{$search}%");
                   });
         })
+        ->when($kategoriId, fn($q) => $q->where('kategori_id', $kategoriId))
         ->get()->map(function ($item, $index) {
             $masuk = $item->barangMasuk->sum('jumlah');
             $keluar = $item->barangKeluar->sum('jumlah');
@@ -263,6 +291,7 @@ class LaporanController extends Controller
     {
         $today = $request->sampai ? Carbon::parse($request->sampai) : Carbon::now();
         $search = $request->search;
+        $kategoriId = $request->kategori_id;
         $deadStockLimit = \App\Models\Setting::getSetting('limit_dead_stock', 30);
 
         // Note: For custom filtering (like filter by 'hari' > 30 from a collection)
@@ -287,6 +316,7 @@ class LaporanController extends Controller
                       $q->where('nama_kategori', 'like', "%{$search}%");
                   });
         })
+        ->when($kategoriId, fn($q) => $q->where('kategori_id', $kategoriId))
         ->get();
 
         $filteredCollection = $semuaBarang->map(function ($item) use ($today) {
@@ -327,7 +357,8 @@ class LaporanController extends Controller
 
         return Inertia::render('Laporan/DeadStock', [
             'barang' => $paginated,
-            'filters' => $request->only(['sampai', 'search'])
+            'filters' => $request->only(['sampai', 'search', 'kategori_id']),
+            'kategoris' => \App\Models\Kategori::all(),
         ]);
     }
 

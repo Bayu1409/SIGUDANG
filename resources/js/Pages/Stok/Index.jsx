@@ -4,6 +4,7 @@ import { Head, router } from "@inertiajs/react";
 import Pagination from "@/Components/Pagination";
 import {
     Search,
+    ChevronDown,
     Package,
     Truck,
     ArrowDownToLine,
@@ -15,8 +16,9 @@ import {
     TrendingUp,
 } from "lucide-react";
 
-export default function Index({ barang, filters = {}, config = {} }) {
+export default function Index({ barang, filters = {}, config = {}, kategoris = [] }) {
     const [search, setSearch] = useState(filters.search || "");
+    const [kategoriId, setKategoriId] = useState(filters.kategori_id || "");
     const [detailItem, setDetailItem] = useState(null);
     const stokLimit = config.stokMinimum || 10;
 
@@ -30,12 +32,19 @@ export default function Index({ barang, filters = {}, config = {} }) {
         const delay = setTimeout(() => {
             router.get(
                 route("stok.index"),
-                { search },
+                { search, kategori_id: kategoriId },
                 { preserveState: true, replace: true, preserveScroll: true }
             );
         }, 300);
         return () => clearTimeout(delay);
-    }, [search]);
+    }, [search, kategoriId]);
+
+    const resetFilters = () => {
+        setSearch("");
+        setKategoriId("");
+    };
+
+    const hasFilter = search || kategoriId;
 
     const getStokStatus = (stok) => {
         if (stok <= 0) return { label: "Habis", color: "text-rose-600", bg: "bg-rose-50 border-rose-200", dot: "bg-rose-500" };
@@ -61,19 +70,52 @@ export default function Index({ barang, filters = {}, config = {} }) {
                 </div>
             </div>
 
-            {/* Search */}
+            {/* Filter Section */}
             <div className="mb-6 bg-white p-4 rounded-xl border border-slate-100 shadow-sm">
-                <div className="relative max-w-sm">
-                    <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-                        <Search className="w-4 h-4" />
-                    </span>
-                    <input
-                        type="text"
-                        placeholder="Cari kode/nama barang atau kategori..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-full rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-10 pr-4 py-2 text-sm transition-all"
-                    />
+                <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+                    {/* Search */}
+                    <div className="relative flex-1 min-w-0">
+                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                            <Search className="w-4 h-4" />
+                        </span>
+                        <input
+                            type="text"
+                            placeholder="Cari kode/nama barang atau kategori..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-full rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-10 pr-4 py-2 text-sm transition-all"
+                        />
+                    </div>
+
+                    {/* Kategori Dropdown */}
+                    <div className="relative min-w-[200px]">
+                        <select
+                            value={kategoriId}
+                            onChange={(e) => setKategoriId(e.target.value)}
+                            className="w-full rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-4 pr-10 py-2 text-sm transition-all appearance-none bg-white font-medium text-slate-700"
+                        >
+                            <option value="">Semua Kategori</option>
+                            {kategoris.map((kat) => (
+                                <option key={kat.id} value={kat.id}>
+                                    {kat.nama_kategori}
+                                </option>
+                            ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                            <ChevronDown className="w-4 h-4" />
+                        </div>
+                    </div>
+
+                    {/* Reset Button */}
+                    {hasFilter && (
+                        <button
+                            onClick={resetFilters}
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-slate-500 hover:bg-slate-100 text-xs font-semibold transition-all border border-slate-200"
+                        >
+                            <X className="w-3.5 h-3.5" />
+                            Reset
+                        </button>
+                    )}
                 </div>
             </div>
 
