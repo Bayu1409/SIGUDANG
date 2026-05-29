@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link, router, usePage, Head } from "@inertiajs/react";
+import { Link, router, Head } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
 import { ArrowUpFromLine, FileText, Package, Search, Trash2 } from "lucide-react";
 
 export default function Index({ barangKeluar, filters = {} }) {
     const [search, setSearch] = useState(filters.search || "");
-
     const isInitialRender = React.useRef(true);
 
     useEffect(() => {
@@ -14,7 +13,6 @@ export default function Index({ barangKeluar, filters = {} }) {
             isInitialRender.current = false;
             return;
         }
-
         const delay = setTimeout(() => {
             router.get(
                 route("barang-keluar.index"),
@@ -31,13 +29,9 @@ export default function Index({ barangKeluar, filters = {} }) {
 
             <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
                 <div>
-                    <h2 className="text-xl font-bold leading-tight text-slate-800">
-                        Barang Keluar
-                    </h2>
+                    <h2 className="text-xl font-bold leading-tight text-slate-800">Barang Keluar</h2>
                     <p className="text-xs text-slate-500 mt-1">Kelola Barang Keluar.</p>
                 </div>
-
-
                 <Link
                     href={route("barang-keluar.create")}
                     className="bg-rose-600 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg shadow-rose-500/20 hover:bg-rose-700 transition-all flex items-center gap-2"
@@ -79,80 +73,121 @@ export default function Index({ barangKeluar, filters = {} }) {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
-                            {barangKeluar.data && barangKeluar.data.length > 0 ? barangKeluar.data.map((item, index) => (
-                                <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                                    <td className="px-6 py-4 text-sm text-slate-500 font-medium">
-                                        {barangKeluar.from + index}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="font-bold text-slate-900 text-sm">
-                                            {item.barang?.nama_barang}
-                                        </div>
-                                        <div className="text-[10px] text-slate-400 font-medium">
-                                            {item.barang?.kode_barang}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-slate-600">
-                                        {item.barang?.kategori?.nama_kategori || "-"}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-slate-600">
-                                        <span className="px-2 py-1 bg-slate-100 rounded text-xs">
-                                            {item.barang?.satuan?.nama || "-"}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-slate-600 font-medium">
-                                        {new Date(item.created_at).toLocaleString("id-ID", {
-                                            dateStyle: "medium",
-                                            timeStyle: "short",
-                                        })}
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-sm font-bold text-rose-600">
-                                            {item.jumlah}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 text-sm">
-                                        {item.dokumen ? (
-                                            <a
-                                                href={`/storage/${item.dokumen}`}
-                                                target="_blank"
-                                                className="inline-flex items-center gap-1.5 text-rose-600 hover:text-rose-800 font-bold transition-colors"
-                                            >
-                                                <FileText className="w-4 h-4" />
-                                                Lihat
-                                            </a>
-                                        ) : (
-                                            <span className="text-slate-300">-</span>
-                                        )}
-                                    </td>
-                                    <td className="px-6 py-4 text-center">
-                                        <Link
-                                            href={route("barang-keluar.destroy", item.id)}
-                                            method="delete"
-                                            as="button"
-                                            className="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
-                                            title="Hapus"
-                                        >
-                                            <Trash2 className="w-5 h-5" />
-                                        </Link>
-                                    </td>
-                                </tr>
-                            )) : (
-                                <tr>
-                                    <td colSpan="8" className="px-6 py-12 text-center text-slate-400">
-                                        <div className="flex flex-col items-center gap-2">
-                                            <Package className="w-10 h-10 opacity-20" />
-                                            <p className="text-sm font-medium">Data barang keluar belum tersedia.</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            )}
+                            {barangKeluar.data && barangKeluar.data.length > 0
+                                ? barangKeluar.data.map((item, index) => (
+                                    <BarangKeluarRow
+                                        key={item.id}
+                                        item={item}
+                                        no={barangKeluar.from + index}
+                                    />
+                                ))
+                                : (
+                                    <tr>
+                                        <td colSpan="8" className="px-6 py-12 text-center text-slate-400">
+                                            <div className="flex flex-col items-center gap-2">
+                                                <Package className="w-10 h-10 opacity-20" />
+                                                <p className="text-sm font-medium">Data barang keluar belum tersedia.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )}
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <Pagination links={barangKeluar.links} />
+        </>
+    );
+}
+
+function BarangKeluarRow({ item, no }) {
+    const [showConfirm, setShowConfirm] = useState(false);
+
+    const handleDelete = () => {
+        router.delete(route("barang-keluar.destroy", item.id), {
+            onSuccess: () => setShowConfirm(false),
+        });
+    };
+
+    return (
+        <>
+            <tr className="hover:bg-slate-50/50 transition-colors">
+                <td className="px-6 py-4 text-sm text-slate-500 font-medium">{no}</td>
+                <td className="px-6 py-4">
+                    <div className="font-bold text-slate-900 text-sm">{item.barang?.nama_barang}</div>
+                    <div className="text-[10px] text-slate-400 font-medium">{item.barang?.kode_barang}</div>
+                </td>
+                <td className="px-6 py-4 text-sm text-slate-600">
+                    {item.barang?.kategori?.nama_kategori || "-"}
+                </td>
+                <td className="px-6 py-4 text-sm text-slate-600">
+                    <span className="px-2 py-1 bg-slate-100 rounded text-xs">
+                        {item.barang?.satuan?.nama || "-"}
+                    </span>
+                </td>
+                <td className="px-6 py-4 text-sm text-slate-600 font-medium">
+                    {new Date(item.created_at).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })}
+                </td>
+                <td className="px-6 py-4">
+                    <span className="text-sm font-bold text-rose-600">{item.jumlah}</span>
+                </td>
+                <td className="px-6 py-4 text-sm">
+                    {item.dokumen ? (
+                        <a href={`/storage/${item.dokumen}`} target="_blank"
+                            className="inline-flex items-center gap-1.5 text-rose-600 hover:text-rose-800 font-bold transition-colors">
+                            <FileText className="w-4 h-4" /> Lihat
+                        </a>
+                    ) : (
+                        <span className="text-slate-300">-</span>
+                    )}
+                </td>
+                <td className="px-6 py-4 text-center">
+                    <button
+                        onClick={() => setShowConfirm(true)}
+                        className="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                        title="Hapus"
+                    >
+                        <Trash2 className="w-5 h-5" />
+                    </button>
+                </td>
+            </tr>
+
+            {showConfirm && (
+                <tr>
+                    <td colSpan="8" className="p-0">
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center">
+                                <div className="flex justify-center mb-4">
+                                    <div className="bg-rose-100 p-4 rounded-full">
+                                        <Trash2 className="w-8 h-8 text-rose-600" />
+                                    </div>
+                                </div>
+                                <h3 className="text-lg font-bold text-slate-800 mb-2">Hapus Data Barang Keluar?</h3>
+                                <p className="text-sm text-slate-500 mb-6">
+                                    Data barang keluar{" "}
+                                    <span className="font-semibold text-slate-700">{item.barang?.nama_barang}</span>{" "}
+                                    akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.
+                                </p>
+                                <div className="flex gap-3 justify-center">
+                                    <button
+                                        onClick={() => setShowConfirm(false)}
+                                        className="px-5 py-2.5 rounded-lg border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 transition-all text-sm"
+                                    >
+                                        Batal
+                                    </button>
+                                    <button
+                                        onClick={handleDelete}
+                                        className="px-5 py-2.5 rounded-lg bg-rose-600 text-white font-bold hover:bg-rose-700 transition-all text-sm shadow-lg shadow-rose-500/20"
+                                    >
+                                        Ya, Hapus
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            )}
         </>
     );
 }

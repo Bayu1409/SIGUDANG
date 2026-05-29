@@ -17,7 +17,7 @@ class StokController extends Controller
         $barangPaginated = Barang::with([
             'kategori',
             'satuan',
-            'barangMasuk',
+            'barangMasuk.supplier',
             'barangKeluar'
         ])
         ->when($search, function ($query, $search) {
@@ -35,24 +35,39 @@ class StokController extends Controller
             $keluar = $item->barangKeluar->sum('jumlah');
             $stok = $masuk - $keluar;
 
+            // Breakdown barang masuk per supplier
+            $supplierBreakdown = $item->barangMasuk
+                ->groupBy('supplier_id')
+                ->map(function ($transaksi) {
+                    $supplier = $transaksi->first()->supplier;
+                    return [
+                        'nama_supplier' => $supplier?->nama_supplier ?? 'Tidak Diketahui',
+                        'total_jumlah'  => $transaksi->sum('jumlah'),
+                        'jumlah_transaksi' => $transaksi->count(),
+                        'terakhir_masuk' => $transaksi->max('created_at'),
+                    ];
+                })
+                ->values();
+
             return [
-                'id' => $item->id,
+                'id'          => $item->id,
                 'kode_barang' => $item->kode_barang,
                 'nama_barang' => $item->nama_barang,
-                'kategori' => $item->kategori->nama_kategori ?? '-',
-                'satuan' => $item->satuan->nama ?? '-',
-                'masuk' => $masuk,
-                'keluar' => $keluar,
-                'stok' => $stok,
+                'kategori'    => $item->kategori->nama_kategori ?? '-',
+                'satuan'      => $item->satuan->nama ?? '-',
+                'masuk'       => $masuk,
+                'keluar'      => $keluar,
+                'stok'        => $stok,
+                'supplier_breakdown' => $supplierBreakdown,
             ];
         });
 
         return Inertia::render(
             'Stok/Index',
             [
-                'barang' => $barangPaginated,
+                'barang'  => $barangPaginated,
                 'filters' => $request->only(['search']),
-                'config' => [
+                'config'  => [
                     'stokMinimum' => self::getActiveStokMinimum()
                 ]
             ]
@@ -63,7 +78,7 @@ class StokController extends Controller
     {
         $bulan = Carbon::now()->month;
         $eventMonths = Setting::getSetting('event_months', [6, 7, 8]);
-        
+
         return in_array($bulan, $eventMonths)
             ? Setting::getSetting('limit_stok_event', 50)
             : Setting::getSetting('limit_stok_normal', 10);
