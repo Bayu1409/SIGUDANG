@@ -53,30 +53,26 @@ export default function Index({ barangMasuk, filters = {}, suppliers = [], baran
 
                     {/* Dropdown Supplier */}
                     <div className="relative min-w-[180px]">
-                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
-                            <ChevronDown className="w-4 h-4" />
-                        </span>
                         <select value={supplierId} onChange={(e) => setSupplierId(e.target.value)}
-                            className="w-full appearance-none rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-9 pr-4 py-2 text-sm transition-all bg-white text-slate-700">
+                            className="w-full appearance-none rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-4 pr-10 py-2 text-sm transition-all bg-white text-slate-700 shadow-sm font-medium">
                             <option value="">Semua Supplier</option>
                             {suppliers.map((s) => (
                                 <option key={s.id} value={s.id}>{s.nama_supplier}</option>
                             ))}
                         </select>
+                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                     </div>
 
                     {/* Dropdown Barang */}
                     <div className="relative min-w-[180px]">
-                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
-                            <ChevronDown className="w-4 h-4" />
-                        </span>
                         <select value={barangId} onChange={(e) => setBarangId(e.target.value)}
-                            className="w-full appearance-none rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-9 pr-4 py-2 text-sm transition-all bg-white text-slate-700">
+                            className="w-full appearance-none rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-4 pr-10 py-2 text-sm transition-all bg-white text-slate-700 shadow-sm font-medium">
                             <option value="">Semua Barang</option>
                             {barangs.map((b) => (
                                 <option key={b.id} value={b.id}>{b.nama_barang}</option>
                             ))}
                         </select>
+                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                     </div>
 
                     {/* Reset */}

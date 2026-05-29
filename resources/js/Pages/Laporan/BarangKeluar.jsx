@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { router, Head } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
-import { Search, ChevronDown, Download, RotateCcw, Calendar, Package } from "lucide-react";
+import { Search, ChevronDown, Download, RotateCcw, Calendar, Package, Folder } from "lucide-react";
 
-export default function BarangKeluar({ data, filters = {}, barangs = [] }) {
+export default function BarangKeluar({ data, filters = {}, barangs = [], kategoris = [] }) {
     const [dari, setDari]         = useState(filters.dari || "");
     const [sampai, setSampai]     = useState(filters.sampai || "");
     const [search, setSearch]     = useState(filters.search || "");
     const [barangId, setBarangId] = useState(filters.barang_id || "");
+    const [kategoriId, setKategoriId] = useState(filters.kategori_id || "");
 
     const isInitialRender = React.useRef(true);
     
@@ -16,11 +17,11 @@ export default function BarangKeluar({ data, filters = {}, barangs = [] }) {
         if (isInitialRender.current) { isInitialRender.current = false; return; }
         const delay = setTimeout(() => {
             router.get(route("laporan.barang-keluar"),
-                { dari, sampai, search, barang_id: barangId },
+                { dari, sampai, search, barang_id: barangId, kategori_id: kategoriId },
                 { preserveState: true, replace: true, preserveScroll: true });
         }, 500);
         return () => clearTimeout(delay);
-    }, [search, dari, sampai, barangId]);
+    }, [search, dari, sampai, barangId, kategoriId]);
 
     const setQuickDate = (type) => {
         const today = new Date();
@@ -45,12 +46,12 @@ export default function BarangKeluar({ data, filters = {}, barangs = [] }) {
     };
 
     const handleExport = () => {
-        const url = route("laporan.barang-keluar.export", { dari, sampai, search, barang_id: barangId });
+        const url = route("laporan.barang-keluar.export", { dari, sampai, search, barang_id: barangId, kategori_id: kategoriId });
         window.open(url, "_blank");
     };
 
     const resetFilters = () => {
-        setDari(""); setSampai(""); setSearch(""); setBarangId("");
+        setDari(""); setSampai(""); setSearch(""); setBarangId(""); setKategoriId("");
     };
 
     return (
@@ -70,31 +71,45 @@ export default function BarangKeluar({ data, filters = {}, barangs = [] }) {
 
                 {/* FILTER CARD */}
                 <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-end">
                         {/* Dari */}
                         <div className="space-y-1.5">
                             <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                                <Calendar className="w-3 h-3" /> Dari Tanggal
+                                <Calendar className="w-3 h-3" /> Dari
                             </label>
                             <input type="date" value={dari} onChange={(e) => setDari(e.target.value)}
-                                className="w-full rounded-lg border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all" />
+                                className="w-full rounded-lg border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm" />
                         </div>
                         {/* Sampai */}
                         <div className="space-y-1.5">
                             <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                                <Calendar className="w-3 h-3" /> Sampai Tanggal
+                                <Calendar className="w-3 h-3" /> Sampai
                             </label>
                             <input type="date" value={sampai} onChange={(e) => setSampai(e.target.value)}
-                                className="w-full rounded-lg border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all" />
+                                className="w-full rounded-lg border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm" />
                         </div>
-                        {/* Barang */}
-                        <div className="space-y-1.5 min-w-[200px]">
+                        {/* Kategori */}
+                        <div className="space-y-1.5">
                             <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                                <Package className="w-3 h-3" /> Pilih Barang
+                                <Folder className="w-3 h-3" /> Kategori
+                            </label>
+                            <div className="relative">
+                                <select value={kategoriId} onChange={(e) => setKategoriId(e.target.value)}
+                                    className="w-full rounded-lg border-slate-200 text-sm appearance-none pr-10 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm font-medium">
+                                    <option value="">Semua Kategori</option>
+                                    {kategoris.map(k => <option key={k.id} value={k.id}>{k.nama_kategori}</option>)}
+                                </select>
+                                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            </div>
+                        </div>
+                        {/* Produk */}
+                        <div className="space-y-1.5">
+                            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                                <Package className="w-3 h-3" /> Produk
                             </label>
                             <div className="relative">
                                 <select value={barangId} onChange={(e) => setBarangId(e.target.value)}
-                                    className="w-full rounded-lg border-slate-200 text-sm appearance-none pr-10 focus:ring-indigo-500 focus:border-indigo-500 transition-all">
+                                    className="w-full rounded-lg border-slate-200 text-sm appearance-none pr-10 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm font-medium">
                                     <option value="">Semua Barang</option>
                                     {barangs.map(b => <option key={b.id} value={b.id}>{b.nama_barang}</option>)}
                                 </select>
@@ -106,8 +121,8 @@ export default function BarangKeluar({ data, filters = {}, barangs = [] }) {
                             <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                                 <Search className="w-3 h-3" /> Keyword
                             </label>
-                            <input type="text" placeholder="Ketik nama/kategori..." value={search} onChange={(e) => setSearch(e.target.value)}
-                                className="w-full rounded-lg border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all" />
+                            <input type="text" placeholder="Cari..." value={search} onChange={(e) => setSearch(e.target.value)}
+                                className="w-full rounded-lg border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm" />
                         </div>
                     </div>
 
@@ -160,7 +175,7 @@ export default function BarangKeluar({ data, filters = {}, barangs = [] }) {
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <span className="inline-flex items-center gap-1 text-sm font-bold text-rose-700 bg-rose-50 px-3 py-1 rounded-full border border-rose-100">
-                                                    {item.jumlah} <span className="text-[10px] text-rose-400">{item.barang?.satuan?.nama}</span>
+                                                    {item.jumlah} <span className="text-[10px] text-rose-400 uppercase">{item.barang?.satuan?.nama}</span>
                                                 </span>
                                             </td>
                                         </tr>

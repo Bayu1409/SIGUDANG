@@ -92,7 +92,7 @@ export default function Index({ barang, filters = {}, config = {}, kategoris = [
                         <select
                             value={kategoriId}
                             onChange={(e) => setKategoriId(e.target.value)}
-                            className="w-full rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-4 pr-10 py-2 text-sm transition-all appearance-none bg-white font-medium text-slate-700"
+                            className="w-full rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-4 pr-10 py-2 text-sm transition-all appearance-none bg-white font-medium text-slate-700 shadow-sm"
                         >
                             <option value="">Semua Kategori</option>
                             {kategoris.map((kat) => (
@@ -101,9 +101,7 @@ export default function Index({ barang, filters = {}, config = {}, kategoris = [
                                 </option>
                             ))}
                         </select>
-                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                            <ChevronDown className="w-4 h-4" />
-                        </div>
+                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                     </div>
 
                     {/* Reset Button */}

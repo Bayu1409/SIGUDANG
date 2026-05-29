@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import {
     AreaChart,
     Area,
@@ -22,10 +22,18 @@ import {
     AlertTriangle,
     Clock,
     TrendingUp,
-    Truck
+    Truck,
+    ChevronDown
 } from "lucide-react";
 
-export default function Dashboard({ stats, lowStock, chartData, supplierChartData, activities, config }) {
+export default function Dashboard({ stats, lowStock, chartData, supplierChartData, activities, config, kategoris = [], filters = {} }) {
+    const [kategoriId, setKategoriId] = useState(filters.kategori_id || "");
+
+    useEffect(() => {
+        if (kategoriId !== (filters.kategori_id || "")) {
+            router.get(route("dashboard"), { kategori_id: kategoriId }, { preserveState: true, replace: true, preserveScroll: true });
+        }
+    }, [kategoriId]);
 
     // Stats Card Component
     const StatCard = ({ title, value, icon: Icon, color, href }) => (
@@ -219,14 +227,34 @@ export default function Dashboard({ stats, lowStock, chartData, supplierChartDat
 
                 {/* 3. LOW STOCK WARNING */}
                 <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-                    <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                        <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between bg-slate-50/50 gap-4">
+                        <div className="flex items-center gap-2">
                             <AlertTriangle className="w-5 h-5 text-orange-500" />
-                            Peringatan Stok Rendah
-                        </h3>
-                        <span className="text-xs font-medium bg-orange-100 text-orange-700 px-2.5 py-0.5 rounded-full border border-orange-200">
-                            Batas Minimum: {config.stokMinimum} Unit
-                        </span>
+                            <h3 className="text-lg font-bold text-slate-800">
+                                Peringatan Stok Rendah
+                            </h3>
+                            <span className="text-xs font-medium bg-orange-100 text-orange-700 px-2.5 py-0.5 rounded-full border border-orange-200">
+                                {config.stokMinimum} Unit
+                            </span>
+                        </div>
+
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                            <div className="relative w-full md:w-56">
+                                <select
+                                    value={kategoriId}
+                                    onChange={(e) => setKategoriId(e.target.value)}
+                                    className="w-full appearance-none rounded-lg border-slate-200 text-sm focus:ring-indigo-500 focus:border-indigo-500 pr-10 py-2 bg-white font-medium text-slate-700 shadow-sm"
+                                >
+                                    <option value="">Semua Kategori</option>
+                                    {kategoris.map((kat) => (
+                                        <option key={kat.id} value={kat.id}>
+                                            {kat.nama_kategori}
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                            </div>
+                        </div>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">

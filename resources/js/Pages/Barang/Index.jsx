@@ -37,7 +37,7 @@ export default function Index({ barang, filters = {}, kategoris = [] }) {
 
             <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
                 <div>
-                    <h2 className="text-xl font-bold leading-tight text-slate-800">Katalog Master Barang</h2>
+                    <h2 className="text-xl font-bold leading-tight text-slate-800">Manajemen Barang</h2>
                     <p className="text-xs text-slate-500 mt-1">Kelola data induk barang, kategori, dan satuan stok.</p>
                 </div>
                 <Link href={route("barang.create")}
@@ -61,16 +61,14 @@ export default function Index({ barang, filters = {}, kategoris = [] }) {
 
                     {/* Dropdown Kategori */}
                     <div className="relative min-w-[180px]">
-                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 pointer-events-none">
-                            <ChevronDown className="w-4 h-4" />
-                        </span>
                         <select value={kategoriId} onChange={(e) => setKategoriId(e.target.value)}
-                            className="w-full appearance-none rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-9 pr-4 py-2 text-sm transition-all bg-white text-slate-700">
+                            className="w-full appearance-none rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-4 pr-10 py-2 text-sm transition-all bg-white text-slate-700 shadow-sm">
                             <option value="">Semua Kategori</option>
                             {kategoris.map((k) => (
                                 <option key={k.id} value={k.id}>{k.nama_kategori}</option>
                             ))}
                         </select>
+                        <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                     </div>
 
                     {/* Reset */}

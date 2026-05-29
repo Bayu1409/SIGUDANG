@@ -107,6 +107,7 @@ class LaporanController extends Controller
     {
         $search = $request->search;
         $barangId = $request->barang_id;
+        $kategoriId = $request->kategori_id;
 
         $query = BarangKeluar::with(['barang.kategori', 'barang.satuan']);
 
@@ -124,13 +125,17 @@ class LaporanController extends Controller
        });
 
        $query->when($barangId, fn($q) => $q->where('barang_id', $barangId));
+       $query->when($kategoriId, function($q) use ($kategoriId) {
+            $q->whereHas('barang', fn($q2) => $q2->where('kategori_id', $kategoriId));
+       });
 
         $data = $query->orderBy('tanggal_keluar', 'desc')->paginate(10)->withQueryString();
 
         return Inertia::render('Laporan/BarangKeluar', [
             'data' => $data,
-            'filters' => $request->only(['dari', 'sampai', 'search', 'barang_id']),
+            'filters' => $request->only(['dari', 'sampai', 'search', 'barang_id', 'kategori_id']),
             'barangs' => \App\Models\Barang::all(),
+            'kategoris' => \App\Models\Kategori::all(),
         ]);
     }
 
@@ -138,6 +143,7 @@ class LaporanController extends Controller
     {
         $search = $request->search;
         $barangId = $request->barang_id;
+        $kategoriId = $request->kategori_id;
 
         $query = BarangKeluar::with(['barang.kategori', 'barang.satuan']);
 
@@ -155,6 +161,9 @@ class LaporanController extends Controller
        });
 
        $query->when($barangId, fn($q) => $q->where('barang_id', $barangId));
+       $query->when($kategoriId, function($q) use ($kategoriId) {
+            $q->whereHas('barang', fn($q2) => $q2->where('kategori_id', $kategoriId));
+       });
 
         $data = $query->orderBy('tanggal_keluar', 'desc')->get();
 
@@ -186,6 +195,7 @@ class LaporanController extends Controller
         $sampai = $request->sampai;
         $search = $request->search;
         $kategoriId = $request->kategori_id;
+        $supplierId = $request->supplier_id;
 
         $barangPaginated = Barang::with([
             'kategori',
@@ -205,13 +215,13 @@ class LaporanController extends Controller
                   });
         })
         ->when($kategoriId, fn($q) => $q->where('kategori_id', $kategoriId))
+        ->when($supplierId, fn($q) => $q->where('supplier_id', $supplierId))
         ->paginate(10)
         ->withQueryString();
 
         $barangPaginated->getCollection()->transform(function ($item) {
             $masuk = $item->barangMasuk->sum('jumlah');
             $keluar = $item->barangKeluar->sum('jumlah');
-            // Stok tetap menggunakan stok aktual yang ada di database saat ini
             $stok = $item->stok;
 
             return [
@@ -228,8 +238,9 @@ class LaporanController extends Controller
 
         return Inertia::render('Laporan/Stok', [
             'barang' => $barangPaginated,
-            'filters' => $request->only(['dari', 'sampai', 'search', 'kategori_id']),
+            'filters' => $request->only(['dari', 'sampai', 'search', 'kategori_id', 'supplier_id']),
             'kategoris' => \App\Models\Kategori::all(),
+            'suppliers' => \App\Models\Supplier::all(),
         ]);
     }
 

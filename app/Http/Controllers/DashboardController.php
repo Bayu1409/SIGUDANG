@@ -15,8 +15,10 @@ use App\Models\Setting;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $kategoriId = $request->kategori_id;
+
         // =========================
         // STATISTIK UTAMA
         // =========================
@@ -40,6 +42,9 @@ class DashboardController extends Controller
             : Setting::getSetting('limit_stok_normal', 10);
 
         $lowStockItems = Barang::with(['satuan', 'kategori'])
+            ->when($kategoriId, function($q) use ($kategoriId) {
+                $q->where('kategori_id', $kategoriId);
+            })
             ->get()
             ->filter(function ($item) use ($stokMinimum) {
                 return $item->stok <= $stokMinimum;
@@ -109,6 +114,8 @@ class DashboardController extends Controller
         return Inertia::render('Dashboard', [
             'stats' => $stats,
             'lowStock' => $lowStockItems,
+            'kategoris' => Kategori::all(),
+            'filters' => $request->only(['kategori_id']),
             'chartData' => $chartData,
             'supplierChartData' => $supplierChartData,
             'activities' => $activities,
