@@ -42,7 +42,7 @@ export default function SettingIndex({ settings }) {
     return (
         <AdminLayout>
             <Head title="Pengaturan Sistem" />
-            
+
             <div className="max-w-4xl mx-auto p-2">
                 <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
                     <div>
@@ -62,7 +62,7 @@ export default function SettingIndex({ settings }) {
                 )}
 
                 <form onSubmit={(e) => { e.preventDefault(); setShowConfirm(true); }} className="space-y-6">
-                    
+
                     {/* Event Configuration */}
                     <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                         <div className="p-6 border-b border-slate-50 bg-slate-50/30">
@@ -100,13 +100,13 @@ export default function SettingIndex({ settings }) {
                         <div className="p-6 border-b border-slate-50 bg-slate-50/30">
                             <h3 className="text-sm font-bold text-slate-700 flex items-center gap-2">
                                 <BarChart3 className="w-4 h-4 text-indigo-500" />
-                                Ambang Batas Stok (Alert Thresholds)
+                                Batas Stok
                             </h3>
                         </div>
                         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-1.5">
                                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                                    Limit Stok Normal
+                                    Limit Stok Bulan Normal
                                 </label>
                                 <input
                                     type="number"

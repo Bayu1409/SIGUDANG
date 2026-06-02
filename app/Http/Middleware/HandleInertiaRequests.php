@@ -36,15 +36,29 @@ class HandleInertiaRequests extends Middleware
             ],
             'event' => [
                 'is_event_month' => ($isEvent = \App\Models\Setting::isEventMonth()),
-                'current_month' => \Carbon\Carbon::now()->translatedFormat('F'),
+                'current_month' => (function() {
+                    $months = [
+                        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                    ];
+                    return $months[\Carbon\Carbon::now()->month];
+                })(),
                 'is_all_stock_fulfilled' => (function() use ($isEvent) {
                     $limit = $isEvent 
                         ? \App\Models\Setting::getSetting('limit_stok_event', 50) 
                         : \App\Models\Setting::getSetting('limit_stok_normal', 10);
                     
-                    // Check if there are ANY items below the limit
-                    $lowStockCount = \App\Models\Barang::where('stok', '<', $limit)->count();
-                    return $lowStockCount === 0;
+                    return \App\Models\Barang::where('stok', '<', $limit)->count() === 0;
+                })(),
+                'low_stock_items' => (function() use ($isEvent) {
+                    $limit = $isEvent 
+                        ? \App\Models\Setting::getSetting('limit_stok_event', 50) 
+                        : \App\Models\Setting::getSetting('limit_stok_normal', 10);
+                    
+                    return \App\Models\Barang::where('stok', '<', $limit)
+                        ->select('id', 'nama_barang', 'stok', 'kode_barang')
+                        ->get();
                 })(),
             ],
             'flash' => [

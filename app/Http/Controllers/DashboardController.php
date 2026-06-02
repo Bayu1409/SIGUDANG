@@ -58,7 +58,12 @@ class DashboardController extends Controller
         $chartData = [];
         for ($i = 5; $i >= 0; $i--) {
             $date = Carbon::now()->subMonths($i);
-            $monthName = $date->translatedFormat('F');
+            $monthNamesId = [
+                1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+            ];
+            $monthName = $monthNamesId[$date->month];
             $yearMonth = $date->format('Y-m');
 
             $masuk = BarangMasuk::where('tanggal_masuk', 'like', "$yearMonth%")->sum('jumlah');
