@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { useForm, Link } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { ArrowRight, ChevronDown, Package, Save, Upload } from "lucide-react";
@@ -19,6 +20,16 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
     jumlah: "",
     dokumen: null,
   });
+
+  // Auto-scroll to first error
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      const firstErrorElement = document.querySelector(".border-rose-500");
+      if (firstErrorElement) {
+        firstErrorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [errors]);
 
   // Cari stok barang yang dipilih
   const selectedBarang = barang.find(

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, Link } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 
@@ -17,6 +17,16 @@ export default function Edit({ barangKeluar, barang }) {
     tanggal_keluar: barangKeluar.tanggal_keluar,
     jumlah:         barangKeluar.jumlah,
   });
+
+  // Auto-scroll to first error
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      const firstErrorElement = document.querySelector(".border-rose-500, .border-red-500");
+      if (firstErrorElement) {
+        firstErrorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [errors]);
 
   // Preview stok akhir saat edit
   const selectedBarang = barang.find((item) => String(item.id) === String(data.barang_id));

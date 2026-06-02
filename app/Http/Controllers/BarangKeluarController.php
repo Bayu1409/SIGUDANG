@@ -97,7 +97,7 @@ class BarangKeluarController extends Controller
 
         LogService::log("Input Barang Keluar: {$barang->nama_barang} ({$request->jumlah})", 'BarangKeluar', $data->id);
 
-        return redirect()->route('barang-keluar.index');
+        return redirect()->route('barang-keluar.index')->with('message', "Data barang keluar {$barang->nama_barang} berhasil ditambahkan.");
 
     }
 
@@ -210,9 +210,7 @@ class BarangKeluarController extends Controller
 
         LogService::log("Update Barang Keluar: {$barangBaru->nama_barang} (ID: {$data->id})", 'BarangKeluar', $data->id);
 
-        return redirect()->route(
-            'barang-keluar.index'
-        );
+        return redirect()->route('barang-keluar.index')->with('message', "Data barang keluar {$barangBaru->nama_barang} berhasil diperbarui.");
 
     }
 
@@ -247,9 +245,7 @@ class BarangKeluarController extends Controller
 
         LogService::log("Hapus Barang Keluar: {$namaBarang} (ID: {$id})", 'BarangKeluar', $id);
 
-        return redirect()->route(
-            'barang-keluar.index'
-        );
+        return redirect()->route('barang-keluar.index')->with('message', "Data barang keluar {$namaBarang} berhasil dihapus.");
 
     }
 

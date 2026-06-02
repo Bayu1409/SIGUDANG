@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { useForm, Link, Head } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import { AlertCircle, ArrowRight, ChevronDown, FileUp, Minus, Package, Save } from "lucide-react";
@@ -18,6 +19,16 @@ export default function Create({ barang }) {
         jumlah: "",
         dokumen: null,
     });
+
+    // Auto-scroll to first error
+    useEffect(() => {
+        if (Object.keys(errors).length > 0) {
+            const firstErrorElement = document.querySelector(".border-rose-500");
+            if (firstErrorElement) {
+                firstErrorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+        }
+    }, [errors]);
 
     // Preview stok akhir
     const selectedBarang = barang.find(
