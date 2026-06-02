@@ -2,14 +2,20 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import { useState } from 'react';
+import ConfirmationModal from '@/Components/ConfirmationModal';
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+    const handleLogout = () => {
+        router.post(route('logout'));
+    };
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -67,9 +73,8 @@ export default function AuthenticatedLayout({ header, children }) {
                                             Profile
                                         </Dropdown.Link>
                                         <Dropdown.Link
-                                            href={route('logout')}
-                                            method="post"
                                             as="button"
+                                            onClick={() => setShowLogoutConfirm(true)}
                                         >
                                             Log Out
                                         </Dropdown.Link>
@@ -151,9 +156,8 @@ export default function AuthenticatedLayout({ header, children }) {
                                 Profile
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
-                                method="post"
-                                href={route('logout')}
                                 as="button"
+                                onClick={() => setShowLogoutConfirm(true)}
                             >
                                 Log Out
                             </ResponsiveNavLink>
@@ -171,6 +175,16 @@ export default function AuthenticatedLayout({ header, children }) {
             )}
 
             <main>{children}</main>
+
+            <ConfirmationModal
+                show={showLogoutConfirm}
+                onClose={() => setShowLogoutConfirm(false)}
+                onConfirm={handleLogout}
+                title="Konfirmasi Logout"
+                message="Apakah Anda yakin ingin keluar dari sistem Sigudang?"
+                confirmText="Ya, Logout"
+                type="danger"
+            />
         </div>
     );
 }

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, usePage, router } from "@inertiajs/react";
 import {
   Users,
   ClipboardList,
@@ -18,13 +18,20 @@ import {
   Settings,
   Tag
 } from "lucide-react";
+import ConfirmationModal from "./ConfirmationModal";
 
 export default function Sidebar({ className = "", isOpen, onClose }) {
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const handleLogout = () => {
+    router.post(route("logout"));
+  };
 
   const [openManagement, setOpenManagement] = useState(() => localStorage.getItem('sb-management') !== 'false');
   const [openTransaksi, setOpenTransaksi] = useState(() => localStorage.getItem('sb-transaksi') !== 'false');
   const [openMonitoring, setOpenMonitoring] = useState(() => localStorage.getItem('sb-monitoring') !== 'false');
   const [openLaporan, setOpenLaporan] = useState(() => localStorage.getItem('sb-laporan') !== 'false');
+
 
   React.useEffect(() => {
     localStorage.setItem('sb-management', openManagement);
@@ -430,17 +437,25 @@ export default function Sidebar({ className = "", isOpen, onClose }) {
               </div>
             </div>
 
-            <Link
-              href={route("logout")}
-              method="post"
-              as="button"
+            <button
+              onClick={() => setShowLogoutConfirm(true)}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 font-semibold transition-all group"
             >
               <LogOut className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
               <span>Sign Out</span>
-            </Link>
+            </button>
           </div>
         </div>
+
+        <ConfirmationModal
+          show={showLogoutConfirm}
+          onClose={() => setShowLogoutConfirm(false)}
+          onConfirm={handleLogout}
+          title="Konfirmasi Logout"
+          message="Apakah Anda yakin ingin keluar dari sistem Sigudang?"
+          confirmText="Ya, Logout"
+          type="danger"
+        />
       </aside>
 
       <style>{`
