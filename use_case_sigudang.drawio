@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="Electron" modified="2026-06-08T23:14:00.000Z" agent="Mozilla/5.0" version="21.0.0" type="device">
+  <diagram id="diagram_use_case_sigudang" name="Use Case SiGudang">
+    <mxGraphModel dx="1000" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <!-- Layer elements -->
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- System Boundary -->
+        <mxCell id="boundary" value="Sistem Manajemen Gudang (SiGudang)" style="shape=rect;html=1;verticalAlign=top;align=center;labelBackgroundColor=none;fillColor=none;strokeColor=#333333;strokeWidth=2;dashed=0;fontSize=14;fontStyle=1;rounded=1;arcSize=4;" parent="1" vertex="1">
+          <mxGeometry x="240" y="60" width="340" height="620" as="geometry" />
+        </mxCell>
+
+        <!-- Actor: Admin -->
+        <mxCell id="admin" value="Admin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeWidth=2;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
+          <mxGeometry x="80" y="190" width="40" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Actor: Super Admin -->
+        <mxCell id="superadmin" value="Super Admin" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;strokeWidth=2;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
+          <mxGeometry x="80" y="440" width="40" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Use Case 1: Login Sistem -->
+        <mxCell id="uc1" value="Login Sistem" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1.5;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="310" y="90" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Use Case 2: Mengelola Data Master -->
+        <mxCell id="uc2" value="Mengelola Data Master&lt;br&gt;(Barang, Kategori, Satuan, Supplier)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1.5;fontStyle=0;" parent="1" vertex="1">
+          <mxGeometry x="310" y="170" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Use Case 3: Mencatat Barang Masuk -->
+        <mxCell id="uc3" value="Mencatat Barang Masuk&lt;br&gt;(Stok Bertambah)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1.5;fontStyle=0;" parent="1" vertex="1">
+          <mxGeometry x="310" y="260" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Use Case 4: Mencatat Barang Keluar -->
+        <mxCell id="uc4" value="Mencatat Barang Keluar&lt;br&gt;(Stok Berkurang)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1.5;fontStyle=0;" parent="1" vertex="1">
+          <mxGeometry x="310" y="340" width="200" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Use Case 5: Memantau Alert Peringatan Stok -->
+        <mxCell id="uc5" value="Memantau Alert Peringatan Stok&lt;br&gt;(Stok Kritis &amp;amp; Dead Stock)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1.5;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="310" y="420" width="200" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- Use Case 6: Memantau Aktivitas Sistem -->
+        <mxCell id="uc6" value="Memantau Aktivitas Sistem&lt;br&gt;(Activity Logs)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1.5;fontStyle=0;" parent="1" vertex="1">
+          <mxGeometry x="310" y="505" width="200" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- Use Case 7: Mengelola Konfigurasi Sistem -->
+        <mxCell id="uc7" value="Mengelola Konfigurasi Sistem&lt;br&gt;(Batas Stok &amp;amp; Event Month)" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;strokeWidth=1.5;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="310" y="590" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Connections for Admin -->
+        <mxCell id="e1" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="admin" target="uc1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="admin" target="uc2">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="admin" target="uc3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="admin" target="uc4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="admin" target="uc5">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Connections for Super Admin -->
+        <mxCell id="e6" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="superadmin" target="uc1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="superadmin" target="uc2">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="superadmin" target="uc3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="superadmin" target="uc4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="superadmin" target="uc5">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="superadmin" target="uc6">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="" style="endArrow=none;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="superadmin" target="uc7">
+          <mxGeometry width="50" height="50" relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
