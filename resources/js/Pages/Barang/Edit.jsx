@@ -17,9 +17,24 @@ export default function Edit({ barang, kategori, satuan }) {
         kode_barang: barang.kode_barang || "",
         nama_barang: barang.nama_barang || "",
         stok: barang.stok || "",
-        kategori_id: barang.kategori_id || "",
         satuan_id: barang.satuan_id || "",
+        batas_minimum: barang.batas_minimum || 0,
+        nilai_konversi: barang.nilai_konversi || 1,
     });
+
+    const handleSatuanChange = (e) => {
+        const sid = e.target.value;
+        const selectedSatuan = satuan.find(s => s.id == sid);
+        setData(prev => {
+            let nextKonversi = prev.nilai_konversi;
+            if (selectedSatuan) {
+                const name = selectedSatuan.nama.toLowerCase();
+                if (name.includes('pack')) nextKonversi = 100;
+                else if (name.includes('kodi')) nextKonversi = 20;
+            }
+            return { ...prev, satuan_id: sid, nilai_konversi: nextKonversi };
+        });
+    };
 
     const submit = (e) => {
         if (e) e.preventDefault();
@@ -96,7 +111,7 @@ export default function Edit({ barang, kategori, satuan }) {
                             <select
                                 className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
                                 value={data.satuan_id}
-                                onChange={(e) => setData("satuan_id", e.target.value)}
+                                onChange={handleSatuanChange}
                             >
                                 <option value="">-- Pilih Satuan --</option>
                                 {satuan.map((item) => (
@@ -105,6 +120,36 @@ export default function Edit({ barang, kategori, satuan }) {
                                     </option>
                                 ))}
                             </select>
+                        </div>
+
+                        {/* Batas Minimum & Konversi */}
+                        <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                            <div>
+                                <Label>Batas Minimum</Label>
+                                <input
+                                    type="number"
+                                    className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-400"
+                                    value={data.batas_minimum}
+                                    onChange={(e) => setData("batas_minimum", e.target.value)}
+                                    placeholder="Contoh: 1"
+                                />
+                                <p className="text-[10px] text-gray-500 mt-1 italic">
+                                    Dalam satuan {barang.satuan?.nama || 'barang'}
+                                </p>
+                            </div>
+                            <div>
+                                <Label>Nilai Konversi</Label>
+                                <input
+                                    type="number"
+                                    className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-400"
+                                    value={data.nilai_konversi}
+                                    onChange={(e) => setData("nilai_konversi", e.target.value)}
+                                    placeholder="Contoh: 100"
+                                />
+                                <p className="text-[10px] text-gray-500 mt-1 italic">
+                                    Otomatis: Pack=100, Kodi=20
+                                </p>
+                            </div>
                         </div>
 
                         {/* Stok info readonly */}

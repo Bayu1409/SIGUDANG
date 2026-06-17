@@ -66,6 +66,8 @@ class BarangController extends Controller
         'kategori_id' => $request->kategori_id,
         'satuan_id' => $request->satuan_id,
         'supplier_id' => null, // sementara
+        'batas_minimum' => $request->batas_minimum ?? 0,
+        'nilai_konversi' => $request->nilai_konversi ?? 1,
     ]);
 
     LogService::log("Menambah barang baru: {$barang->nama_barang}", 'Barang', $barang->id);
@@ -104,6 +106,8 @@ class BarangController extends Controller
         'nama_barang' => $request->nama_barang,
         'kategori_id' => $request->kategori_id,
         'satuan_id' => $request->satuan_id,
+        'batas_minimum' => $request->batas_minimum ?? 0,
+        'nilai_konversi' => $request->nilai_konversi ?? 1,
     ]);
 
     LogService::log("Memperbarui data barang: {$barang->nama_barang}", 'Barang', $barang->id);

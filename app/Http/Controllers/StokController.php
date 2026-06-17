@@ -62,6 +62,9 @@ class StokController extends Controller
                 'masuk'       => $masuk,
                 'keluar'      => $keluar,
                 'stok'        => $stok,
+                'nilai_konversi' => $item->nilai_konversi ?: 1,
+                'total_unit'  => $stok * ($item->nilai_konversi ?: 1),
+                'batas_minimum' => $item->batas_minimum,
                 'supplier_breakdown' => $supplierBreakdown,
             ];
         });

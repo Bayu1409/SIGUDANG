@@ -66,7 +66,7 @@ export default function Index({ barang, filters = {}, config = {}, kategoris = [
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
                     <AlertTriangle className="w-4 h-4 text-amber-500" />
-                    Batas stok minimum: <span className="font-bold text-slate-700 ml-1">{stokLimit} unit</span>
+                    Batas minimum (Global): <span className="font-bold text-slate-700 ml-1">{stokLimit} Unit/Biji</span>
                 </div>
             </div>
 
@@ -136,7 +136,7 @@ export default function Index({ barang, filters = {}, config = {}, kategoris = [
                         <tbody className="divide-y divide-slate-100">
                             {barang.data && barang.data.length > 0 ? (
                                 barang.data.map((item, index) => {
-                                    const status = getStokStatus(item.stok);
+                                    const status = getStokStatus(item.total_unit);
                                     return (
                                         <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
                                             <td className="px-6 py-4 text-sm text-slate-500 font-medium">
@@ -172,9 +172,16 @@ export default function Index({ barang, filters = {}, config = {}, kategoris = [
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <span className={`text-base font-extrabold ${status.color}`}>
-                                                    {item.stok}
-                                                </span>
+                                                <div className="flex flex-col items-center">
+                                                    <span className={`text-base font-extrabold ${status.color}`}>
+                                                        {item.stok} {item.satuan}
+                                                    </span>
+                                                    {item.nilai_konversi > 1 && (
+                                                        <span className="text-[10px] text-slate-400 font-medium">
+                                                            ({item.total_unit.toLocaleString()} Unit/Biji)
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
 
                                             <td className="px-6 py-4 text-center">

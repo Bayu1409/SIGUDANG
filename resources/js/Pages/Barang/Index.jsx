@@ -112,7 +112,16 @@ export default function Index({ barang, filters = {}, kategoris = [] }) {
                                                 {item.kategori?.nama_kategori || "-"}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{item.satuan?.nama || "-"}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                                            <div className="flex flex-col">
+                                                <span className="font-semibold text-slate-700">{item.satuan?.nama || "-"}</span>
+                                                {item.nilai_konversi > 1 && (
+                                                    <span className="text-[10px] text-slate-400 italic">
+                                                        1 {item.satuan?.nama} = {item.nilai_konversi} Unit
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-center">
                                             <div className="flex items-center justify-center gap-2">
                                                 <Link href={route("barang.edit", item.id)}

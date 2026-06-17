@@ -29,7 +29,17 @@ class StokMinimumController extends Controller
             })
             ->get()
             ->filter(function ($item) use ($limitDefault) {
-                return $item->stok < $limitDefault;
+                // Konversi stok ke satuan terkecil (Unit/Biji)
+                $totalUnitSaatIni = $item->stok * ($item->nilai_konversi ?: 1);
+
+                // Hitung ambang batas dalam satuan terkecil
+                // Jika ada batas_minimum spesifik, asumsikan itu dalam satuan barangnya (misal: 1 kodi)
+                // maka dikalikan nilai_konversi. Jika 0, gunakan global limit (sudah dalam Unit).
+                $thresholdUnit = ($item->batas_minimum > 0) 
+                    ? ($item->batas_minimum * ($item->nilai_konversi ?: 1)) 
+                    : $limitDefault;
+                
+                return $totalUnitSaatIni < $thresholdUnit;
             })
             ->values();
 

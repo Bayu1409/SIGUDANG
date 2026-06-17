@@ -115,14 +115,21 @@ export default function Index({ barang, limit, is_event_month, kategoris = [], f
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="text-sm font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded">
-                                                {item.stok} {item.satuan?.nama}
-                                            </span>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded w-fit">
+                                                    {item.stok} {item.satuan?.nama}
+                                                </span>
+                                                {item.nilai_konversi > 1 && (
+                                                    <span className="text-[10px] text-slate-400 mt-1 font-medium">
+                                                        ({(item.stok * item.nilai_konversi).toLocaleString()} Unit/Biji)
+                                                    </span>
+                                                )}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-700 border border-rose-200">
                                                 <AlertTriangle className="w-3 h-3" />
-                                                Kurang dari {limit}
+                                                Min: {item.batas_minimum > 0 ? (item.batas_minimum * (item.nilai_konversi || 1)).toLocaleString() : limit.toLocaleString()} Unit
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-center">
