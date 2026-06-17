@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, router, Head } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
+import ConfirmationModal from "@/Components/ConfirmationModal";
 import { Search, ChevronDown, Download, RotateCcw, Calendar, Truck, Package } from "lucide-react";
 
 export default function BarangMasuk({ data, filters = {}, suppliers = [], barangs = [] }) {
@@ -10,6 +11,8 @@ export default function BarangMasuk({ data, filters = {}, suppliers = [], barang
     const [search, setSearch]     = useState(filters.search || "");
     const [supplierId, setSupplierId] = useState(filters.supplier_id || "");
     const [barangId, setBarangId]     = useState(filters.barang_id || "");
+
+    const [showExportConfirm, setShowExportConfirm] = useState(false);
 
     const isInitialRender = React.useRef(true);
     
@@ -45,7 +48,8 @@ export default function BarangMasuk({ data, filters = {}, suppliers = [], barang
         }
     };
 
-    const handleExport = () => {
+    const performExport = () => {
+        setShowExportConfirm(false);
         const url = route("laporan.barang-masuk.export", { dari, sampai, search, supplier_id: supplierId, barang_id: barangId });
         window.open(url, "_blank");
     };
@@ -63,8 +67,12 @@ export default function BarangMasuk({ data, filters = {}, suppliers = [], barang
                         <h2 className="text-xl font-bold text-slate-800 tracking-tight">Laporan Barang Masuk</h2>
                         <p className="text-xs text-slate-500 mt-1">Gunakan filter untuk menyaring data mutasi masuk.</p>
                     </div>
-                    <button onClick={handleExport}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2">
+                    <button 
+                        onClick={() => setShowExportConfirm(true)}
+                        disabled={!data?.data || data.data.length === 0}
+                        title={(!data?.data || data.data.length === 0) ? "Tidak ada data untuk diunduh" : "Unduh Laporan Excel"}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-emerald-600 disabled:shadow-none"
+                    >
                         <Download className="w-4 h-4" /> Unduh Excel
                     </button>
                 </div>
@@ -198,6 +206,16 @@ export default function BarangMasuk({ data, filters = {}, suppliers = [], barang
                 </div>
 
                 <Pagination links={data.links} />
+
+                <ConfirmationModal
+                    show={showExportConfirm}
+                    onClose={() => setShowExportConfirm(false)}
+                    onConfirm={performExport}
+                    title="Konfirmasi Unduh Laporan"
+                    message="Apakah Anda yakin ingin mengunduh laporan Barang Masuk dalam format Excel?"
+                    confirmText="Ya, Unduh"
+                    type="info"
+                />
             </div>
         </AdminLayout>
     );

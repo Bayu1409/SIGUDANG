@@ -2,12 +2,15 @@ import React, { useState, useEffect } from "react";
 import { router, Head } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
+import ConfirmationModal from "@/Components/ConfirmationModal";
 import { Search, ChevronDown, Download, RotateCcw, Calendar, Folder, Clock, AlertTriangle } from "lucide-react";
 
 export default function DeadStock({ barang, filters = {}, kategoris = [], limit_dead_stock = 30 }) {
     const [sampai, setSampai] = useState(filters.sampai || "");
     const [search, setSearch] = useState(filters.search || "");
     const [kategoriId, setKategoriId] = useState(filters.kategori_id || "");
+
+    const [showExportConfirm, setShowExportConfirm] = useState(false);
 
     const isInitialRender = React.useRef(true);
 
@@ -21,7 +24,8 @@ export default function DeadStock({ barang, filters = {}, kategoris = [], limit_
         return () => clearTimeout(delay);
     }, [search, sampai, kategoriId]);
 
-    const handleExport = () => {
+    const performExport = () => {
+        setShowExportConfirm(false);
         const url = route("laporan.dead-stock.export", { sampai, search, kategori_id: kategoriId });
         window.open(url, "_blank");
     };
@@ -46,8 +50,10 @@ export default function DeadStock({ barang, filters = {}, kategoris = [], limit_
                         </p>
                     </div>
                     <button
-                        onClick={handleExport}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2"
+                        onClick={() => setShowExportConfirm(true)}
+                        disabled={!barang?.data || barang.data.length === 0}
+                        title={(!barang?.data || barang.data.length === 0) ? "Tidak ada data untuk diunduh" : "Unduh Laporan Excel"}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-emerald-600 disabled:shadow-none"
                     >
                         <Download className="w-4 h-4" /> Unduh Excel
                     </button>
@@ -188,6 +194,16 @@ export default function DeadStock({ barang, filters = {}, kategoris = [], limit_
                 </div>
 
                 <Pagination links={barang.links} />
+
+                <ConfirmationModal
+                    show={showExportConfirm}
+                    onClose={() => setShowExportConfirm(false)}
+                    onConfirm={performExport}
+                    title="Konfirmasi Unduh Laporan"
+                    message="Apakah Anda yakin ingin mengunduh laporan Dead Stock dalam format Excel?"
+                    confirmText="Ya, Unduh"
+                    type="info"
+                />
             </div>
         </AdminLayout>
     );
