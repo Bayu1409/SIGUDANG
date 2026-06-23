@@ -62,7 +62,7 @@ export default function Index({ barang, filters = {}, kategoris = [] }) {
                     {/* Dropdown Kategori */}
                     <div className="relative min-w-[180px]">
                         <select value={kategoriId} onChange={(e) => setKategoriId(e.target.value)}
-                            className="w-full appearance-none rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-4 pr-10 py-2 text-sm transition-all bg-white text-slate-700 shadow-sm">
+                            className="w-full appearance-none bg-white bg-none rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 pl-4 pr-10 py-2 text-sm transition-all text-slate-700 shadow-sm">
                             <option value="">Semua Kategori</option>
                             {kategoris.map((k) => (
                                 <option key={k.id} value={k.id}>{k.nama_kategori}</option>

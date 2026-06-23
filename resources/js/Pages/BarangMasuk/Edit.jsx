@@ -68,19 +68,13 @@ export default function Edit({ barangMasuk, barang, suppliers }) {
                         <div className="space-y-1">
                             <Label required>Barang</Label>
                             <div className="relative">
-                                <select
-                                    className={`w-full bg-slate-50 border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 appearance-none transition-all ${errors.barang_id ? "border-rose-500" : ""}`}
-                                    value={data.barang_id}
-                                    onChange={(e) => setData("barang_id", e.target.value)}
-                                    disabled
-                                >
-                                    {barang.map((item) => (
-                                        <option key={item.id} value={item.id}>
-                                            {item.nama_barang} (Stok: {item.stok})
-                                        </option>
-                                    ))}
-                                </select>
-                                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                <input
+                                    type="text"
+                                    className="w-full bg-slate-50 border-slate-200 p-3 rounded-xl text-slate-600 cursor-not-allowed transition-all"
+                                    value={barang.find((item) => String(item.id) === String(data.barang_id)) ? `${barang.find((item) => String(item.id) === String(data.barang_id)).nama_barang} (Stok: ${barang.find((item) => String(item.id) === String(data.barang_id)).stok})` : ""}
+                                    readOnly
+                                />
+                                <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
                                     <Lock className="w-4 h-4 text-slate-400" title="Item tidak dapat diubah" />
                                 </div>
                             </div>
@@ -92,7 +86,7 @@ export default function Edit({ barangMasuk, barang, suppliers }) {
                             <Label required>Supplier (Asal Barang)</Label>
                             <div className="relative">
                                 <select
-                                    className={`w-full bg-slate-50 border-slate-200 p-3 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 appearance-none transition-all ${errors.supplier_id ? "border-rose-500" : ""}`}
+                                    className={`w-full bg-slate-50 bg-none border-slate-200 p-3 pr-10 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 appearance-none transition-all ${errors.supplier_id ? "border-rose-500" : ""}`}
                                     value={data.supplier_id}
                                     onChange={(e) => setData("supplier_id", e.target.value)}
                                 >
@@ -103,7 +97,7 @@ export default function Edit({ barangMasuk, barang, suppliers }) {
                                         </option>
                                     ))}
                                 </select>
-                                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
                                     <ChevronDown className="w-4 h-4 text-slate-400" />
                                 </div>
                             </div>

@@ -16,7 +16,7 @@ export default function Index({ barangKeluar, filters = {} }) {
             if (flash && flash.print_id) {
                 setShowPrintModal(true);
             }
-        } catch(e) {
+        } catch (e) {
             // silently ignore
         }
     }, []);
