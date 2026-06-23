@@ -35,12 +35,14 @@ class KategoriBarangController extends Controller
             'nama_kategori' => 'required'
         ]);
 
-        KategoriBarang::create([
+        $kategori = KategoriBarang::create([
             'nama_kategori' => $request->nama_kategori,
             'deskripsi' => $request->deskripsi
         ]);
 
-        return redirect()->route('kategori-barang.index');
+        \App\Services\LogService::log("Menambah kategori baru: {$kategori->nama_kategori}", 'KategoriBarang', $kategori->id);
+
+        return redirect()->route('kategori-barang.index')->with('success', 'Kategori berhasil ditambahkan');
     }
 
     public function edit($id)
@@ -59,13 +61,23 @@ class KategoriBarangController extends Controller
         ]);
 
         $kategori = KategoriBarang::findOrFail($id);
+        $oldData = $kategori->only(['nama_kategori', 'deskripsi']);
 
         $kategori->update([
             'nama_kategori' => $request->nama_kategori,
             'deskripsi' => $request->deskripsi
         ]);
 
-        return redirect()->route('kategori-barang.index');
+        $changes = [];
+        foreach ($oldData as $key => $oldVal) {
+            if ($kategori->{$key} != $oldVal) {
+                $changes[$key] = ['old' => $oldVal, 'new' => $kategori->{$key}];
+            }
+        }
+
+        \App\Services\LogService::log("Memperbarui kategori: {$kategori->nama_kategori}", 'KategoriBarang', $id, ['changes' => $changes]);
+
+        return redirect()->route('kategori-barang.index')->with('success', 'Kategori berhasil diperbarui');
     }
 
     public function destroy($id)

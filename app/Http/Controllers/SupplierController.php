@@ -40,12 +40,14 @@ class SupplierController extends Controller
             'nama_supplier' => 'required'
         ]);
 
-        Supplier::create([
+        $supplier = Supplier::create([
             'nama_supplier' => $request->nama_supplier,
             'alamat' => $request->alamat,
             'telepon' => $request->telepon,
             'email' => $request->email
         ]);
+
+        \App\Services\LogService::log("Menambah supplier baru: {$supplier->nama_supplier}", 'Supplier', $supplier->id);
 
         return redirect()->route('supplier.index');
 
@@ -70,6 +72,7 @@ class SupplierController extends Controller
         ]);
 
         $supplier = Supplier::findOrFail($id);
+        $oldData = $supplier->only(['nama_supplier', 'alamat', 'telepon', 'email']);
 
         $supplier->update([
             'nama_supplier' => $request->nama_supplier,
@@ -77,6 +80,15 @@ class SupplierController extends Controller
             'telepon' => $request->telepon,
             'email' => $request->email
         ]);
+
+        $changes = [];
+        foreach ($oldData as $key => $oldVal) {
+            if ($supplier->{$key} != $oldVal) {
+                $changes[$key] = ['old' => $oldVal, 'new' => $supplier->{$key}];
+            }
+        }
+
+        \App\Services\LogService::log("Memperbarui data supplier: {$supplier->nama_supplier}", 'Supplier', $id, ['changes' => $changes]);
 
         return redirect()->route('supplier.index');
 

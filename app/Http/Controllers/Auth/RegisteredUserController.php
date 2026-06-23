@@ -46,6 +46,14 @@ class RegisteredUserController extends Controller
             'role' => $role,
         ]);
 
+        \App\Services\LogService::log(
+            "Pendaftaran akun baru sebagai " . strtoupper($role), 
+            'User', 
+            $user->id, 
+            ['name' => $user->name, 'email' => $user->email], 
+            $user->id
+        );
+
         event(new Registered($user));
 
         // Auth::login($user); // Diperintahkan untuk ke login saja setelah daftar

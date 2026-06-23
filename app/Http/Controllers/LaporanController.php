@@ -58,6 +58,8 @@ class LaporanController extends Controller
         $supplierId = $request->supplier_id;
         $barangId = $request->barang_id;
 
+        \App\Services\LogService::log("Mengunduh Laporan Barang Masuk (Excel)", 'Laporan', null);
+
         $query = BarangMasuk::with(['barang.kategori', 'barang.satuan', 'supplier']);
 
         if ($request->dari && $request->sampai) {
