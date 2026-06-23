@@ -73,6 +73,14 @@ class SatuanController extends Controller
     public function destroy($id)
     {
         $satuan = Satuan::findOrFail($id);
+        
+        // Cek apakah satuan sedang digunakan oleh barang
+        if ($satuan->barangs()->exists()) {
+            return redirect()
+                ->back()
+                ->with('error', "Satuan '{$satuan->nama}' tidak dapat dihapus karena sedang digunakan oleh data barang.");
+        }
+
         $nama = $satuan->nama;
         $satuan->delete();
 
