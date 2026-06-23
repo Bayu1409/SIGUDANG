@@ -201,15 +201,17 @@ function BarangKeluarRow({ item, no }) {
                         </a>
                     ) : <span className="text-slate-300">-</span>}
                 </td>
-                <td className="px-6 py-4 text-center whitespace-nowrap">
-                    <a href={route('barang-keluar.print', item.id)} target="_blank" rel="noreferrer"
-                        className="p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all inline-block mr-1" title="Cetak Nota">
-                        <Printer className="w-5 h-5" />
-                    </a>
-                    <button onClick={() => setShowConfirm(true)}
-                        className="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Hapus">
-                        <Trash2 className="w-5 h-5" />
-                    </button>
+                <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center justify-center gap-1">
+                        <a href={route('barang-keluar.print', item.id)} target="_blank" rel="noreferrer"
+                            className="p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Cetak Nota">
+                            <Printer className="w-5 h-5" />
+                        </a>
+                        <button onClick={() => setShowConfirm(true)}
+                            className="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Hapus">
+                            <Trash2 className="w-5 h-5" />
+                        </button>
+                    </div>
                 </td>
             </tr>
 
