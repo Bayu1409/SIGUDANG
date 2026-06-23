@@ -283,7 +283,7 @@ export default function Dashboard({ stats, lowStock, chartData, supplierChartDat
                                         </td>
                                         <td className="px-6 py-4">
                                             <Link
-                                                href={`/barang-masuk/create?barang_id=${item.id}`}
+                                                href={route('barang-masuk.create', { barang_id: item.id })}
                                                 className="text-xs bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg font-bold transition-all border border-indigo-100"
                                             >
                                                 Restock

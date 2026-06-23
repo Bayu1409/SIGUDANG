@@ -100,7 +100,7 @@ export default function AdminLayout({ children, header }) {
                 {event.low_stock_items.map((item, idx) => (
                   <Link
                     key={idx}
-                    href={route('stok-minimum.index')}
+                    href={route('barang-masuk.create', { barang_id: item.id })}
                     onClick={() => setShowLowStockItems(false)}
                     className="flex items-center gap-4 p-3 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-indigo-600 hover:bg-white hover:shadow-xl hover:shadow-indigo-50/50 transition-all text-left"
                   >
