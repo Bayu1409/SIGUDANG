@@ -8,6 +8,7 @@ class Satuan extends Model
 {
     protected $fillable = [
         'nama',
+        'nilai_konversi_default'
     ];
 
     public function barangs()

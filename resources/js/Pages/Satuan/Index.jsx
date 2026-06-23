@@ -75,6 +75,7 @@ export default function Index({ satuan, filters = {} }) {
 
                             <th className="px-4 py-2">No</th>
                             <th className="px-4 py-2">Nama Satuan</th>
+                            <th className="px-4 py-2">Informasi Konversi</th>
                             <th className="px-4 py-2">Aksi</th>
 
                         </tr>
@@ -82,43 +83,49 @@ export default function Index({ satuan, filters = {} }) {
                     </thead>
                     <tbody>
 
-                        {satuan.data && satuan.data.map((item, index) => (
+                        {satuan.data && satuan.data.map((item, index) => {
+                            return (
+                                <tr key={item.id} className="border-t hover:bg-gray-50">
 
-                            <tr key={item.id} className="border-t hover:bg-gray-50">
+                                    <td className="border px-4 py-2 text-center text-slate-500">
+                                        {satuan.from + index}
+                                    </td>
 
-                                <td className="border px-4 py-2 text-center">
-                                    {satuan.from + index}
-                                </td>
+                                    <td className="border px-4 py-2 font-semibold">
+                                        {item.nama}
+                                    </td>
 
-                                <td className="border px-4 py-2">
-                                    {item.nama}
-                                </td>
+                                    <td className="border px-4 py-2 text-center">
+                                        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+                                            1 {item.nama} = {item.nilai_konversi_default} Unit/Biji
+                                        </span>
+                                    </td>
 
-                                <td className="border px-4 py-2 space-x-2">
+                                    <td className="border px-4 py-2 space-x-2">
 
-                                    {/* BUTTON EDIT */}
+                                        {/* BUTTON EDIT */}
 
-                                    <Link
-                                        href={route("satuan.edit", item.id)}
-                                        className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm"
-                                    >
-                                        Edit
-                                    </Link>
+                                        <Link
+                                            href={route("satuan.edit", item.id)}
+                                            className="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-sm transition"
+                                        >
+                                            Edit
+                                        </Link>
 
-                                    {/* BUTTON HAPUS */}
+                                        {/* BUTTON HAPUS */}
 
-                                    <button
-                                        onClick={() => setConfirmDelete({ show: true, id: item.id })}
-                                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
-                                    >
-                                        Hapus
-                                    </button>
+                                        <button
+                                            onClick={() => setConfirmDelete({ show: true, id: item.id })}
+                                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition"
+                                        >
+                                            Hapus
+                                        </button>
 
-                                </td>
+                                    </td>
 
-                            </tr>
-
-                        ))}
+                                </tr>
+                            );
+                        })}
 
                     </tbody>
 

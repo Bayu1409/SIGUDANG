@@ -28,9 +28,8 @@ export default function Create({ kategoris = [], satuans = [] }) {
         setData(prev => {
             let nextKonversi = prev.nilai_konversi;
             if (selectedSatuan) {
-                const name = selectedSatuan.nama.toLowerCase();
-                if (name.includes('pack')) nextKonversi = 100;
-                else if (name.includes('kodi')) nextKonversi = 20;
+                // Gunakan nilai default dari database satuan
+                nextKonversi = selectedSatuan.nilai_konversi_default || 1;
             }
             return { ...prev, satuan_id: sid, nilai_konversi: nextKonversi };
         });

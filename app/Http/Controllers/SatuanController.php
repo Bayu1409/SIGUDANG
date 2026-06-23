@@ -35,10 +35,12 @@ class SatuanController extends Controller
 {
     $request->validate([
         'nama' => 'required|string|max:255',
+        'nilai_konversi_default' => 'required|integer|min:1',
     ]);
 
     Satuan::create([
         'nama' => $request->nama,
+        'nilai_konversi_default' => $request->nilai_konversi_default,
     ]);
 
     return redirect()
@@ -58,13 +60,15 @@ class SatuanController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nama_satuan' => 'required'
+            'nama' => 'required',
+            'nilai_konversi_default' => 'required|integer|min:1',
         ]);
 
         $satuan = Satuan::findOrFail($id);
 
         $satuan->update([
-            'nama_satuan' => $request->nama_satuan
+            'nama' => $request->nama,
+            'nilai_konversi_default' => $request->nilai_konversi_default,
         ]);
 
         return redirect()->route('satuan.index');
