@@ -160,6 +160,7 @@ export default function BarangKeluar({ data, filters = {}, barangs = [], kategor
                                     <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">No</th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">Waktu & Tanggal</th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">Barang</th>
+                                    <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">Tujuan / Penerima</th>
                                     <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">Kategori</th>
                                     <th className="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase">Jumlah Keluar</th>
                                 </tr>
@@ -176,6 +177,9 @@ export default function BarangKeluar({ data, filters = {}, barangs = [], kategor
                                                 <div className="text-sm font-bold text-slate-900">{item.barang?.nama_barang}</div>
                                                 <div className="text-[10px] text-slate-400 font-mono">{item.barang?.kode_barang}</div>
                                             </td>
+                                            <td className="px-6 py-4 text-sm font-bold text-slate-700 italic">
+                                                {item.penerima || "-"}
+                                            </td>
                                             <td className="px-6 py-4">
                                                 <span className="px-2 py-0.5 bg-slate-100 rounded text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
                                                     {item.barang?.kategori?.nama_kategori || "-"}
@@ -190,7 +194,7 @@ export default function BarangKeluar({ data, filters = {}, barangs = [], kategor
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="5" className="text-center py-16">
+                                        <td colSpan="6" className="text-center py-16">
                                             <div className="flex flex-col items-center gap-2 text-slate-300">
                                                 <RotateCcw className="w-12 h-12 opacity-20" />
                                                 <p className="text-sm font-medium">Tidak ada data ditemukan.</p>

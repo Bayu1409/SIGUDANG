@@ -170,13 +170,14 @@ class LaporanController extends Controller
         return $this->generateExcel(
             'Laporan_Barang_Keluar_' . now()->format('YmdHis'),
             'LAPORAN BARANG KELUAR',
-            ['No', 'Tanggal & Waktu', 'Kode Barang', 'Nama Barang', 'Kategori', 'Jumlah', 'Satuan'],
+            ['No', 'Tanggal & Waktu', 'Kode Barang', 'Nama Barang', 'Tujuan / Penerima', 'Kategori', 'Jumlah', 'Satuan'],
             $data->map(function ($item, $index) {
                 return [
                     $index + 1,
                     $item->created_at->format('d/m/Y H:i'),
                     $item->barang->kode_barang ?? '-',
                     $item->barang->nama_barang ?? '-',
+                    $item->penerima ?? '-',
                     $item->barang->kategori->nama_kategori ?? '-',
                     $item->jumlah,
                     $item->barang->satuan->nama ?? '-',
