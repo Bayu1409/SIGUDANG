@@ -1,9 +1,16 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 
-export default function Welcome({ auth = {} }) {
+export default function Welcome({ auth = {}, status, flash }) {
     const [activeTab, setActiveTab] = useState('login');
     const [isMounted, setIsMounted] = useState(false);
+
+    // Aktifkan tab login jika ada status/flash berhasil (setelah daftar)
+    useEffect(() => {
+        if (status || flash?.message) {
+            setActiveTab('login');
+        }
+    }, [status, flash]);
 
     useEffect(() => {
         setIsMounted(true);
@@ -41,7 +48,7 @@ export default function Welcome({ auth = {} }) {
     const onRegisterSubmit = (e) => {
         e.preventDefault();
         registerForm.post(safeRoute('register'), {
-            onFinish: () => registerForm.reset('password', 'password_confirmation'),
+            onSuccess: () => registerForm.reset(),
         });
     };
 
@@ -104,6 +111,18 @@ export default function Welcome({ auth = {} }) {
                             Daftar
                         </button>
                     </div>
+
+                    {/* Success Alert (After Register) */}
+                    {(status || flash?.message) && (
+                        <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-3 animate-fade-in shadow-sm shadow-emerald-100/50">
+                            <div className="bg-emerald-500 p-1.5 rounded-lg shadow-lg shadow-emerald-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                            </div>
+                            <p className="text-sm font-bold text-emerald-800 leading-tight">
+                                {status || flash.message}
+                            </p>
+                        </div>
+                    )}
 
                     {/* Form Login */}
                     {activeTab === 'login' ? (
@@ -193,6 +212,20 @@ export default function Welcome({ auth = {} }) {
                                     className="w-full px-5 py-3.5 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-indigo-600 outline-none transition-all font-medium"
                                     placeholder="Buat Password"
                                 />
+                                {registerForm.errors.password && <p className="text-[10px] text-red-500 px-1 mt-1 font-bold">{registerForm.errors.password}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 ml-1">Konfirmasi Password</label>
+                                <input 
+                                    type="password" 
+                                    required
+                                    value={registerForm.data.password_confirmation}
+                                    onChange={e => registerForm.setData('password_confirmation', e.target.value)}
+                                    className="w-full px-5 py-3.5 bg-slate-50 border-none rounded-2xl text-sm focus:ring-2 focus:ring-indigo-600 outline-none transition-all font-medium"
+                                    placeholder="Ulangi Password"
+                                />
+                                {registerForm.errors.password_confirmation && <p className="text-[10px] text-red-500 px-1 mt-1 font-bold">{registerForm.errors.password_confirmation}</p>}
                             </div>
 
                             <button 

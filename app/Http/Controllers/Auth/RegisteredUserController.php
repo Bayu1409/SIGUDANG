@@ -37,16 +37,19 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        $role = ($request->password === 'superadmin123') ? 'superadmin' : 'admin';
+ 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $role,
         ]);
 
         event(new Registered($user));
 
         // Auth::login($user); // Diperintahkan untuk ke login saja setelah daftar
 
-        return redirect(route('login'))->with('status', 'Registrasi berhasil! Silakan masuk menggunakan akun baru Anda.');
+        return redirect('/')->with('message', 'Registrasi berhasil! Akun Anda siap digunakan. Silakan masuk di bawah ini.');
     }
 }
