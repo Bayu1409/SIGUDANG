@@ -46,9 +46,21 @@ export default function Index({ barang, filters = {}, config = {}, kategoris = [
 
     const hasFilter = search || kategoriId;
 
-    const getStokStatus = (stok) => {
-        if (stok <= 0) return { label: "Habis", color: "text-rose-600", bg: "bg-rose-50 border-rose-200", dot: "bg-rose-500" };
-        if (stok <= stokLimit) return { label: "Rendah", color: "text-amber-600", bg: "bg-amber-50 border-amber-200", dot: "bg-amber-500" };
+    const getStokStatus = (item) => {
+        const total = item.total_unit || 0;
+        const localLimit = (item.batas_minimum || 0) * (item.nilai_konversi || 1);
+        
+        if (total <= 0) {
+            return { label: "Habis", color: "text-rose-600", bg: "bg-rose-50 border-rose-200", dot: "bg-rose-500" };
+        }
+        
+        // Cek apakah di bawah batas global ATAU di bawah batas lokal
+        const isLow = total < stokLimit || (localLimit > 0 && total < localLimit);
+        
+        if (isLow) {
+            return { label: "Rendah", color: "text-amber-600", bg: "bg-amber-50 border-amber-200", dot: "bg-amber-500" };
+        }
+        
         return { label: "Aman", color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200", dot: "bg-emerald-500" };
     };
 
@@ -136,7 +148,7 @@ export default function Index({ barang, filters = {}, config = {}, kategoris = [
                         <tbody className="divide-y divide-slate-100">
                             {barang.data && barang.data.length > 0 ? (
                                 barang.data.map((item, index) => {
-                                    const status = getStokStatus(item.total_unit);
+                                    const status = getStokStatus(item);
                                     return (
                                         <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
                                             <td className="px-6 py-4 text-sm text-slate-500 font-medium">
@@ -226,9 +238,15 @@ export default function Index({ barang, filters = {}, config = {}, kategoris = [
 }
 
 function DetailModal({ item, stokLimit, onClose }) {
-    const getColor = (stok) => {
-        if (stok <= 0) return "text-rose-600";
-        if (stok <= stokLimit) return "text-amber-600";
+    const status = {
+        label: item.total_unit <= 0 ? "Habis" : (item.total_unit < stokLimit || (item.batas_minimum > 0 && item.total_unit < item.batas_minimum * item.nilai_konversi) ? "Rendah" : "Aman"),
+        color: item.total_unit <= 0 ? "text-rose-600" : (item.total_unit < stokLimit || (item.batas_minimum > 0 && item.total_unit < item.batas_minimum * item.nilai_konversi) ? "text-amber-600" : "text-emerald-600")
+    };
+
+    const getColor = (stokUnits, itemKonv, itemBatas) => {
+        const localLimit = (itemBatas || 0) * (itemKonv || 1);
+        if (stokUnits <= 0) return "text-rose-600";
+        if (stokUnits < stokLimit || (localLimit > 0 && stokUnits < localLimit)) return "text-amber-600";
         return "text-emerald-600";
     };
 
@@ -276,7 +294,7 @@ function DetailModal({ item, stokLimit, onClose }) {
                         </div>
                         <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 text-center">
                             <BoxesIcon className="w-5 h-5 text-slate-500 mx-auto mb-1" />
-                            <p className={`text-2xl font-extrabold ${getColor(item.stok)}`}>{item.stok}</p>
+                            <p className={`text-2xl font-extrabold ${getColor(item.total_unit, item.nilai_konversi, item.batas_minimum)}`}>{item.stok}</p>
                             <p className="text-xs text-slate-500 font-medium mt-0.5">Stok Akhir ({item.satuan})</p>
                         </div>
                     </div>

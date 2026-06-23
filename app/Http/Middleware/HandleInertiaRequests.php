@@ -49,9 +49,12 @@ class HandleInertiaRequests extends Middleware
                         ? \App\Models\Setting::getSetting('limit_stok_event', 50) 
                         : \App\Models\Setting::getSetting('limit_stok_normal', 10);
                     
-                    // Gunakan raw query agar performa tetap terjaga namun akurat secara konversi
-                    return \App\Models\Barang::whereRaw('(stok * nilai_konversi) >= ? AND batas_minimum = 0', [$limit])
-                        ->orWhereRaw('(stok * nilai_konversi) >= (batas_minimum * nilai_konversi) AND batas_minimum > 0')
+                    // Barang harus memenuhi syarat global DAN syarat lokalnya sendiri
+                    return \App\Models\Barang::whereRaw('(stok * nilai_konversi) >= ?', [$limit])
+                        ->where(function($query) {
+                            $query->where('batas_minimum', 0)
+                                  ->orWhereRaw('(stok * nilai_konversi) >= (batas_minimum * nilai_konversi)');
+                        })
                         ->count() === \App\Models\Barang::count();
                 })(),
                 'low_stock_items' => (function() use ($isEvent) {
@@ -59,14 +62,13 @@ class HandleInertiaRequests extends Middleware
                         ? \App\Models\Setting::getSetting('limit_stok_event', 50) 
                         : \App\Models\Setting::getSetting('limit_stok_normal', 10);
                     
-                    // Ambil barang yang memenuhi kriteria stok rendah (setelah konversi)
+                    // Deteksi jika di bawah batas global ATAU di bawah batas lokalnya
                     return \App\Models\Barang::where(function($query) use ($limit) {
                             $query->whereRaw('(stok * nilai_konversi) < ?', [$limit])
-                                  ->where('batas_minimum', 0);
-                        })
-                        ->orWhere(function($query) {
-                            $query->whereRaw('(stok * nilai_konversi) < (batas_minimum * nilai_konversi)')
-                                  ->where('batas_minimum', '>', 0);
+                                  ->orWhere(function($q) {
+                                      $q->where('batas_minimum', '>', 0)
+                                        ->whereRaw('(stok * nilai_konversi) < (batas_minimum * nilai_konversi)');
+                                  });
                         })
                         ->select('id', 'nama_barang', 'stok', 'kode_barang', 'nilai_konversi', 'batas_minimum')
                         ->get();
