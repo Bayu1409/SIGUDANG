@@ -68,6 +68,7 @@ export default function Index({ barangKeluar, filters = {} }) {
                                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Barang</th>
                                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori</th>
                                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Satuan</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Tujuan / Penerima</th>
                                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Tanggal & Waktu</th>
                                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Jumlah</th>
                                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Dokumen</th>
@@ -81,7 +82,7 @@ export default function Index({ barangKeluar, filters = {} }) {
                                 ))
                                 : (
                                     <tr>
-                                        <td colSpan="8" className="px-6 py-12 text-center text-slate-400">
+                                        <td colSpan="9" className="px-6 py-12 text-center text-slate-400">
                                             <div className="flex flex-col items-center gap-2">
                                                 <Package className="w-10 h-10 opacity-20" />
                                                 <p className="text-sm font-medium">Data barang keluar belum tersedia.</p>
@@ -120,6 +121,7 @@ function BarangKeluarRow({ item, no }) {
                 <td className="px-6 py-4 text-sm text-slate-600">
                     <span className="px-2 py-1 bg-slate-100 rounded text-xs">{item.barang?.satuan?.nama || "-"}</span>
                 </td>
+                <td className="px-6 py-4 text-sm text-slate-600 font-bold italic">{item.penerima || "-"}</td>
                 <td className="px-6 py-4 text-sm text-slate-600 font-medium">
                     {new Date(item.created_at).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })}
                 </td>
@@ -143,7 +145,7 @@ function BarangKeluarRow({ item, no }) {
             </tr>
 
             {showConfirm && (
-                <tr><td colSpan="8" className="p-0">
+                <tr><td colSpan="9" className="p-0">
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
                         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center">
                             <div className="flex justify-center mb-4">

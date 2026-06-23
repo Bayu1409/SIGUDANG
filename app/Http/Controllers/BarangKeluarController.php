@@ -54,7 +54,8 @@ class BarangKeluarController extends Controller
     {
         $request->validate([
             'tanggal_keluar' => 'required',
-            'dokumen'        => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'penerima'       => 'required|string|max:255',
+            'dokumen'        => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'items'          => 'required|array|min:1',
             'items.*.barang_id' => 'required|exists:barangs,id',
             'items.*.jumlah'    => 'required|integer|min:1',
@@ -79,6 +80,7 @@ class BarangKeluarController extends Controller
             $data = BarangKeluar::create([
                 'barang_id'      => $itemData['barang_id'],
                 'tanggal_keluar' => $request->tanggal_keluar,
+                'penerima'       => $request->penerima,
                 'jumlah'         => $itemData['jumlah'],
                 'dokumen'        => $dokumenPath
             ]);
@@ -88,10 +90,10 @@ class BarangKeluarController extends Controller
             $barang->stok -= $itemData['jumlah'];
             $barang->save();
 
-            LogService::log("Input Barang Keluar: {$barang->nama_barang} ({$itemData['jumlah']})", 'BarangKeluar', $data->id);
+            LogService::log("Input Barang Keluar ke {$request->penerima}: {$barang->nama_barang} ({$itemData['jumlah']})", 'BarangKeluar', $data->id);
         }
 
-        return redirect()->route('barang-keluar.index')->with('message', count($request->items) . " jenis barang berhasil dicatat keluar.");
+        return redirect()->route('barang-keluar.index')->with('message', count($request->items) . " jenis barang berhasil dicatat keluar ketujuan {$request->penerima}.");
     }
 
     /*

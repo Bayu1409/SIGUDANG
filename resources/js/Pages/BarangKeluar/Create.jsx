@@ -13,6 +13,7 @@ const Label = ({ children, required }) => (
 export default function Create({ barang, selectedBarangId }) {
   const { data, setData, post, processing, errors } = useForm({
     tanggal_keluar: "",
+    penerima: "",
     dokumen: null,
     items: [
       { barang_id: selectedBarangId || "", jumlah: "" }
@@ -48,8 +49,8 @@ export default function Create({ barang, selectedBarangId }) {
           <p className="text-slate-500 mt-1 font-medium italic">Catat pengeluaran stok barang secara massal.</p>
         </div>
         <div className="bg-rose-600/10 text-rose-700 px-4 py-2 rounded-2xl border border-rose-100 flex items-center gap-2">
-           <LogOut className="w-5 h-5" />
-           <span className="font-bold text-sm">{data.items.length} Item Keluar</span>
+          <LogOut className="w-5 h-5" />
+          <span className="font-bold text-sm">{data.items.length} Item Keluar</span>
         </div>
       </div>
 
@@ -68,10 +69,22 @@ export default function Create({ barang, selectedBarangId }) {
                 />
                 {errors.tanggal_keluar && <p className="text-rose-500 text-[10px] font-black uppercase mt-2 ml-1">{errors.tanggal_keluar}</p>}
               </div>
+
+              <div>
+                <Label required>Tujuan / Penerima (Pelanggan)</Label>
+                <input
+                  type="text"
+                  placeholder="Nama Pelanggan atau Instansi"
+                  className={`w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl focus:ring-4 focus:ring-rose-100 focus:border-rose-500 transition-all font-bold text-slate-700 ${errors.penerima ? "border-rose-300 bg-rose-50" : ""}`}
+                  value={data.penerima}
+                  onChange={(e) => setData("penerima", e.target.value)}
+                />
+                {errors.penerima && <p className="text-rose-500 text-[10px] font-black uppercase mt-2 ml-1">{errors.penerima}</p>}
+              </div>
             </div>
 
             <div className="space-y-1">
-              <Label>Lampiran Dokumen (Opsional)</Label>
+              <Label required>Lampiran Dokumen (Nota/Bukti)</Label>
               <div className="group relative border-2 border-dashed border-slate-200 hover:border-rose-400 rounded-3xl p-8 transition-all bg-slate-50/30 hover:bg-rose-50/10 text-center cursor-pointer flex items-center justify-center">
                 <input
                   type="file"
@@ -80,7 +93,7 @@ export default function Create({ barang, selectedBarangId }) {
                 />
                 <div className="flex flex-col items-center gap-3">
                   <div className="p-3 bg-white rounded-2xl shadow-sm border border-slate-100 group-hover:scale-110 transition-transform">
-                     <Upload className="w-6 h-6 text-slate-400 group-hover:text-rose-500" />
+                    <Upload className="w-6 h-6 text-slate-400 group-hover:text-rose-500" />
                   </div>
                   <div className="max-w-[200px]">
                     <p className="text-sm font-black text-slate-800 truncate">
@@ -99,8 +112,8 @@ export default function Create({ barang, selectedBarangId }) {
         <div className="space-y-4">
           <div className="flex items-center justify-between px-2">
             <h3 className="text-lg font-black text-slate-800 flex items-center gap-2">
-               <Package className="w-5 h-5 text-rose-500" />
-               Daftar Barang yang Keluar
+              <Package className="w-5 h-5 text-rose-500" />
+              Daftar Barang yang Keluar
             </h3>
             <button
               type="button"
@@ -129,12 +142,12 @@ export default function Create({ barang, selectedBarangId }) {
                       <Trash2 className="w-4 h-4" />
                     </button>
                   )}
-                  
+
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
                     <div className="lg:col-span-1 text-xs font-black text-slate-300 text-center pb-4">
-                       #{index + 1}
+                      #{index + 1}
                     </div>
-                    
+
                     <div className="lg:col-span-7">
                       <Label required>Nama Barang</Label>
                       <select
@@ -170,36 +183,36 @@ export default function Create({ barang, selectedBarangId }) {
                   {currentBarang && item.jumlah > 0 && (
                     <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between gap-4">
                       <div className="flex items-center gap-4 text-[11px] font-bold">
-                          <div className="flex items-center gap-2 text-slate-400">
-                             <span className="uppercase tracking-widest text-[9px]">Stok:</span>
-                             <span className="text-slate-600">{currentBarang.stok}</span>
-                          </div>
-                          <ArrowRight className="w-3 h-3 text-rose-300" />
-                          <div className="flex items-center gap-2 text-rose-600">
-                             <span className="uppercase tracking-widest text-[9px]">Keluar:</span>
-                             <span>-{item.jumlah}</span>
-                          </div>
-                          <ArrowRight className="w-3 h-3 text-rose-300" />
-                          <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${Number(currentBarang.stok) < Number(item.jumlah) ? 'bg-rose-100 text-rose-600' : 'bg-slate-100 text-slate-600'}`}>
-                             <span className="uppercase tracking-widest text-[9px]">Sisa:</span>
-                             <span>{Number(currentBarang.stok) - Number(item.jumlah)} {currentBarang.satuan?.nama}</span>
-                          </div>
+                        <div className="flex items-center gap-2 text-slate-400">
+                          <span className="uppercase tracking-widest text-[9px]">Stok:</span>
+                          <span className="text-slate-600">{currentBarang.stok}</span>
+                        </div>
+                        <ArrowRight className="w-3 h-3 text-rose-300" />
+                        <div className="flex items-center gap-2 text-rose-600">
+                          <span className="uppercase tracking-widest text-[9px]">Keluar:</span>
+                          <span>-{item.jumlah}</span>
+                        </div>
+                        <ArrowRight className="w-3 h-3 text-rose-300" />
+                        <div className={`flex items-center gap-2 px-3 py-1 rounded-full ${Number(currentBarang.stok) < Number(item.jumlah) ? 'bg-rose-100 text-rose-600' : 'bg-slate-100 text-slate-600'}`}>
+                          <span className="uppercase tracking-widest text-[9px]">Sisa:</span>
+                          <span>{Number(currentBarang.stok) - Number(item.jumlah)} {currentBarang.satuan?.nama}</span>
+                        </div>
                       </div>
 
                       {/* Info Konversi untuk referensi monitoring */}
                       <div className="bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Monitoring Sistem (Unit/Biji)</p>
-                          <p className="text-[11px] font-bold text-slate-600">
-                             {( (Number(currentBarang.stok) - Number(item.jumlah)) * (currentBarang.nilai_konversi || 1) ).toLocaleString()} Unit
-                          </p>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Monitoring Sistem (Unit/Biji)</p>
+                        <p className="text-[11px] font-bold text-slate-600">
+                          {((Number(currentBarang.stok) - Number(item.jumlah)) * (currentBarang.nilai_konversi || 1)).toLocaleString()} Unit
+                        </p>
                       </div>
                     </div>
                   )}
 
                   {hasError && (
                     <p className="text-rose-600 text-[10px] font-black uppercase mt-3 italic flex items-center gap-2">
-                       <span className="w-1 h-1 bg-rose-600 rounded-full animate-ping"></span>
-                       {hasError}
+                      <span className="w-1 h-1 bg-rose-600 rounded-full animate-ping"></span>
+                      {hasError}
                     </p>
                   )}
                 </div>
