@@ -100,7 +100,13 @@ export default function Index({ barang, filters = {}, kategoris = [] }) {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-medium">{barang.from + index}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center gap-3">
-                                                <div className="bg-slate-100 p-2 rounded-lg text-slate-400"><Box className="w-5 h-5" /></div>
+                                                <div className="bg-slate-100 rounded-lg overflow-hidden w-10 h-10 flex items-center justify-center border border-slate-200">
+                                                    {item.foto ? (
+                                                        <img src={`/storage/${item.foto}`} alt={item.nama_barang} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <Box className="w-5 h-5 text-slate-400" />
+                                                    )}
+                                                </div>
                                                 <div>
                                                     <div className="text-sm font-bold text-slate-900">{item.nama_barang}</div>
                                                     <div className="text-[10px] text-slate-400 uppercase tracking-tight font-medium">{item.kode_barang}</div>

@@ -20,7 +20,8 @@ class Barang extends Model
         'supplier_id',
         'stok',
         'batas_minimum',
-        'nilai_konversi'
+        'nilai_konversi',
+        'foto'
     ];
 
     // =========================

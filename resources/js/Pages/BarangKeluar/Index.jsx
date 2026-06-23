@@ -168,8 +168,19 @@ function BarangKeluarRow({ item, no }) {
             <tr className="hover:bg-slate-50/50 transition-colors">
                 <td className="px-6 py-4 text-sm text-slate-500 font-medium">{no}</td>
                 <td className="px-6 py-4">
-                    <div className="font-bold text-slate-900 text-sm">{item.barang?.nama_barang}</div>
-                    <div className="text-[10px] text-slate-400 font-medium">{item.barang?.kode_barang}</div>
+                    <div className="flex items-center gap-3">
+                        <div className="bg-slate-100 rounded-lg overflow-hidden w-10 h-10 flex flex-shrink-0 items-center justify-center border border-slate-200">
+                            {item.barang?.foto ? (
+                                <img src={`/storage/${item.barang.foto}`} alt={item.barang.nama_barang} className="w-full h-full object-cover" />
+                            ) : (
+                                <Package className="w-5 h-5 text-slate-400" />
+                            )}
+                        </div>
+                        <div>
+                            <div className="font-bold text-slate-900 text-sm">{item.barang?.nama_barang}</div>
+                            <div className="text-[10px] text-slate-400 font-medium">{item.barang?.kode_barang}</div>
+                        </div>
+                    </div>
                 </td>
                 <td className="px-6 py-4 text-sm text-slate-600">{item.barang?.kategori?.nama_kategori || "-"}</td>
                 <td className="px-6 py-4 text-sm text-slate-600">
