@@ -218,6 +218,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::delete('/{id}', [BarangKeluarController::class, 'destroy'])
             ->name('barang-keluar.destroy');
+
+        Route::get('/{id}/print', [BarangKeluarController::class, 'cetakNota'])
+            ->name('barang-keluar.print');
     });
 
 

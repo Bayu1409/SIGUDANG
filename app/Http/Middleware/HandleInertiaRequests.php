@@ -73,8 +73,10 @@ class HandleInertiaRequests extends Middleware
                 })(),
             ],
             'flash' => [
-                'message' => $request->session()->get('message'),
-                'error' => $request->session()->get('error'),
+                'message'        => $request->session()->get('message'),
+                'error'          => $request->session()->get('error'),
+                'print_id'       => $request->session()->get('print_id'),
+                'kode_transaksi' => $request->session()->get('kode_transaksi'),
             ],
         ];
     }

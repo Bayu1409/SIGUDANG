@@ -76,14 +76,20 @@ class BarangKeluarController extends Controller
             $dokumenPath = $request->file('dokumen')->store('dokumen-keluar', 'public');
         }
 
-        foreach ($request->items as $itemData) {
+        $kodeTransaksi = 'OUT-' . date('Ymd') . '-' . strtoupper(bin2hex(random_bytes(3)));
+        $firstData = null;
+
+        foreach ($request->items as $idx => $itemData) {
             $data = BarangKeluar::create([
+                'kode_transaksi' => $kodeTransaksi,
                 'barang_id'      => $itemData['barang_id'],
                 'tanggal_keluar' => $request->tanggal_keluar,
                 'penerima'       => $request->penerima,
                 'jumlah'         => $itemData['jumlah'],
                 'dokumen'        => $dokumenPath
             ]);
+
+            if ($idx === 0) $firstData = $data;
 
             // KURANGI STOK
             $barang = Barang::find($itemData['barang_id']);
@@ -93,7 +99,11 @@ class BarangKeluarController extends Controller
             LogService::log("Input Barang Keluar ke {$request->penerima}: {$barang->nama_barang} ({$itemData['jumlah']})", 'BarangKeluar', $data->id);
         }
 
-        return redirect()->route('barang-keluar.index')->with('message', count($request->items) . " jenis barang berhasil dicatat keluar ketujuan {$request->penerima}.");
+        return redirect()->route('barang-keluar.index')->with([
+            'message'         => count($request->items) . " jenis barang berhasil dicatat keluar ke {$request->penerima}.",
+            'print_id'        => $firstData->id,
+            'kode_transaksi'  => $kodeTransaksi,
+        ]);
     }
 
     /*
@@ -122,6 +132,26 @@ class BarangKeluarController extends Controller
             ]
         );
 
+    }
+
+    public function cetakNota($id)
+    {
+        $single = BarangKeluar::findOrFail($id);
+
+        if ($single->kode_transaksi) {
+            $items = BarangKeluar::with(['barang.kategori', 'barang.satuan'])
+                ->where('kode_transaksi', $single->kode_transaksi)
+                ->get();
+        } else {
+            $items = BarangKeluar::with(['barang.kategori', 'barang.satuan'])
+                ->where('id', $id)
+                ->get();
+        }
+
+        return Inertia::render('BarangKeluar/Print', [
+            'items' => $items,
+            'header' => $items->first()
+        ]);
     }
 
     /*
