@@ -64,40 +64,37 @@ class BarangMasukController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'barang_id'    => 'required',
             'supplier_id'  => 'required|exists:suppliers,id',
             'tanggal_masuk'=> 'required',
-            'jumlah'       => 'required|integer',
-            'dokumen'      => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048'
+            'dokumen'      => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'items'        => 'required|array|min:1',
+            'items.*.barang_id' => 'required|exists:barangs,id',
+            'items.*.jumlah'    => 'required|integer|min:1',
         ]);
 
         $dokumenPath = null;
-
         if ($request->hasFile('dokumen')) {
-            $dokumenPath = $request
-                ->file('dokumen')
-                ->store('dokumen-masuk', 'public');
+            $dokumenPath = $request->file('dokumen')->store('dokumen-masuk', 'public');
         }
 
-        $data = BarangMasuk::create([
-            'barang_id'     => $request->barang_id,
-            'supplier_id'   => $request->supplier_id,
-            'tanggal_masuk' => $request->tanggal_masuk,
-            'jumlah'        => $request->jumlah,
-            'dokumen'       => $dokumenPath
-        ]);
+        foreach ($request->items as $itemData) {
+            $data = BarangMasuk::create([
+                'barang_id'     => $itemData['barang_id'],
+                'supplier_id'   => $request->supplier_id,
+                'tanggal_masuk' => $request->tanggal_masuk,
+                'jumlah'        => $itemData['jumlah'],
+                'dokumen'       => $dokumenPath
+            ]);
 
-        /*
-        UPDATE STOK
-        */
+            // UPDATE STOK
+            $barang = Barang::find($itemData['barang_id']);
+            $barang->stok += $itemData['jumlah'];
+            $barang->save();
 
-        $barang = Barang::find($request->barang_id);
-        $barang->stok += $request->jumlah;
-        $barang->save();
+            LogService::log("Input Barang Masuk: {$barang->nama_barang} ({$itemData['jumlah']})", 'BarangMasuk', $data->id);
+        }
 
-        LogService::log("Input Barang Masuk: {$barang->nama_barang} ({$request->jumlah})", 'BarangMasuk', $data->id);
-
-        return redirect()->route('barang-masuk.index')->with('message', "Data barang masuk {$barang->nama_barang} berhasil ditambahkan.");
+        return redirect()->route('barang-masuk.index')->with('message', count($request->items) . " jenis barang berhasil ditambahkan.");
     }
 
     public function edit($id)

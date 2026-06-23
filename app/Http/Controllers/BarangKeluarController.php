@@ -52,53 +52,46 @@ class BarangKeluarController extends Controller
 
     public function store(Request $request)
     {
-
         $request->validate([
-            'barang_id' => 'required',
             'tanggal_keluar' => 'required',
-            'jumlah' => 'required|integer',
-            'dokumen' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048'
+            'dokumen'        => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'items'          => 'required|array|min:1',
+            'items.*.barang_id' => 'required|exists:barangs,id',
+            'items.*.jumlah'    => 'required|integer|min:1',
         ]);
 
-        $barang = Barang::find($request->barang_id);
-
-        // VALIDASI STOK
-        if ($request->jumlah > $barang->stok) {
-
-            return back()->withErrors([
-                'jumlah' => 'Jumlah melebihi stok tersedia'
-            ]);
-
+        // CEK STOK SEMUA BARANG DULU
+        foreach ($request->items as $idx => $itemData) {
+            $barang = Barang::find($itemData['barang_id']);
+            if ($itemData['jumlah'] > $barang->stok) {
+                return back()->withErrors([
+                    "items.{$idx}.jumlah" => "Jumlah melebihi stok ({$barang->stok}) untuk {$barang->nama_barang}"
+                ]);
+            }
         }
 
         $dokumenPath = null;
-
         if ($request->hasFile('dokumen')) {
-
-            $dokumenPath = $request
-                ->file('dokumen')
-                ->store('dokumen-keluar', 'public');
-
+            $dokumenPath = $request->file('dokumen')->store('dokumen-keluar', 'public');
         }
 
-        $data = BarangKeluar::create([
-            'barang_id' => $request->barang_id,
-            'tanggal_keluar' => $request->tanggal_keluar,
-            'jumlah' => $request->jumlah,
-            'dokumen' => $dokumenPath
-        ]);
+        foreach ($request->items as $itemData) {
+            $data = BarangKeluar::create([
+                'barang_id'      => $itemData['barang_id'],
+                'tanggal_keluar' => $request->tanggal_keluar,
+                'jumlah'         => $itemData['jumlah'],
+                'dokumen'        => $dokumenPath
+            ]);
 
-        /*
-        KURANGI STOK
-        */
+            // KURANGI STOK
+            $barang = Barang::find($itemData['barang_id']);
+            $barang->stok -= $itemData['jumlah'];
+            $barang->save();
 
-        $barang->stok -= $request->jumlah;
-        $barang->save();
+            LogService::log("Input Barang Keluar: {$barang->nama_barang} ({$itemData['jumlah']})", 'BarangKeluar', $data->id);
+        }
 
-        LogService::log("Input Barang Keluar: {$barang->nama_barang} ({$request->jumlah})", 'BarangKeluar', $data->id);
-
-        return redirect()->route('barang-keluar.index')->with('message', "Data barang keluar {$barang->nama_barang} berhasil ditambahkan.");
-
+        return redirect()->route('barang-keluar.index')->with('message', count($request->items) . " jenis barang berhasil dicatat keluar.");
     }
 
     /*
