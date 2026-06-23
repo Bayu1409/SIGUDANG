@@ -55,9 +55,27 @@ export default function Index({ logs }) {
                                             <span className="text-sm font-semibold text-slate-900">{log.user?.name || 'Deleted User'}</span>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <p className="text-sm text-slate-700">{log.activity}</p>
-                                    </td>
+                                     <td className="px-6 py-4">
+                                         <p className="text-sm font-bold text-slate-800">{log.activity}</p>
+                                         {log.properties?.changes && Object.keys(log.properties.changes).length > 0 && (
+                                             <div className="mt-2 space-y-1">
+                                                 {Object.entries(log.properties.changes).map(([field, delta]) => (
+                                                     <div key={field} className="text-[11px] flex flex-wrap items-center gap-1.5 bg-slate-50 border border-slate-100 rounded-lg p-2">
+                                                         <span className="font-bold text-slate-400 uppercase tracking-tighter w-24">
+                                                             {field.replace('_', ' ')}:
+                                                         </span>
+                                                         <span className="text-rose-500 line-through opacity-60">
+                                                             {Array.isArray(delta.old) ? delta.old.join(', ') : delta.old}
+                                                         </span>
+                                                         <span className="text-slate-400">→</span>
+                                                         <span className="text-emerald-600 font-black">
+                                                             {Array.isArray(delta.new) ? delta.new.join(', ') : delta.new}
+                                                         </span>
+                                                     </div>
+                                                 ))}
+                                             </div>
+                                         )}
+                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
                                             <HardDrive className="w-3 h-3" />

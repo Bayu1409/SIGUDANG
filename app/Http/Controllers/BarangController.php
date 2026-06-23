@@ -100,6 +100,9 @@ class BarangController extends Controller
     ]);
 
     $barang = Barang::findOrFail($id);
+    
+    // Simpan data lama untuk perbandingan
+    $oldData = $barang->only(['nama_barang', 'kode_barang', 'kategori_id', 'satuan_id', 'batas_minimum', 'nilai_konversi']);
 
     $barang->update([
         'kode_barang' => $request->kode_barang,
@@ -110,7 +113,18 @@ class BarangController extends Controller
         'nilai_konversi' => $request->nilai_konversi ?? 1,
     ]);
 
-    LogService::log("Memperbarui data barang: {$barang->nama_barang}", 'Barang', $barang->id);
+    // Ambil data yang berubah
+    $changes = [];
+    foreach ($oldData as $key => $oldLabel) {
+        if ($barang->{$key} != $oldLabel) {
+            $changes[$key] = [
+                'old' => $oldLabel,
+                'new' => $barang->{$key}
+            ];
+        }
+    }
+
+    LogService::log("Memperbarui data barang: {$barang->nama_barang}", 'Barang', $barang->id, ['changes' => $changes]);
 
     return redirect()
         ->route('barang.index')
