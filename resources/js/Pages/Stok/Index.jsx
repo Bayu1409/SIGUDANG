@@ -156,9 +156,13 @@ export default function Index({ barang, filters = {}, config = {}, kategoris = [
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="bg-slate-100 p-2 rounded-lg">
-                                                        <Package className="w-4 h-4 text-slate-400" />
-                                                    </div>
+                                                <div className="bg-slate-100 rounded-lg overflow-hidden w-10 h-10 flex flex-shrink-0 items-center justify-center border border-slate-200">
+                                                    {item.foto ? (
+                                                        <img src={`/storage/${item.foto}`} alt={item.nama_barang} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <Package className="w-5 h-5 text-slate-400" />
+                                                    )}
+                                                </div>
                                                     <div>
                                                         <p className="text-sm font-bold text-slate-900">{item.nama_barang}</p>
                                                         <p className="text-[10px] text-slate-400 font-mono uppercase">{item.kode_barang}</p>
@@ -263,8 +267,12 @@ function DetailModal({ item, stokLimit, onClose }) {
                 {/* Modal Header */}
                 <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-start justify-between rounded-t-2xl z-10">
                     <div className="flex items-center gap-3">
-                        <div className="bg-indigo-100 p-2.5 rounded-xl">
-                            <Package className="w-5 h-5 text-indigo-600" />
+                        <div className="bg-indigo-100 rounded-xl overflow-hidden w-12 h-12 flex flex-shrink-0 items-center justify-center border border-indigo-200">
+                            {item.foto ? (
+                                <img src={`/storage/${item.foto}`} alt={item.nama_barang} className="w-full h-full object-cover" />
+                            ) : (
+                                <Package className="w-6 h-6 text-indigo-600" />
+                            )}
                         </div>
                         <div>
                             <h3 className="text-lg font-bold text-slate-900">{item.nama_barang}</h3>

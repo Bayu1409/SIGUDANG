@@ -42,6 +42,7 @@ class DeadStockController extends Controller
                     'id' => $item->id,
                     'kode_barang' => $item->kode_barang,
                     'nama_barang' => $item->nama_barang,
+                    'foto' => $item->foto,
                     'kategori' => $item->kategori->nama_kategori ?? '-',
                     'satuan' => $item->satuan->nama ?? '-',
                     'stok' => $stok,

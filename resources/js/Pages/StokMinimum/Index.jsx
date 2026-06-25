@@ -100,8 +100,12 @@ export default function Index({ barang, limit, is_event_month, kategoris = [], f
                                         </td>
                                         <td className="px-6 py-4 text-left">
                                             <div className="flex items-center gap-3">
-                                                <div className="bg-slate-100 p-2 rounded-lg text-slate-400">
-                                                    <Package className="w-4 h-4" />
+                                                <div className="bg-slate-100 rounded-lg overflow-hidden w-10 h-10 flex flex-shrink-0 items-center justify-center border border-slate-200">
+                                                    {item.foto ? (
+                                                        <img src={`/storage/${item.foto}`} alt={item.nama_barang} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <Package className="w-5 h-5 text-slate-400" />
+                                                    )}
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-bold text-slate-900 leading-none">{item.nama_barang}</p>
