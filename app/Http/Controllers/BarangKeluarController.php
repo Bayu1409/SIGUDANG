@@ -198,13 +198,18 @@ class BarangKeluarController extends Controller
         $file = $request->file('file');
         $handle = fopen($file->getRealPath(), 'r');
         
-        fgetcsv($handle); // Skip header
+        // Cek delimiter (bisa koma atau titik koma)
+        $firstLine = fgets($handle);
+        $delimiter = (strpos($firstLine, ';') !== false) ? ';' : ',';
+        rewind($handle);
+
+        fgetcsv($handle, 1000, $delimiter); // Skip header
 
         $imported = 0;
         $errors = [];
         $kodeTransaksi = 'IMP-OUT-' . date('Ymd') . '-' . strtoupper(bin2hex(random_bytes(3)));
 
-        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+        while (($data = fgetcsv($handle, 1000, $delimiter)) !== FALSE) {
             if (count($data) < 4) continue;
 
             $kodeBarang   = trim($data[0]);
@@ -257,12 +262,16 @@ class BarangKeluarController extends Controller
             'Content-Disposition' => 'attachment; filename="template_barang_keluar.csv"',
         ];
 
-        $callback = function () {
+        $barangs = \App\Models\Barang::orderBy('nama_barang')->get();
+
+        $callback = function () use ($barangs) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['kode_barang', 'penerima', 'tanggal_keluar', 'jumlah']);
-            fputcsv($file, ['BRG-001', 'Toko Berkah', date('Y-m-d'), '5']);
-            fputcsv($file, ['BRG-002', 'Bpk. Ahmad', date('Y-m-d'), '12']);
-            fputcsv($file, ['BRG-003', 'Instansi Sejahtera', date('Y-m-d'), '30']);
+            fputcsv($file, ['nama_barang', 'penerima', 'tanggal_keluar', 'jumlah'], ';');
+            
+            foreach ($barangs as $b) {
+                fputcsv($file, [$b->nama_barang, '', date('Y-m-d'), ''], ';');
+            }
+            
             fclose($file);
         };
 

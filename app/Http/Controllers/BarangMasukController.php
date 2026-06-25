@@ -195,12 +195,17 @@ class BarangMasukController extends Controller
         $file = $request->file('file');
         $handle = fopen($file->getRealPath(), 'r');
         
-        fgetcsv($handle); // Skip header
+        // Cek delimiter (bisa koma atau titik koma)
+        $firstLine = fgets($handle);
+        $delimiter = (strpos($firstLine, ';') !== false) ? ';' : ',';
+        rewind($handle);
+
+        fgetcsv($handle, 1000, $delimiter); // Skip header
 
         $imported = 0;
         $errors = [];
 
-        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+        while (($data = fgetcsv($handle, 1000, $delimiter)) !== FALSE) {
             if (count($data) < 4) continue;
 
             $kodeBarang   = trim($data[0]);
@@ -253,12 +258,16 @@ class BarangMasukController extends Controller
             'Content-Disposition' => 'attachment; filename="template_barang_masuk.csv"',
         ];
 
-        $callback = function () {
+        $barangs = \App\Models\Barang::orderBy('nama_barang')->get();
+
+        $callback = function () use ($barangs) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['kode_barang', 'nama_supplier', 'tanggal_masuk', 'jumlah']);
-            fputcsv($file, ['BRG-001', 'Supplier A', date('Y-m-d'), '10']);
-            fputcsv($file, ['BRG-002', 'Supplier B', date('Y-m-d'), '25']);
-            fputcsv($file, ['BRG-003', 'Supplier C', date('Y-m-d'), '50']);
+            fputcsv($file, ['nama_barang', 'nama_supplier', 'tanggal_masuk', 'jumlah'], ';');
+            
+            foreach ($barangs as $b) {
+                fputcsv($file, [$b->nama_barang, '', date('Y-m-d'), ''], ';');
+            }
+            
             fclose($file);
         };
 

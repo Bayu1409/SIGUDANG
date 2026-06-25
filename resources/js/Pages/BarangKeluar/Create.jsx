@@ -11,6 +11,7 @@ const Label = ({ children, required }) => (
 );
 
 export default function Create({ barang, selectedBarangId }) {
+  const [isImporting, setIsImporting] = React.useState(false);
   const { errors_import } = usePage().props;
   const { data, setData, post, processing, errors } = useForm({
     tanggal_keluar: "",
@@ -45,12 +46,87 @@ export default function Create({ barang, selectedBarangId }) {
   const handleImport = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const formData = new FormData();
-      formData.append('file', file);
-      router.post(route('barang-keluar.import'), formData, {
-        forceFormData: true,
-        onSuccess: () => { e.target.value = null; }
-      });
+      setIsImporting(true);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const text = event.target.result;
+          const lines = text.split(/\r?\n/).filter(line => line.trim() !== "");
+          if (lines.length < 2) {
+            alert("File CSV kosong atau hanya berisi header.");
+            setIsImporting(false);
+            return;
+          }
+
+          const firstLine = lines[0];
+          const delimiter = (firstLine.includes(';') || lines[1]?.includes(';')) ? ';' : ',';
+
+          let importedRecipient = data.penerima;
+          let importedDate = data.tanggal_keluar;
+          const newItems = [];
+
+          for (let i = 1; i < lines.length; i++) {
+            const cols = lines[i].split(delimiter).map(c => c.trim().replace(/^["']|["']$/g, ""));
+            if (cols.length < 2) continue;
+
+            const identifier = cols[0]; // Bisa Nama Barang atau Kode Barang
+            const recipient = cols[1];
+            const tanggal = cols[2];
+            const qty = cols[3];
+
+            // Pembersihan
+            const cleanId = identifier.trim().toLowerCase();
+
+            // Cari berdasarkan Nama (prioritas) atau Kode
+            const foundBarang = barang.find(b => 
+              b.nama_barang.trim().toLowerCase() === cleanId || 
+              b.kode_barang.trim().toLowerCase() === cleanId
+            );
+            
+            if (foundBarang) {
+              newItems.push({
+                barang_id: foundBarang.id,
+                jumlah: qty || "1"
+              });
+            }
+
+            if (i === 1) {
+              if (recipient) importedRecipient = recipient;
+              if (tanggal) {
+                const dmhMatch = tanggal.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+                if (dmhMatch) {
+                  importedDate = `${dmhMatch[3]}-${dmhMatch[2].padStart(2, '0')}-${dmhMatch[1].padStart(2, '0')}`;
+                } else if (/^\d{4}-\d{2}-\d{2}$/.test(tanggal)) {
+                  importedDate = tanggal;
+                }
+              }
+            }
+          }
+
+          if (newItems.length > 0) {
+            setData({
+              ...data,
+              items: newItems,
+              penerima: importedRecipient,
+              tanggal_keluar: importedDate
+            });
+            alert(`Berhasil memuat ${newItems.length} item ke dalam form.`);
+          } else {
+            alert("Tidak ada kode barang yang cocok ditemukan. Mohon pastikan kode barang sudah benar.");
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Gagal memproses file.");
+        } finally {
+          setIsImporting(false);
+          e.target.value = null;
+        }
+      };
+      reader.onerror = () => {
+        alert("Gagal membaca file.");
+        setIsImporting(false);
+      };
+      reader.readAsText(file);
     }
   };
 
@@ -87,9 +163,13 @@ export default function Create({ barang, selectedBarangId }) {
           >
             Download Template
           </a>
-          <label className="flex-1 md:flex-none cursor-pointer text-center px-6 py-3 bg-emerald-600 text-white rounded-xl font-bold text-xs hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 flex items-center justify-center gap-2">
-            <Upload className="w-4 h-4" /> Import Sekarang
-            <input type="file" className="hidden" accept=".csv" onChange={handleImport} />
+          <label className={`flex-1 md:flex-none cursor-pointer text-center px-6 py-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 ${isImporting ? "bg-slate-200 text-slate-500 cursor-not-allowed" : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-200"}`}>
+            {isImporting ? (
+               <><div className="w-4 h-4 border-2 border-slate-400 border-t-slate-600 rounded-full animate-spin"></div> Memproses...</>
+            ) : (
+               <><Upload className="w-4 h-4" /> Import Sekarang</>
+            )}
+            <input type="file" className="hidden" accept=".csv" onChange={handleImport} disabled={isImporting} />
           </label>
         </div>
       </div>
