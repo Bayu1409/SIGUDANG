@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, router, Head } from "@inertiajs/react";
+import { Link, router, Head, usePage } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
 import ConfirmationModal from "@/Components/ConfirmationModal";
@@ -164,7 +164,7 @@ export default function BarangMasuk({ data, filters = {}, suppliers = [], barang
                                     <th className="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">Supplier</th>
                                     <th className="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase">Jumlah</th>
                                 </tr>
-                            </thead>
+							</thead>
                             <tbody className="divide-y divide-slate-100">
                                 {data.data && data.data.length > 0 ? (
                                     data.data.map((item, index) => (
@@ -220,3 +220,5 @@ export default function BarangMasuk({ data, filters = {}, suppliers = [], barang
         </AdminLayout>
     );
 }
+
+BarangMasuk.layout = (page) => <AdminLayout children={page} />;

@@ -106,32 +106,15 @@ class BarangKeluarController extends Controller
         ]);
     }
 
-    /*
-    =========================
-    EDIT
-    =========================
-    */
-
     public function edit($id)
     {
+        $barangKeluar = BarangKeluar::findOrFail($id);
+        $barang = Barang::all();
 
-        $barangKeluar =
-            BarangKeluar::findOrFail($id);
-
-        $barang =
-            Barang::all();
-
-        return Inertia::render(
-            'BarangKeluar/Edit',
-            [
-                'barangKeluar' =>
-                    $barangKeluar,
-
-                'barang' =>
-                    $barang
-            ]
-        );
-
+        return Inertia::render('BarangKeluar/Edit', [
+            'barangKeluar' => $barangKeluar,
+            'barang' => $barang
+        ]);
     }
 
     public function cetakNota($id)
@@ -154,115 +137,48 @@ class BarangKeluarController extends Controller
         ]);
     }
 
-    /*
-    =========================
-    UPDATE
-    =========================
-    */
-
     public function update(Request $request, $id)
     {
-
         $request->validate([
             'barang_id' => 'required',
             'tanggal_keluar' => 'required',
             'jumlah' => 'required|integer'
         ]);
 
-        $data =
-            BarangKeluar::findOrFail($id);
+        $data = BarangKeluar::findOrFail($id);
 
-        /*
-        TAMBAH STOK LAMA DULU
-        */
-
-        $barangLama =
-            Barang::find($data->barang_id);
-
+        $barangLama = Barang::find($data->barang_id);
         if ($barangLama) {
-
-            $barangLama->stok +=
-                $data->jumlah;
-
+            $barangLama->stok += $data->jumlah;
             $barangLama->save();
-
         }
 
-        /*
-        CEK STOK BARU
-        */
-
-        $barangBaru =
-            Barang::find(
-                $request->barang_id
-            );
-
-        if (
-            $request->jumlah >
-            $barangBaru->stok
-        ) {
-
-            return back()->withErrors([
-                'jumlah' =>
-                'Jumlah melebihi stok tersedia'
-            ]);
-
+        $barangBaru = Barang::find($request->barang_id);
+        if ($request->jumlah > $barangBaru->stok) {
+            return back()->withErrors(['jumlah' => 'Jumlah melebihi stok tersedia']);
         }
-
-        /*
-        UPDATE DATA
-        */
 
         $data->update([
-            'barang_id' =>
-                $request->barang_id,
-
-            'tanggal_keluar' =>
-                $request->tanggal_keluar,
-
-            'jumlah' =>
-                $request->jumlah
+            'barang_id' => $request->barang_id,
+            'tanggal_keluar' => $request->tanggal_keluar,
+            'jumlah' => $request->jumlah
         ]);
 
-        /*
-        KURANGI STOK BARU
-        */
-
-        $barangBaru->stok -=
-            $request->jumlah;
-
+        $barangBaru->stok -= $request->jumlah;
         $barangBaru->save();
 
         LogService::log("Update Barang Keluar: {$barangBaru->nama_barang} (ID: {$data->id})", 'BarangKeluar', $data->id);
 
         return redirect()->route('barang-keluar.index')->with('message', "Data barang keluar {$barangBaru->nama_barang} berhasil diperbarui.");
-
     }
-
-    /*
-    =========================
-    DELETE
-    =========================
-    */
 
     public function destroy($id)
     {
-        $data =
-            BarangKeluar::findOrFail($id);
-
-        $barang =
-            Barang::find(
-                $data->barang_id
-            );
-
-        // TAMBAH STOK KEMBALI
+        $data = BarangKeluar::findOrFail($id);
+        $barang = Barang::find($data->barang_id);
         if ($barang) {
-
-            $barang->stok +=
-                $data->jumlah;
-
+            $barang->stok += $data->jumlah;
             $barang->save();
-
         }
 
         $namaBarang = $barang->nama_barang ?? 'Unknown';
@@ -271,7 +187,85 @@ class BarangKeluarController extends Controller
         LogService::log("Hapus Barang Keluar: {$namaBarang} (ID: {$id})", 'BarangKeluar', $id);
 
         return redirect()->route('barang-keluar.index')->with('message', "Data barang keluar {$namaBarang} berhasil dihapus.");
-
     }
 
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt|max:2048',
+        ]);
+
+        $file = $request->file('file');
+        $handle = fopen($file->getRealPath(), 'r');
+        
+        fgetcsv($handle); // Skip header
+
+        $imported = 0;
+        $errors = [];
+        $kodeTransaksi = 'IMP-OUT-' . date('Ymd') . '-' . strtoupper(bin2hex(random_bytes(3)));
+
+        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            if (count($data) < 4) continue;
+
+            $kodeBarang   = trim($data[0]);
+            $penerima     = trim($data[1]);
+            $tanggal      = trim($data[2]);
+            $jumlah       = (int) trim($data[3]);
+
+            $barang = Barang::where('kode_barang', $kodeBarang)->first();
+
+            if (!$barang) {
+                $errors[] = "Barang kode '{$kodeBarang}' tidak ditemukan.";
+                continue;
+            }
+
+            if ($jumlah > $barang->stok) {
+                $errors[] = "Stok tidak cukup untuk {$barang->nama_barang} (Kode: {$kodeBarang}).";
+                continue;
+            }
+
+            $bk = BarangKeluar::create([
+                'kode_transaksi' => $kodeTransaksi,
+                'barang_id'      => $barang->id,
+                'tanggal_keluar' => $tanggal,
+                'penerima'       => $penerima,
+                'jumlah'         => $jumlah,
+                'dokumen'        => null
+            ]);
+
+            $barang->stok -= $jumlah;
+            $barang->save();
+
+            LogService::log("Import Barang Keluar: {$barang->nama_barang} ({$jumlah})", 'BarangKeluar', $bk->id);
+            $imported++;
+        }
+
+        fclose($handle);
+
+        $msg = "{$imported} data berhasil diimport.";
+        if (count($errors) > 0) {
+            $msg .= " Terdapat " . count($errors) . " error.";
+        }
+
+        return redirect()->back()->with('message', $msg)->with('errors_import', $errors);
+    }
+
+    public function downloadTemplate()
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="template_barang_keluar.csv"',
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['kode_barang', 'penerima', 'tanggal_keluar', 'jumlah']);
+            fputcsv($file, ['BRG-001', 'Toko Berkah', date('Y-m-d'), '5']);
+            fputcsv($file, ['BRG-002', 'Bpk. Ahmad', date('Y-m-d'), '12']);
+            fputcsv($file, ['BRG-003', 'Instansi Sejahtera', date('Y-m-d'), '30']);
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

@@ -192,6 +192,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::delete('/{id}', [BarangMasukController::class, 'destroy'])
             ->name('barang-masuk.destroy');
+
+        Route::post('/import', [BarangMasukController::class, 'import'])
+            ->name('barang-masuk.import');
+        
+        Route::get('/template', [BarangMasukController::class, 'downloadTemplate'])
+            ->name('barang-masuk.template');
     });
 
 
@@ -221,6 +227,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/{id}/print', [BarangKeluarController::class, 'cetakNota'])
             ->name('barang-keluar.print');
+
+        Route::post('/import', [BarangKeluarController::class, 'import'])
+            ->name('barang-keluar.import');
+        
+        Route::get('/template', [BarangKeluarController::class, 'downloadTemplate'])
+            ->name('barang-keluar.template');
     });
 
 

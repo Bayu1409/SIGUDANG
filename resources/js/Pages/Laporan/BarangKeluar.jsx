@@ -222,3 +222,5 @@ export default function BarangKeluar({ data, filters = {}, barangs = [], kategor
         </AdminLayout>
     );
 }
+
+BarangKeluar.layout = (page) => <AdminLayout children={page} />;

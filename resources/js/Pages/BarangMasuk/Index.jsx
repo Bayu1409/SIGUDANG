@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, router, Head } from "@inertiajs/react";
+import { Link, router, Head, usePage } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
 import { FileText, Package, Plus, Search, Trash2, Edit3, ChevronDown, X } from "lucide-react";
@@ -36,6 +36,7 @@ export default function Index({ barangMasuk, filters = {}, suppliers = [] }) {
                     <Plus className="w-4 h-4" /> Input Barang Masuk
                 </Link>
             </div>
+
 
             {/* FILTER */}
             <div className="mb-6 bg-white p-4 rounded-xl border border-slate-100 shadow-sm">

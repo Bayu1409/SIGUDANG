@@ -1,7 +1,7 @@
 import React from "react";
-import { useForm, Link } from "@inertiajs/react";
+import { useForm, Link, usePage, router } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { Plus, Trash2, Save, Upload, Package, ArrowRight, LogOut } from "lucide-react";
+import { Plus, Trash2, Save, Upload, Package, ArrowRight, LogOut, FileSpreadsheet, AlertCircle, X } from "lucide-react";
 
 const Label = ({ children, required }) => (
   <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
@@ -11,6 +11,7 @@ const Label = ({ children, required }) => (
 );
 
 export default function Create({ barang, selectedBarangId }) {
+  const { errors_import } = usePage().props;
   const { data, setData, post, processing, errors } = useForm({
     tanggal_keluar: "",
     penerima: "",
@@ -41,18 +42,75 @@ export default function Create({ barang, selectedBarangId }) {
     post(route("barang-keluar.store"));
   }
 
+  const handleImport = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      router.post(route('barang-keluar.import'), formData, {
+        forceFormData: true,
+        onSuccess: () => { e.target.value = null; }
+      });
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto pb-20">
-      <div className="mb-8 flex items-end justify-between">
+      <div className="mb-8 flex items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Input Barang Keluar</h1>
-          <p className="text-slate-500 mt-1 font-medium italic">Catat pengeluaran stok barang secara massal.</p>
+          <p className="text-slate-500 mt-1 font-medium italic">Catat pengeluaran stok barang secara massal atau import via CSV.</p>
         </div>
-        <div className="bg-rose-600/10 text-rose-700 px-4 py-2 rounded-2xl border border-rose-100 flex items-center gap-2">
-          <LogOut className="w-5 h-5" />
-          <span className="font-bold text-sm">{data.items.length} Item Keluar</span>
+        <div className="flex gap-3">
+          <div className="bg-rose-600/10 text-rose-700 px-4 py-2 rounded-2xl border border-rose-100 flex items-center gap-2">
+            <LogOut className="w-5 h-5" />
+            <span className="font-bold text-sm">{data.items.length} Item Keluar</span>
+          </div>
         </div>
       </div>
+
+      {/* QUICK IMPORT SECTION */}
+      <div className="mb-8 bg-emerald-50/50 border-2 border-dashed border-emerald-200 rounded-[2rem] p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex items-center gap-4">
+          <div className="bg-white p-4 rounded-2xl shadow-sm border border-emerald-100">
+            <FileSpreadsheet className="w-8 h-8 text-emerald-500" />
+          </div>
+          <div>
+            <h4 className="font-black text-slate-800">Cepat dengan Import CSV</h4>
+            <p className="text-xs text-slate-500 font-medium">Download template dan upload file CSV Anda.</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <a
+            href={route('barang-keluar.template')}
+            className="flex-1 md:flex-none text-center px-6 py-3 bg-white border-2 border-emerald-100 text-emerald-600 rounded-xl font-bold text-xs hover:bg-emerald-50 transition-all shadow-sm"
+          >
+            Download Template
+          </a>
+          <label className="flex-1 md:flex-none cursor-pointer text-center px-6 py-3 bg-emerald-600 text-white rounded-xl font-bold text-xs hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 flex items-center justify-center gap-2">
+            <Upload className="w-4 h-4" /> Import Sekarang
+            <input type="file" className="hidden" accept=".csv" onChange={handleImport} />
+          </label>
+        </div>
+      </div>
+
+      {/* ERROR IMPORT */}
+      {errors_import && errors_import.length > 0 && (
+        <div className="mb-8 bg-rose-50 border-2 border-rose-100 rounded-[2rem] p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <AlertCircle className="w-6 h-6 text-rose-500" />
+            <h4 className="font-black text-rose-800">Gagal Import ({errors_import.length} Error)</h4>
+          </div>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
+            {errors_import.map((err, i) => (
+              <li key={i} className="text-xs text-rose-600 flex items-start gap-2 bg-white/50 p-2 rounded-lg">
+                <span className="font-bold">#{i+1}</span>
+                {err}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* HEADER INFO: SHARED DATA */}

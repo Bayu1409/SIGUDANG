@@ -165,39 +165,103 @@ class BarangMasukController extends Controller
     }
 
     public function destroy($id)
-{
-    $data = BarangMasuk::findOrFail($id);
+    {
+        $data = BarangMasuk::findOrFail($id);
 
-    /*
-    KURANGI STOK SAAT HAPUS
-    */
+        $barang = Barang::find($data->barang_id);
 
-    $barang = Barang::find($data->barang_id);
-
-    // 🔥 CEK DULU AGAR TIDAK NULL
-    if ($barang) {
-
-        $barang->stok -= $data->jumlah;
-
-        // Jaga agar stok tidak minus
-        if ($barang->stok < 0) {
-            $barang->stok = 0;
+        if ($barang) {
+            $barang->stok -= $data->jumlah;
+            if ($barang->stok < 0) {
+                $barang->stok = 0;
+            }
+            $barang->save();
         }
 
-        $barang->save();
+        $namaBarang = $barang->nama_barang ?? 'Unknown';
+        $data->delete();
 
+        LogService::log("Hapus Barang Masuk: {$namaBarang} (ID: {$id})", 'BarangMasuk', $id);
+
+        return redirect()->route('barang-masuk.index')->with('message', "Data barang masuk {$namaBarang} berhasil dihapus.");
     }
 
-    /*
-    HAPUS DATA
-    */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt|max:2048',
+        ]);
 
-    $namaBarang = $barang->nama_barang ?? 'Unknown';
-    $data->delete();
+        $file = $request->file('file');
+        $handle = fopen($file->getRealPath(), 'r');
+        
+        fgetcsv($handle); // Skip header
 
-    LogService::log("Hapus Barang Masuk: {$namaBarang} (ID: {$id})", 'BarangMasuk', $id);
+        $imported = 0;
+        $errors = [];
 
-    return redirect()->route('barang-masuk.index')->with('message', "Data barang masuk {$namaBarang} berhasil dihapus.");
-}
+        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            if (count($data) < 4) continue;
 
+            $kodeBarang   = trim($data[0]);
+            $namaSupplier = trim($data[1]);
+            $tanggal      = trim($data[2]);
+            $jumlah       = (int) trim($data[3]);
+
+            $barang = Barang::where('kode_barang', $kodeBarang)->first();
+            $supplier = Supplier::where('nama_supplier', 'like', "%{$namaSupplier}%")->first();
+
+            if (!$barang) {
+                $errors[] = "Barang kode '{$kodeBarang}' tidak ditemukan.";
+                continue;
+            }
+
+            if (!$supplier) {
+                $errors[] = "Supplier '{$namaSupplier}' tidak ditemukan.";
+                continue;
+            }
+
+            $bm = BarangMasuk::create([
+                'barang_id'     => $barang->id,
+                'supplier_id'   => $supplier->id,
+                'tanggal_masuk' => $tanggal,
+                'jumlah'        => $jumlah,
+                'dokumen'       => null
+            ]);
+
+            $barang->stok += $jumlah;
+            $barang->save();
+
+            LogService::log("Import Barang Masuk: {$barang->nama_barang} ({$jumlah})", 'BarangMasuk', $bm->id);
+            $imported++;
+        }
+
+        fclose($handle);
+
+        $msg = "{$imported} data berhasil diimport.";
+        if (count($errors) > 0) {
+            $msg .= " Namun ada " . count($errors) . " error.";
+        }
+
+        return redirect()->back()->with('message', $msg)->with('errors_import', $errors);
+    }
+
+    public function downloadTemplate()
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="template_barang_masuk.csv"',
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['kode_barang', 'nama_supplier', 'tanggal_masuk', 'jumlah']);
+            fputcsv($file, ['BRG-001', 'Supplier A', date('Y-m-d'), '10']);
+            fputcsv($file, ['BRG-002', 'Supplier B', date('Y-m-d'), '25']);
+            fputcsv($file, ['BRG-003', 'Supplier C', date('Y-m-d'), '50']);
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }
