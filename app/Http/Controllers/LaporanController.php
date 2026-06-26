@@ -29,18 +29,21 @@ class LaporanController extends Controller
         }
 
         $query->when($search, function($q, $search) {
-            $q->whereHas('barang', function ($q2) use ($search) {
-                $q2->where('nama_barang', 'like', "%{$search}%")
-                  ->orWhereHas('kategori', function ($q3) use ($search) {
-                        $q3->where('nama_kategori', 'like', "%{$search}%");
-                  });
-            })->orWhereHas('supplier', function ($q2) use ($search) {
-                $q2->where('nama_supplier', 'like', "%{$search}%");
+            $q->where(function($q_inner) use ($search) {
+                $q_inner->whereHas('barang', function ($q2) use ($search) {
+                    $q2->where('nama_barang', 'like', "%{$search}%")
+                      ->orWhere('kode_barang', 'like', "%{$search}%")
+                      ->orWhereHas('kategori', function ($q3) use ($search) {
+                            $q3->where('nama_kategori', 'like', "%{$search}%");
+                      });
+                })->orWhereHas('supplier', function ($q2) use ($search) {
+                    $q2->where('nama_supplier', 'like', "%{$search}%");
+                });
             });
-       });
+        });
 
-       $query->when($supplierId, fn($q) => $q->where('supplier_id', $supplierId));
-       $query->when($barangId, fn($q) => $q->where('barang_id', $barangId));
+        $query->when($supplierId, fn($q) => $q->where('supplier_id', $supplierId));
+        $query->when($barangId, fn($q) => $q->where('barang_id', $barangId));
 
         $data = $query->orderBy('tanggal_masuk', 'desc')->paginate(10)->withQueryString();
 
@@ -67,18 +70,21 @@ class LaporanController extends Controller
         }
 
         $query->when($search, function($q, $search) {
-            $q->whereHas('barang', function ($q2) use ($search) {
-                $q2->where('nama_barang', 'like', "%{$search}%")
-                  ->orWhereHas('kategori', function ($q3) use ($search) {
-                        $q3->where('nama_kategori', 'like', "%{$search}%");
-                  });
-            })->orWhereHas('supplier', function ($q2) use ($search) {
-                $q2->where('nama_supplier', 'like', "%{$search}%");
+            $q->where(function($q_inner) use ($search) {
+                $q_inner->whereHas('barang', function ($q2) use ($search) {
+                    $q2->where('nama_barang', 'like', "%{$search}%")
+                      ->orWhere('kode_barang', 'like', "%{$search}%")
+                      ->orWhereHas('kategori', function ($q3) use ($search) {
+                            $q3->where('nama_kategori', 'like', "%{$search}%");
+                      });
+                })->orWhereHas('supplier', function ($q2) use ($search) {
+                    $q2->where('nama_supplier', 'like', "%{$search}%");
+                });
             });
-       });
+        });
 
-       $query->when($supplierId, fn($q) => $q->where('supplier_id', $supplierId));
-       $query->when($barangId, fn($q) => $q->where('barang_id', $barangId));
+        $query->when($supplierId, fn($q) => $q->where('supplier_id', $supplierId));
+        $query->when($barangId, fn($q) => $q->where('barang_id', $barangId));
 
         $data = $query->orderBy('tanggal_masuk', 'desc')->get();
 
@@ -118,18 +124,22 @@ class LaporanController extends Controller
         }
 
         $query->when($search, function($q, $search) {
-            $q->whereHas('barang', function ($q2) use ($search) {
-                $q2->where('nama_barang', 'like', "%{$search}%")
-                  ->orWhereHas('kategori', function ($q3) use ($search) {
-                        $q3->where('nama_kategori', 'like', "%{$search}%");
-                  });
+            $q->where(function($q_inner) use ($search) {
+                $q_inner->where('penerima', 'like', "%{$search}%")
+                  ->orWhereHas('barang', function ($q2) use ($search) {
+                    $q2->where('nama_barang', 'like', "%{$search}%")
+                      ->orWhere('kode_barang', 'like', "%{$search}%")
+                      ->orWhereHas('kategori', function ($q3) use ($search) {
+                            $q3->where('nama_kategori', 'like', "%{$search}%");
+                      });
+                });
             });
-       });
+        });
 
-       $query->when($barangId, fn($q) => $q->where('barang_id', $barangId));
-       $query->when($kategoriId, function($q) use ($kategoriId) {
+        $query->when($barangId, fn($q) => $q->where('barang_id', $barangId));
+        $query->when($kategoriId, function($q) use ($kategoriId) {
             $q->whereHas('barang', fn($q2) => $q2->where('kategori_id', $kategoriId));
-       });
+        });
 
         $data = $query->orderBy('tanggal_keluar', 'desc')->paginate(10)->withQueryString();
 
@@ -154,13 +164,17 @@ class LaporanController extends Controller
         }
 
         $query->when($search, function($q, $search) {
-            $q->whereHas('barang', function ($q2) use ($search) {
-                $q2->where('nama_barang', 'like', "%{$search}%")
-                  ->orWhereHas('kategori', function ($q3) use ($search) {
-                        $q3->where('nama_kategori', 'like', "%{$search}%");
-                  });
+            $q->where(function($q_inner) use ($search) {
+                $q_inner->where('penerima', 'like', "%{$search}%")
+                  ->orWhereHas('barang', function ($q2) use ($search) {
+                    $q2->where('nama_barang', 'like', "%{$search}%")
+                      ->orWhere('kode_barang', 'like', "%{$search}%")
+                      ->orWhereHas('kategori', function ($q3) use ($search) {
+                            $q3->where('nama_kategori', 'like', "%{$search}%");
+                      });
+                });
             });
-       });
+        });
 
        $query->when($barangId, fn($q) => $q->where('barang_id', $barangId));
        $query->when($kategoriId, function($q) use ($kategoriId) {

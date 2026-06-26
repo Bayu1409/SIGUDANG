@@ -74,7 +74,7 @@ class BarangController extends Controller
 
     return redirect()
         ->route('barang.index')
-        ->with('success', 'Barang berhasil ditambahkan');
+        ->with('message', 'Barang berhasil ditambahkan');
 }
     public function edit($id)
     {
@@ -128,7 +128,7 @@ class BarangController extends Controller
 
     return redirect()
         ->route('barang.index')
-        ->with('success', 'Barang berhasil diupdate');
+        ->with('message', 'Barang berhasil diupdate');
 }
 
     public function destroy($id)
@@ -139,7 +139,7 @@ class BarangController extends Controller
 
         LogService::log("Menghapus barang: {$nama}", 'Barang', $id);
 
-        return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus');
+        return redirect()->route('barang.index')->with('message', 'Barang berhasil dihapus');
     }
 
 }

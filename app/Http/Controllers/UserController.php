@@ -41,7 +41,7 @@ class UserController extends Controller
 
         LogService::log("Membuat user baru: {$user->name} ({$user->role})", 'User', $user->id);
 
-        return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan.');
+        return redirect()->route('users.index')->with('message', 'User berhasil ditambahkan.');
     }
 
     public function edit(User $user)
@@ -73,7 +73,7 @@ class UserController extends Controller
 
         LogService::log("Memperbarui user: {$user->name}. Role: {$oldRole} -> {$user->role}", 'User', $user->id);
 
-        return redirect()->route('users.index')->with('success', 'User berhasil diperbarui.');
+        return redirect()->route('users.index')->with('message', 'User berhasil diperbarui.');
     }
 
     public function destroy(User $user)
@@ -88,6 +88,6 @@ class UserController extends Controller
         $user->delete();
         LogService::log("Menghapus user: {$name}", 'User', $id);
 
-        return redirect()->route('users.index')->with('success', 'User berhasil dihapus.');
+        return redirect()->route('users.index')->with('message', 'User berhasil dihapus.');
     }
 }

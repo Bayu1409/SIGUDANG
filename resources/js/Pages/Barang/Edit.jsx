@@ -16,6 +16,7 @@ export default function Edit({ barang, kategori, satuan }) {
     const { data, setData, put, processing, errors } = useForm({
         kode_barang: barang.kode_barang || "",
         nama_barang: barang.nama_barang || "",
+        kategori_id: barang.kategori_id || "",
         stok: barang.stok || "",
         satuan_id: barang.satuan_id || "",
         batas_minimum: barang.batas_minimum || 0,
@@ -89,9 +90,9 @@ export default function Edit({ barang, kategori, satuan }) {
 
                         {/* KATEGORI */}
                         <div>
-                            <Label>Kategori</Label>
+                            <Label required>Kategori</Label>
                             <select
-                                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                className={`w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.kategori_id ? "border-red-500" : ""}`}
                                 value={data.kategori_id}
                                 onChange={(e) => setData("kategori_id", e.target.value)}
                             >
@@ -102,13 +103,16 @@ export default function Edit({ barang, kategori, satuan }) {
                                     </option>
                                 ))}
                             </select>
+                            {errors.kategori_id && (
+                                <p className="text-red-500 text-xs mt-1">{errors.kategori_id}</p>
+                            )}
                         </div>
 
                         {/* SATUAN */}
                         <div>
-                            <Label>Satuan</Label>
+                            <Label required>Satuan</Label>
                             <select
-                                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                className={`w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.satuan_id ? "border-red-500" : ""}`}
                                 value={data.satuan_id}
                                 onChange={handleSatuanChange}
                             >
@@ -119,6 +123,9 @@ export default function Edit({ barang, kategori, satuan }) {
                                     </option>
                                 ))}
                             </select>
+                            {errors.satuan_id && (
+                                <p className="text-red-500 text-xs mt-1">{errors.satuan_id}</p>
+                            )}
                         </div>
 
                         {/* Batas Minimum & Konversi */}
@@ -127,11 +134,14 @@ export default function Edit({ barang, kategori, satuan }) {
                                 <Label>Batas Minimum</Label>
                                 <input
                                     type="number"
-                                    className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-400"
+                                    className={`w-full border p-2 rounded focus:ring-2 focus:ring-blue-400 ${errors.batas_minimum ? "border-red-500" : ""}`}
                                     value={data.batas_minimum}
                                     onChange={(e) => setData("batas_minimum", e.target.value)}
                                     placeholder="Contoh: 1"
                                 />
+                                {errors.batas_minimum && (
+                                    <p className="text-red-500 text-xs mt-1">{errors.batas_minimum}</p>
+                                )}
                                 <p className="text-[10px] text-gray-500 mt-1 italic">
                                     Dalam satuan {barang.satuan?.nama || 'barang'}
                                 </p>
@@ -140,11 +150,14 @@ export default function Edit({ barang, kategori, satuan }) {
                                 <Label>Nilai Konversi</Label>
                                 <input
                                     type="number"
-                                    className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-400"
+                                    className={`w-full border p-2 rounded focus:ring-2 focus:ring-blue-400 ${errors.nilai_konversi ? "border-red-500" : ""}`}
                                     value={data.nilai_konversi}
                                     onChange={(e) => setData("nilai_konversi", e.target.value)}
                                     placeholder="Contoh: 100"
                                 />
+                                {errors.nilai_konversi && (
+                                    <p className="text-red-500 text-xs mt-1">{errors.nilai_konversi}</p>
+                                )}
                                 <p className="text-[10px] text-gray-500 mt-1 italic">
                                     Otomatis: Pack=100, Kodi=20
                                 </p>

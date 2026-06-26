@@ -161,7 +161,7 @@ export default function Index({ barang, filters = {}, kategoris = [] }) {
 
             {/* Confirmation Modal */}
             {confirmDelete.show && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center">
                         <div className="flex justify-center mb-4">
                             <div className="bg-rose-100 p-4 rounded-full"><Trash2 className="w-8 h-8 text-rose-600" /></div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, router, Head } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
-import { ArrowUpFromLine, FileText, Package, Search, Trash2, X } from "lucide-react";
+import { ArrowUpFromLine, FileText, Package, Printer, Search, Trash2, X } from "lucide-react";
 
 export default function Index({ barangKeluar, filters = {} }) {
     const [search, setSearch] = useState(filters.search || "");
@@ -150,7 +150,11 @@ function BarangKeluarRow({ item, no }) {
                         </a>
                     ) : <span className="text-slate-300">-</span>}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">
+                <td className="px-6 py-4 whitespace-nowrap text-center flex items-center justify-center gap-1">
+                    <a href={route("barang-keluar.print", item.id)} target="_blank" rel="noreferrer"
+                        className="p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all" title="Cetak Nota">
+                        <Printer className="w-5 h-5" />
+                    </a>
                     <button onClick={() => setShowConfirm(true)}
                         className="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all" title="Hapus">
                         <Trash2 className="w-5 h-5" />
@@ -160,7 +164,7 @@ function BarangKeluarRow({ item, no }) {
 
             {showConfirm && (
                 <tr><td colSpan="9" className="p-0">
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
                         <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center">
                             <div className="flex justify-center mb-4">
                                 <div className="bg-rose-100 p-4 rounded-full"><Trash2 className="w-8 h-8 text-rose-600" /></div>

@@ -45,7 +45,7 @@ class SatuanController extends Controller
 
     return redirect()
         ->route('satuan.index')
-        ->with('success', 'Satuan berhasil ditambahkan');
+        ->with('message', 'Satuan berhasil ditambahkan');
 }
 
     public function edit($id)
@@ -71,7 +71,7 @@ class SatuanController extends Controller
             'nilai_konversi_default' => $request->nilai_konversi_default,
         ]);
 
-        return redirect()->route('satuan.index');
+        return redirect()->route('satuan.index')->with('message', 'Satuan berhasil diperbarui');
     }
 
     public function destroy($id)
@@ -90,7 +90,7 @@ class SatuanController extends Controller
 
         \App\Services\LogService::log("Menghapus satuan barang: {$nama}", 'Satuan', $id);
 
-        return redirect()->route('satuan.index')->with('success', 'Satuan berhasil dihapus');
+        return redirect()->route('satuan.index')->with('message', 'Satuan berhasil dihapus');
     }
 
 }

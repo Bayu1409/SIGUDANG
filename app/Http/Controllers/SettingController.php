@@ -64,6 +64,6 @@ class SettingController extends Controller
 
         LogService::log("Memperbarui konfigurasi sistem", 'Setting', 1, ['changes' => $changes]);
 
-        return redirect()->back()->with('success', 'Pengaturan berhasil disimpan!');
+        return redirect()->back()->with('message', 'Pengaturan berhasil disimpan!');
     }
 }

@@ -59,7 +59,7 @@ export default function BarangMasuk({ data, filters = {}, suppliers = [], barang
     };
 
     return (
-        <AdminLayout>
+        <>
             <Head title="Laporan Barang Masuk" />
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
@@ -217,7 +217,7 @@ export default function BarangMasuk({ data, filters = {}, suppliers = [], barang
                     type="info"
                 />
             </div>
-        </AdminLayout>
+        </>
     );
 }
 

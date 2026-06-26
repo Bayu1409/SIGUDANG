@@ -59,7 +59,7 @@ export default function BarangKeluar({ data, filters = {}, barangs = [], kategor
     };
 
     return (
-        <AdminLayout>
+        <>
             <Head title="Laporan Barang Keluar" />
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6 bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
@@ -219,7 +219,7 @@ export default function BarangKeluar({ data, filters = {}, barangs = [], kategor
                     type="info"
                 />
             </div>
-        </AdminLayout>
+        </>
     );
 }
 

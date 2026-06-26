@@ -5,15 +5,20 @@ import { AlertCircle, CheckCircle, Info, Menu, X, Package, Boxes } from "lucide-
 
 export default function AdminLayout({ children, header }) {
   const { auth, event, flash } = usePage().props;
-  const [showFlash, setShowFlash] = useState(true);
+  const [showFlash, setShowFlash] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showLowStockItems, setShowLowStockItems] = useState(false);
+  const [lastFlash, setLastFlash] = useState(null);
 
   useEffect(() => {
+    // Hanya tampilkan jika flash ada dan berbeda dari yang sebelumnya sudah ditampilkan 
+    // atau jika halamannya benar-benar baru (Inertia menghapus flash di request berikutnya)
     if (flash && (flash.message || flash.error)) {
-      setShowFlash(true);
-      const timer = setTimeout(() => setShowFlash(false), 5000);
-      return () => clearTimeout(timer);
+        setShowFlash(true);
+        const timer = setTimeout(() => setShowFlash(false), 5000);
+        return () => clearTimeout(timer);
+    } else {
+        setShowFlash(false);
     }
   }, [flash]);
 
@@ -39,7 +44,7 @@ export default function AdminLayout({ children, header }) {
         </header>
 
         {/* STICKY UNIFIED ALERTS (Visiable even when scrolling content) */}
-        <div className="z-[80] shadow-md font-sans">
+        <div className="z-40 shadow-md font-sans">
           {event?.is_event_month ? (
             /* BANNER KHUSUS BULAN RAMAI (Hanya 1 Banner) */
             <div className={`text-white px-6 py-3 flex items-center justify-between transition-all duration-500 ${event.is_all_stock_fulfilled
@@ -127,7 +132,7 @@ export default function AdminLayout({ children, header }) {
         <div className="flex-1 overflow-y-auto custom-scrollbar-main">
           {/* FLASH MESSAGES */}
           {showFlash && flash && (flash.message || flash.error) && (
-            <div className="fixed top-24 right-4 z-[9999] animate-bounce-in max-w-[90vw]">
+            <div className="fixed top-24 right-4 z-[200] animate-bounce-in max-w-[90vw]">
               <div className={`p-4 rounded-2xl shadow-2xl border flex items-start gap-4 min-w-[300px] backdrop-blur-xl ${flash.message ? 'bg-white/90 border-emerald-100 text-emerald-800' : 'bg-white/90 border-rose-100 text-rose-800'
                 }`}>
                 <div className={`p-2 rounded-xl ${flash.message ? 'bg-emerald-100' : 'bg-rose-100'}`}>

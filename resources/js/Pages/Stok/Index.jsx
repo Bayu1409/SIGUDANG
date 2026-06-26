@@ -54,8 +54,8 @@ export default function Index({ barang, filters = {}, config = {}, kategoris = [
             return { label: "Habis", color: "text-rose-600", bg: "bg-rose-50 border-rose-200", dot: "bg-rose-500" };
         }
         
-        // Cek apakah di bawah batas global ATAU di bawah batas lokal
-        const isLow = total < stokLimit || (localLimit > 0 && total < localLimit);
+        const threshold = localLimit > 0 ? localLimit : stokLimit;
+        const isLow = total < threshold;
         
         if (isLow) {
             return { label: "Rendah", color: "text-amber-600", bg: "bg-amber-50 border-amber-200", dot: "bg-amber-500" };
@@ -242,15 +242,18 @@ export default function Index({ barang, filters = {}, config = {}, kategoris = [
 }
 
 function DetailModal({ item, stokLimit, onClose }) {
+    const threshold = item.batas_minimum > 0 ? (item.batas_minimum * (item.nilai_konversi || 1)) : stokLimit;
+    const isLow = item.total_unit < threshold;
+
     const status = {
-        label: item.total_unit <= 0 ? "Habis" : (item.total_unit < stokLimit || (item.batas_minimum > 0 && item.total_unit < item.batas_minimum * item.nilai_konversi) ? "Rendah" : "Aman"),
-        color: item.total_unit <= 0 ? "text-rose-600" : (item.total_unit < stokLimit || (item.batas_minimum > 0 && item.total_unit < item.batas_minimum * item.nilai_konversi) ? "text-amber-600" : "text-emerald-600")
+        label: item.total_unit <= 0 ? "Habis" : (isLow ? "Rendah" : "Aman"),
+        color: item.total_unit <= 0 ? "text-rose-600" : (isLow ? "text-amber-600" : "text-emerald-600")
     };
 
     const getColor = (stokUnits, itemKonv, itemBatas) => {
-        const localLimit = (itemBatas || 0) * (itemKonv || 1);
+        const threshold = itemBatas > 0 ? (itemBatas * (itemKonv || 1)) : stokLimit;
         if (stokUnits <= 0) return "text-rose-600";
-        if (stokUnits < stokLimit || (localLimit > 0 && stokUnits < localLimit)) return "text-amber-600";
+        if (stokUnits < threshold) return "text-amber-600";
         return "text-emerald-600";
     };
 
@@ -262,7 +265,7 @@ function DetailModal({ item, stokLimit, onClose }) {
     ];
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
                 {/* Modal Header */}
                 <div className="sticky top-0 bg-white border-b border-slate-100 px-6 py-4 flex items-start justify-between rounded-t-2xl z-10">

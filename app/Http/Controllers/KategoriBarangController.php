@@ -42,7 +42,7 @@ class KategoriBarangController extends Controller
 
         \App\Services\LogService::log("Menambah kategori baru: {$kategori->nama_kategori}", 'KategoriBarang', $kategori->id);
 
-        return redirect()->route('kategori-barang.index')->with('success', 'Kategori berhasil ditambahkan');
+        return redirect()->route('kategori-barang.index')->with('message', 'Kategori berhasil ditambahkan');
     }
 
     public function edit($id)
@@ -77,7 +77,7 @@ class KategoriBarangController extends Controller
 
         \App\Services\LogService::log("Memperbarui kategori: {$kategori->nama_kategori}", 'KategoriBarang', $id, ['changes' => $changes]);
 
-        return redirect()->route('kategori-barang.index')->with('success', 'Kategori berhasil diperbarui');
+        return redirect()->route('kategori-barang.index')->with('message', 'Kategori berhasil diperbarui');
     }
 
     public function destroy($id)
@@ -96,7 +96,7 @@ class KategoriBarangController extends Controller
 
         \App\Services\LogService::log("Menghapus kategori barang: {$nama}", 'KategoriBarang', $id);
 
-        return redirect()->route('kategori-barang.index')->with('success', 'Kategori berhasil dihapus');
+        return redirect()->route('kategori-barang.index')->with('message', 'Kategori berhasil dihapus');
     }
 
 }

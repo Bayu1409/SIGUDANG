@@ -49,29 +49,32 @@ class HandleInertiaRequests extends Middleware
                         ? \App\Models\Setting::getSetting('limit_stok_event', 50) 
                         : \App\Models\Setting::getSetting('limit_stok_normal', 10);
                     
-                    // Barang harus memenuhi syarat global DAN syarat lokalnya sendiri
-                    return \App\Models\Barang::whereRaw('(stok * nilai_konversi) >= ?', [$limit])
-                        ->where(function($query) {
-                            $query->where('batas_minimum', 0)
-                                  ->orWhereRaw('(stok * nilai_konversi) >= (batas_minimum * nilai_konversi)');
-                        })
-                        ->count() === \App\Models\Barang::count();
+                    $totalBarang = \App\Models\Barang::count();
+                    if ($totalBarang === 0) return true;
+
+                    $failedCount = \App\Models\Barang::get()->filter(function ($item) use ($limit) {
+                        $totalUnit = $item->stok * ($item->nilai_konversi ?: 1);
+                        $threshold = ($item->batas_minimum > 0) 
+                            ? ($item->batas_minimum * ($item->nilai_konversi ?: 1)) 
+                            : $limit;
+                        return $totalUnit < $threshold;
+                    })->count();
+
+                    return $failedCount === 0;
                 })(),
                 'low_stock_items' => (function() use ($isEvent) {
                     $limit = $isEvent 
                         ? \App\Models\Setting::getSetting('limit_stok_event', 50) 
                         : \App\Models\Setting::getSetting('limit_stok_normal', 10);
                     
-                    // Deteksi jika di bawah batas global ATAU di bawah batas lokalnya
-                    return \App\Models\Barang::where(function($query) use ($limit) {
-                            $query->whereRaw('(stok * nilai_konversi) < ?', [$limit])
-                                  ->orWhere(function($q) {
-                                      $q->where('batas_minimum', '>', 0)
-                                        ->whereRaw('(stok * nilai_konversi) < (batas_minimum * nilai_konversi)');
-                                  });
-                        })
-                        ->select('id', 'nama_barang', 'stok', 'kode_barang', 'nilai_konversi', 'batas_minimum')
-                        ->get();
+                    return \App\Models\Barang::get()->filter(function ($item) use ($limit) {
+                        $totalUnit = $item->stok * ($item->nilai_konversi ?: 1);
+                        $threshold = ($item->batas_minimum > 0) 
+                            ? ($item->batas_minimum * ($item->nilai_konversi ?: 1)) 
+                            : $limit;
+                        
+                        return $totalUnit < $threshold;
+                    })->values();
                 })(),
             ],
             'flash' => [
