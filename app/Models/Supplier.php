@@ -19,7 +19,12 @@ class Supplier extends Model
     // Relasi ke barang (nanti dipakai)
     public function barang()
     {
-        return $this->hasMany(Barang::class);
+        return $this->hasMany(Barang::class, 'supplier_id');
+    }
+
+    public function barangMasuk()
+    {
+        return $this->hasMany(BarangMasuk::class, 'supplier_id');
     }
 
 }

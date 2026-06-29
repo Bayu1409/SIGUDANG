@@ -97,6 +97,14 @@ class SupplierController extends Controller
     public function destroy($id)
     {
         $supplier = Supplier::findOrFail($id);
+
+        // Cek apakah supplier sedang digunakan oleh data barang atau riwayat masuk
+        if ($supplier->barang()->exists() || $supplier->barangMasuk()->exists()) {
+            return redirect()
+                ->back()
+                ->with('error', "Supplier '{$supplier->nama_supplier}' tidak dapat dihapus karena sedang digunakan dalam data barang atau riwayat transaksi masuk.");
+        }
+
         $nama = $supplier->nama_supplier;
         $supplier->delete();
 

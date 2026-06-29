@@ -134,6 +134,14 @@ class BarangController extends Controller
     public function destroy($id)
     {
         $barang = Barang::findOrFail($id);
+
+        // Cek apakah barang memiliki riwayat transaksi
+        if ($barang->barangMasuk()->exists() || $barang->barangKeluar()->exists()) {
+            return redirect()
+                ->back()
+                ->with('error', "Barang '{$barang->nama_barang}' tidak dapat dihapus karena sudah memiliki riwayat transaksi.");
+        }
+
         $nama = $barang->nama_barang;
         $barang->delete();
 
