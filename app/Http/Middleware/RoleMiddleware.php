@@ -18,6 +18,11 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
+        // Superadmin has access to everything
+        if ($request->user() && $request->user()->role === 'superadmin') {
+            return $next($request);
+        }
+
         if (!$request->user() || $request->user()->role !== $role) {
             abort(403, 'Akses ditolak. Anda tidak memiliki izin untuk halaman ini.');
         }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Barang;
 use App\Models\BarangMasuk;
 use App\Models\BarangKeluar;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -217,6 +218,7 @@ class LaporanController extends Controller
         $barangPaginated = Barang::with([
             'kategori',
             'satuan',
+            'supplier',
             'barangMasuk' => function ($q) use ($dari, $sampai) {
                 if ($dari && $sampai) $q->whereBetween('tanggal_masuk', [$dari, $sampai]);
             },
@@ -232,7 +234,6 @@ class LaporanController extends Controller
                   });
         })
         ->when($kategoriId, fn($q) => $q->where('kategori_id', $kategoriId))
-        ->when($supplierId, fn($q) => $q->where('supplier_id', $supplierId))
         ->paginate(10)
         ->withQueryString();
 
@@ -255,9 +256,8 @@ class LaporanController extends Controller
 
         return Inertia::render('Laporan/Stok', [
             'barang' => $barangPaginated,
-            'filters' => $request->only(['dari', 'sampai', 'search', 'kategori_id', 'supplier_id']),
+            'filters' => $request->only(['dari', 'sampai', 'search', 'kategori_id']),
             'kategoris' => \App\Models\Kategori::all(),
-            'suppliers' => \App\Models\Supplier::all(),
         ]);
     }
 
@@ -271,6 +271,7 @@ class LaporanController extends Controller
         $barang = Barang::with([
             'kategori',
             'satuan',
+            'supplier',
             'barangMasuk' => function ($q) use ($dari, $sampai) {
                 if ($dari && $sampai) $q->whereBetween('tanggal_masuk', [$dari, $sampai]);
             },

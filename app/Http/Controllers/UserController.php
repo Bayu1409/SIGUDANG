@@ -37,6 +37,7 @@ class UserController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
+            'email_verified_at' => now(), // Auto-verify new users created by Admin
         ]);
 
         LogService::log("Membuat user baru: {$user->name} ({$user->role})", 'User', $user->id);

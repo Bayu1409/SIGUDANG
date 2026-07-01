@@ -5,26 +5,25 @@ import Pagination from "@/Components/Pagination";
 import ConfirmationModal from "@/Components/ConfirmationModal";
 import { Search, ChevronDown, Download, RotateCcw, Calendar, Folder, Truck } from "lucide-react";
 
-export default function StokLaporan({ barang, filters = {}, kategoris = [], suppliers = [] }) {
-    const [dari, setDari]         = useState(filters.dari || "");
-    const [sampai, setSampai]     = useState(filters.sampai || "");
-    const [search, setSearch]     = useState(filters.search || "");
+export default function StokLaporan({ barang, filters = {}, kategoris = [] }) {
+    const [dari, setDari] = useState(filters.dari || "");
+    const [sampai, setSampai] = useState(filters.sampai || "");
+    const [search, setSearch] = useState(filters.search || "");
     const [kategoriId, setKategoriId] = useState(filters.kategori_id || "");
-    const [supplierId, setSupplierId] = useState(filters.supplier_id || "");
 
     const [showExportConfirm, setShowExportConfirm] = useState(false);
 
     const isInitialRender = React.useRef(true);
-    
+
     useEffect(() => {
         if (isInitialRender.current) { isInitialRender.current = false; return; }
         const delay = setTimeout(() => {
             router.get(route("laporan.stok"),
-                { dari, sampai, search, kategori_id: kategoriId, supplier_id: supplierId },
+                { dari, sampai, search, kategori_id: kategoriId },
                 { preserveState: true, replace: true, preserveScroll: true });
         }, 500);
         return () => clearTimeout(delay);
-    }, [search, dari, sampai, kategoriId, supplierId]);
+    }, [search, dari, sampai, kategoriId]);
 
     const setQuickDate = (type) => {
         const today = new Date();
@@ -50,12 +49,12 @@ export default function StokLaporan({ barang, filters = {}, kategoris = [], supp
 
     const performExport = () => {
         setShowExportConfirm(false);
-        const url = route("laporan.stok.export", { dari, sampai, search, kategori_id: kategoriId, supplier_id: supplierId });
+        const url = route("laporan.stok.export", { dari, sampai, search, kategori_id: kategoriId });
         window.open(url, "_blank");
     };
 
     const resetFilters = () => {
-        setDari(""); setSampai(""); setSearch(""); setKategoriId(""); setSupplierId("");
+        setDari(""); setSampai(""); setSearch(""); setKategoriId("");
     };
 
     return (
@@ -67,7 +66,7 @@ export default function StokLaporan({ barang, filters = {}, kategoris = [], supp
                         <h2 className="text-xl font-bold text-slate-800 tracking-tight">Laporan Rekapitulasi Stok</h2>
                         <p className="text-xs text-slate-500 mt-1">Rekap mutasi masuk, keluar, dan posisi stok akhir.</p>
                     </div>
-                    <button 
+                    <button
                         onClick={() => setShowExportConfirm(true)}
                         disabled={!barang?.data || barang.data.length === 0}
                         title={(!barang?.data || barang.data.length === 0) ? "Tidak ada data untuk diunduh" : "Unduh Laporan Excel"}
@@ -79,7 +78,7 @@ export default function StokLaporan({ barang, filters = {}, kategoris = [], supp
 
                 {/* FILTER CARD */}
                 <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-end">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                         {/* Dari */}
                         <div className="space-y-1.5">
                             <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
@@ -110,20 +109,7 @@ export default function StokLaporan({ barang, filters = {}, kategoris = [], supp
                                 <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                             </div>
                         </div>
-                        {/* Supplier */}
-                        <div className="space-y-1.5">
-                            <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                                <Truck className="w-3 h-3" /> Supplier
-                            </label>
-                            <div className="relative">
-                                <select value={supplierId} onChange={(e) => setSupplierId(e.target.value)}
-                                    className="w-full rounded-lg border-slate-200 text-sm appearance-none pr-10 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm font-medium">
-                                    <option value="">Semua Supplier</option>
-                                    {suppliers.map(s => <option key={s.id} value={s.id}>{s.nama_supplier}</option>)}
-                                </select>
-                                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                            </div>
-                        </div>
+
                         {/* Search */}
                         <div className="space-y-1.5">
                             <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">

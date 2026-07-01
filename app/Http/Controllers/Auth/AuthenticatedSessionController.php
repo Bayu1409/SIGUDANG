@@ -35,7 +35,7 @@ class AuthenticatedSessionController extends Controller
 
         \App\Services\LogService::log("Melakukan login ke sistem", 'Auth', Auth::id());
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->route('dashboard');
     }
 
     /**

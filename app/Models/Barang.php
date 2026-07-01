@@ -7,6 +7,7 @@ use App\Models\Kategori;
 use App\Models\Satuan;
 use App\Models\BarangMasuk;
 use App\Models\BarangKeluar;
+use App\Models\Supplier;
 
 class Barang extends Model
 {
@@ -69,6 +70,18 @@ class Barang extends Model
         return $this->hasMany(
             BarangKeluar::class,
             'barang_id'
+        );
+    }
+
+    // =========================
+    // RELASI SUPPLIER
+    // =========================
+
+    public function supplier()
+    {
+        return $this->belongsTo(
+            Supplier::class,
+            'supplier_id'
         );
     }
 }
