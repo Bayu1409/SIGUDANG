@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, router, Head, usePage } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
 import Pagination from "@/Components/Pagination";
-import { FileText, Package, Plus, Search, Trash2, Edit3, ChevronDown, X } from "lucide-react";
+import { FileText, Package, Plus, Search, Trash2, Edit3, ChevronDown, X, ArrowDownToLine } from "lucide-react";
 
 export default function Index({ barangMasuk, filters = {}, suppliers = [] }) {
     const [search, setSearch]         = useState(filters.search || "");
@@ -33,7 +33,7 @@ export default function Index({ barangMasuk, filters = {}, suppliers = [] }) {
                 </div>
                 <Link href={route("barang-masuk.create")}
                     className="bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 transition-all flex items-center gap-2">
-                    <Plus className="w-4 h-4" /> Input Barang Masuk
+                    <ArrowDownToLine className="w-4 h-4" /> Input Barang Masuk
                 </Link>
             </div>
 

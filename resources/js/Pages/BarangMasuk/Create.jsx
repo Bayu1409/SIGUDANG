@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useForm, Link, usePage, router } from "@inertiajs/react";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { Plus, Trash2, Save, Upload, Package, ArrowRight, ClipboardList, FileSpreadsheet, AlertCircle, X } from "lucide-react";
+import { Plus, Trash2, Save, Upload, Package, ArrowRight, ClipboardList, FileSpreadsheet, AlertCircle, X, Import } from "lucide-react";
 
 const Label = ({ children, required }) => (
   <label className="block text-sm font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
@@ -170,7 +170,7 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
             {isImporting ? (
                <><div className="w-4 h-4 border-2 border-slate-400 border-t-slate-600 rounded-full animate-spin"></div> Memproses...</>
             ) : (
-               <><Upload className="w-4 h-4" /> Import Sekarang</>
+               <><Import className="w-4 h-4" /> Import Sekarang</>
             )}
             <input type="file" className="hidden" accept=".csv" onChange={handleImport} disabled={isImporting} />
           </label>

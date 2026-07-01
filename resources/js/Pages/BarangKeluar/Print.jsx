@@ -4,7 +4,7 @@ import { Head } from "@inertiajs/react";
 export default function Print({ items, header }) {
     useEffect(() => {
         const timer = setTimeout(() => {
-            window.print(); // Dinonaktifkan sementara oleh user
+            window.print();
         }, 600);
         return () => clearTimeout(timer);
     }, []);

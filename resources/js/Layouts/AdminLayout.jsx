@@ -109,8 +109,12 @@ export default function AdminLayout({ children, header }) {
                     onClick={() => setShowLowStockItems(false)}
                     className="flex items-center gap-4 p-3 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-indigo-600 hover:bg-white hover:shadow-xl hover:shadow-indigo-50/50 transition-all text-left"
                   >
-                    <div className="bg-white p-3 rounded-xl shadow-sm text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 shrink-0">
-                      <Package className="w-5 h-5" />
+                    <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden w-12 h-12 flex items-center justify-center shrink-0 group-hover:border-indigo-200 transition-all">
+                      {item.foto ? (
+                        <img src={`/storage/${item.foto}`} alt={item.nama_barang} className="w-full h-full object-cover" />
+                      ) : (
+                        <Package className="w-5 h-5 text-indigo-600 group-hover:scale-110 transition-transform" />
+                      )}
                     </div>
                     <div className="overflow-hidden">
                       <p className="text-xs font-black text-slate-800 truncate uppercase tracking-tight leading-none mb-1.5">{item.nama_barang}</p>
