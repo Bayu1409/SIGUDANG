@@ -33,7 +33,7 @@ class DeadStockController extends Controller
                 $lastKeluar = $item->barangKeluar->sortByDesc('tanggal_keluar')->first();
                 if ($lastKeluar) {
                     $lastDate = Carbon::parse($lastKeluar->tanggal_keluar);
-                    $selisihHari = $today->diffInDays($lastDate);
+                    $selisihHari = (int) $lastDate->diffInDays($today);
                 } else {
                     $selisihHari = 999; // Sangat lama/belum pernah
                 }

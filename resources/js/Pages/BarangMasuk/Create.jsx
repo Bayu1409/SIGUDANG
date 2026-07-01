@@ -60,7 +60,7 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
 
           const firstLine = lines[0];
           const delimiter = (firstLine.includes(';') || lines[1]?.includes(';')) ? ';' : ',';
-          
+
           let importedSupplierId = data.supplier_id;
           let importedDate = data.tanggal_masuk;
           const newItems = [];
@@ -78,11 +78,11 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
             const cleanId = identifier.trim().toLowerCase();
 
             // Cari berdasarkan Nama Barang (prioritas) atau Kode Barang
-            const foundBarang = barang.find(b => 
-              b.nama_barang.trim().toLowerCase() === cleanId || 
+            const foundBarang = barang.find(b =>
+              b.nama_barang.trim().toLowerCase() === cleanId ||
               b.kode_barang.trim().toLowerCase() === cleanId
             );
-            
+
             if (foundBarang) {
               newItems.push({
                 barang_id: foundBarang.id,
@@ -168,9 +168,9 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
           </a>
           <label className={`flex-1 md:flex-none cursor-pointer text-center px-6 py-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 ${isImporting ? "bg-slate-200 text-slate-500 cursor-not-allowed" : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-200"}`}>
             {isImporting ? (
-               <><div className="w-4 h-4 border-2 border-slate-400 border-t-slate-600 rounded-full animate-spin"></div> Memproses...</>
+              <><div className="w-4 h-4 border-2 border-slate-400 border-t-slate-600 rounded-full animate-spin"></div> Memproses...</>
             ) : (
-               <><Import className="w-4 h-4" /> Import Sekarang</>
+              <><Import className="w-4 h-4" /> Import Sekarang</>
             )}
             <input type="file" className="hidden" accept=".csv" onChange={handleImport} disabled={isImporting} />
           </label>
@@ -187,7 +187,7 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
           <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
             {errors_import.map((err, i) => (
               <li key={i} className="text-xs text-rose-600 flex items-start gap-2 bg-white/50 p-2 rounded-lg">
-                <span className="font-bold">#{i+1}</span>
+                <span className="font-bold">#{i + 1}</span>
                 {err}
               </li>
             ))}
@@ -237,7 +237,7 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
                 />
                 <div className="flex flex-col items-center gap-3">
                   <div className="p-3 bg-white rounded-2xl shadow-sm border border-slate-100 group-hover:scale-110 transition-transform">
-                     <Upload className="w-6 h-6 text-slate-400 group-hover:text-indigo-500" />
+                    <Upload className="w-6 h-6 text-slate-400 group-hover:text-indigo-500" />
                   </div>
                   <div className="max-w-[200px]">
                     <p className="text-sm font-black text-slate-800 truncate">
@@ -256,8 +256,8 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
         <div className="space-y-4">
           <div className="flex items-center justify-between px-2">
             <h3 className="text-lg font-black text-slate-800 flex items-center gap-2">
-               <Package className="w-5 h-5 text-indigo-500" />
-               Daftar Barang yang Diterima
+              <Package className="w-5 h-5 text-indigo-500" />
+              Daftar Barang yang Diterima
             </h3>
             <button
               type="button"
@@ -283,12 +283,12 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
                       <Trash2 className="w-4 h-4" />
                     </button>
                   )}
-                  
+
                   <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
                     <div className="lg:col-span-1 text-xs font-black text-slate-300 text-center pb-4">
-                       #{index + 1}
+                      #{index + 1}
                     </div>
-                    
+
                     <div className="lg:col-span-7">
                       <Label required>Nama Barang</Label>
                       <select
@@ -324,36 +324,36 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
                   {currentBarang && item.jumlah > 0 && (
                     <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between gap-4">
                       <div className="flex items-center gap-4 text-[11px] font-bold">
-                          <div className="flex items-center gap-2 text-slate-400">
-                             <span className="uppercase tracking-widest text-[9px]">Stok:</span>
-                             <span className="text-slate-600">{currentBarang.stok}</span>
-                          </div>
-                          <ArrowRight className="w-3 h-3 text-indigo-300" />
-                          <div className="flex items-center gap-2 text-emerald-600">
-                             <span className="uppercase tracking-widest text-[9px]">Masuk:</span>
-                             <span>+{item.jumlah}</span>
-                          </div>
-                          <ArrowRight className="w-3 h-3 text-indigo-300" />
-                          <div className="flex items-center gap-2 text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
-                             <span className="uppercase tracking-widest text-[9px]">Hasil:</span>
-                             <span>{Number(currentBarang.stok) + Number(item.jumlah)} {currentBarang.satuan?.nama}</span>
-                          </div>
+                        <div className="flex items-center gap-2 text-slate-400">
+                          <span className="uppercase tracking-widest text-[9px]">Stok:</span>
+                          <span className="text-slate-600">{currentBarang.stok}</span>
+                        </div>
+                        <ArrowRight className="w-3 h-3 text-indigo-300" />
+                        <div className="flex items-center gap-2 text-emerald-600">
+                          <span className="uppercase tracking-widest text-[9px]">Masuk:</span>
+                          <span>+{item.jumlah}</span>
+                        </div>
+                        <ArrowRight className="w-3 h-3 text-indigo-300" />
+                        <div className="flex items-center gap-2 text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
+                          <span className="uppercase tracking-widest text-[9px]">Hasil:</span>
+                          <span>{Number(currentBarang.stok) + Number(item.jumlah)} {currentBarang.satuan?.nama}</span>
+                        </div>
                       </div>
 
                       {/* Info Konversi untuk referensi monitoring */}
                       <div className="bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Monitoring Sistem (Unit/Biji)</p>
-                          <p className="text-[11px] font-bold text-slate-600">
-                             {( (Number(currentBarang.stok) + Number(item.jumlah)) * (currentBarang.nilai_konversi || 1) ).toLocaleString()} Unit
-                          </p>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Monitoring Sistem (Unit/Biji)</p>
+                        <p className="text-[11px] font-bold text-slate-600">
+                          {((Number(currentBarang.stok) + Number(item.jumlah)) * (currentBarang.nilai_konversi || 1)).toLocaleString()} Unit
+                        </p>
                       </div>
                     </div>
                   )}
 
                   {(errors[`items.${index}.barang_id`] || errors[`items.${index}.jumlah`]) && (
                     <p className="text-rose-500 text-[10px] font-black uppercase mt-3 italic flex items-center gap-2">
-                       <span className="w-1 h-1 bg-rose-500 rounded-full animate-ping"></span>
-                       Mohon lengkapi data barang #{index + 1} di atas.
+                      <span className="w-1 h-1 bg-rose-500 rounded-full animate-ping"></span>
+                      Mohon lengkapi data barang #{index + 1} di atas.
                     </p>
                   )}
                 </div>

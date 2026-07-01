@@ -60,11 +60,22 @@ export default function Dashboard({ stats, lowStock, chartData, supplierChartDat
                 <h2 className="text-xl font-bold leading-tight text-slate-800">
                     Dashboard Utama
                 </h2>
-                <div className="text-sm text-slate-500 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-indigo-500" />
-                    Status Gudang: <span className={`font-bold ${config.isRamai ? 'text-orange-500' : 'text-green-500'}`}>
-                        {config.isRamai ? 'Musim Ramai' : 'Musim Normal'}
-                    </span>
+                <div className="flex items-center gap-4">
+                    <div className="text-sm text-slate-500 flex items-center gap-2 pr-4 border-r border-slate-100">
+                        <Clock className="w-4 h-4 text-indigo-500" />
+                        Status Gudang: <span className={`font-bold ${config.isRamai ? 'text-orange-500' : 'text-green-500'}`}>
+                            {config.isRamai ? 'Musim Ramai' : 'Musim Normal'}
+                        </span>
+                    </div>
+                    {config.deadStockCount > 0 && (
+                        <Link href="/dead-stock" className="text-sm flex items-center gap-2 group">
+                            <AlertTriangle className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform" />
+                            <span className="text-slate-500">Dead Stock:</span>
+                            <span className="font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100 group-hover:bg-amber-100 transition-colors">
+                                {config.deadStockCount} Barang
+                            </span>
+                        </Link>
+                    )}
                 </div>
             </div>
 
@@ -225,7 +236,7 @@ export default function Dashboard({ stats, lowStock, chartData, supplierChartDat
 
                 </div>
 
-                {/* 3. LOW STOCK WARNING */}
+                {/* 3. INVENTORY ALERTS */}
                 <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
                     <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between bg-slate-50/50 gap-4">
                         <div className="flex items-center gap-2">
@@ -263,7 +274,7 @@ export default function Dashboard({ stats, lowStock, chartData, supplierChartDat
                                     <th className="px-6 py-3">Barang</th>
                                     <th className="px-6 py-3">Kategori</th>
                                     <th className="px-6 py-3">Sisa Stok</th>
-                                    <th className="px-6 py-3">Aksi</th>
+                                    <th className="px-6 py-3 text-right">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
@@ -292,7 +303,7 @@ export default function Dashboard({ stats, lowStock, chartData, supplierChartDat
                                                 {item.stok} {item.satuan?.nama}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 py-4 text-right">
                                             <Link
                                                 href={route('barang-masuk.create', { barang_id: item.id })}
                                                 className="text-xs bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white px-3 py-1.5 rounded-lg font-bold transition-all border border-indigo-100"
@@ -312,7 +323,6 @@ export default function Dashboard({ stats, lowStock, chartData, supplierChartDat
                         </table>
                     </div>
                 </div>
-
             </div>
         </>
     );

@@ -41,6 +41,26 @@ class DashboardController extends Controller
             ? Setting::getSetting('limit_stok_event', 50) 
             : Setting::getSetting('limit_stok_normal', 10);
 
+        // =========================
+        // DEAD STOCK (RINGKAS)
+        // =========================
+        $today = Carbon::now();
+        $limitDeadStock = Setting::getSetting('limit_dead_stock', 30);
+        
+        $deadStockCount = Barang::with(['barangKeluar'])
+            ->get()
+            ->filter(function ($item) use ($today, $limitDeadStock) {
+                $lastKeluar = $item->barangKeluar->sortByDesc('tanggal_keluar')->first();
+                if ($lastKeluar) {
+                    $lastDate = Carbon::parse($lastKeluar->tanggal_keluar);
+                    $selisihHari = (int) $lastDate->diffInDays($today);
+                } else {
+                    $selisihHari = 999;
+                }
+                return $selisihHari > $limitDeadStock && $item->stok > 0;
+            })
+            ->count();
+
         $lowStockItems = Barang::with(['satuan', 'kategori'])
             ->when($kategoriId, function($q) use ($kategoriId) {
                 $q->where('kategori_id', $kategoriId);
@@ -126,7 +146,8 @@ class DashboardController extends Controller
             'activities' => $activities,
             'config' => [
                 'stokMinimum' => $stokMinimum,
-                'isRamai' => $isEventMonth
+                'isRamai' => $isEventMonth,
+                'deadStockCount' => $deadStockCount
             ]
         ]);
     }

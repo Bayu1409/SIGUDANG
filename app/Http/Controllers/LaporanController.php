@@ -354,7 +354,12 @@ class LaporanController extends Controller
                 $stok = $masuk - $keluar;
 
                 $lastKeluar = $item->barangKeluar->sortByDesc('tanggal_keluar')->first();
-                $selisihHari = $lastKeluar ? $today->diffInDays(Carbon::parse($lastKeluar->tanggal_keluar)) : 999;
+                if ($lastKeluar) {
+                    $lastDate = Carbon::parse($lastKeluar->tanggal_keluar);
+                    $selisihHari = (int) $lastDate->diffInDays($today);
+                } else {
+                    $selisihHari = 999;
+                }
 
                 return [
                     'id' => $item->id,
@@ -422,7 +427,12 @@ class LaporanController extends Controller
                 $stok = $masuk - $keluar;
 
                 $lastKeluar = $item->barangKeluar->sortByDesc('tanggal_keluar')->first();
-                $selisihHari = $lastKeluar ? $today->diffInDays(Carbon::parse($lastKeluar->tanggal_keluar)) : 999;
+                if ($lastKeluar) {
+                    $lastDate = Carbon::parse($lastKeluar->tanggal_keluar);
+                    $selisihHari = (int) $lastDate->diffInDays($today);
+                } else {
+                    $selisihHari = 999;
+                }
 
                 return [
                     'id' => $item->id,
