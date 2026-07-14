@@ -5,7 +5,7 @@ import Pagination from "@/Components/Pagination";
 import { Edit3, Package, Plus, Search, Trash2, Box, ChevronDown, X } from "lucide-react";
 
 export default function Index({ barang, filters = {}, kategoris = [] }) {
-    const [search, setSearch]       = useState(filters.search || "");
+    const [search, setSearch] = useState(filters.search || "");
     const [kategoriId, setKategoriId] = useState(filters.kategori_id || "");
     const [confirmDelete, setConfirmDelete] = useState({ show: false, id: null, name: "" });
 

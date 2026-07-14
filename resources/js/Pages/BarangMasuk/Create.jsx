@@ -265,7 +265,7 @@ export default function Create({ barang, suppliers, selectedBarangId }) {
               className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold text-xs shadow-lg shadow-indigo-200 hover:bg-slate-900 transition-all active:scale-95"
             >
               <Plus className="w-4 h-4" />
-              Tambah Baris
+              Tambah Barang
             </button>
           </div>
 

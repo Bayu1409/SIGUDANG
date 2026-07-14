@@ -49,7 +49,7 @@ class SupplierController extends Controller
 
         \App\Services\LogService::log("Menambah supplier baru: {$supplier->nama_supplier}", 'Supplier', $supplier->id);
 
-        return redirect()->route('supplier.index')->with('message', 'Supplier berhasil ditambahkan');
+        return redirect()->route('supplier.index')->with('message', "Supplier \"{$supplier->nama_supplier}\" berhasil ditambahkan.");
 
     }
 
@@ -90,7 +90,7 @@ class SupplierController extends Controller
 
         \App\Services\LogService::log("Memperbarui data supplier: {$supplier->nama_supplier}", 'Supplier', $id, ['changes' => $changes]);
 
-        return redirect()->route('supplier.index')->with('message', 'Supplier berhasil diperbarui');
+        return redirect()->route('supplier.index')->with('message', "Data supplier \"{$supplier->nama_supplier}\" berhasil diperbarui.");
 
     }
 
@@ -110,7 +110,7 @@ class SupplierController extends Controller
 
         \App\Services\LogService::log("Menghapus supplier: {$nama}", 'Supplier', $id);
 
-        return redirect()->route('supplier.index')->with('message', 'Supplier berhasil dihapus');
+        return redirect()->route('supplier.index')->with('message', "Supplier \"{$nama}\" berhasil dihapus dari sistem.");
     }
 
 }

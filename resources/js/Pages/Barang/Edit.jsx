@@ -12,8 +12,10 @@ const Label = ({ children, required }) => (
 
 export default function Edit({ barang, kategori, satuan }) {
     const [showConfirm, setShowConfirm] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState(barang.foto ? `/storage/${barang.foto}` : null);
 
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
+        _method: "PUT",
         kode_barang: barang.kode_barang || "",
         nama_barang: barang.nama_barang || "",
         kategori_id: barang.kategori_id || "",
@@ -21,6 +23,7 @@ export default function Edit({ barang, kategori, satuan }) {
         satuan_id: barang.satuan_id || "",
         batas_minimum: barang.batas_minimum || 0,
         nilai_konversi: barang.nilai_konversi || 1,
+        foto: null,
     });
 
     const handleSatuanChange = (e) => {
@@ -38,7 +41,7 @@ export default function Edit({ barang, kategori, satuan }) {
 
     const submit = (e) => {
         if (e) e.preventDefault();
-        put(route("barang.update", barang.id));
+        post(route("barang.update", barang.id));
     };
 
     const triggerConfirm = (e) => {
@@ -173,6 +176,33 @@ export default function Edit({ barang, kategori, satuan }) {
                             <p className="text-xs text-gray-400 mt-1">
                                 Stok diubah melalui transaksi Barang Masuk / Barang Keluar.
                             </p>
+                        </div>
+
+                        {/* Foto Barang */}
+                        <div>
+                            <Label>Foto Barang</Label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    setData("foto", file);
+                                    if (file) {
+                                        setPreviewUrl(URL.createObjectURL(file));
+                                    } else {
+                                        setPreviewUrl(null);
+                                    }
+                                }}
+                            />
+                            {previewUrl && (
+                                <div className="mt-2 w-32 h-32 border rounded overflow-hidden">
+                                    <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                                </div>
+                            )}
+                            {errors.foto && (
+                                <p className="text-red-500 text-xs mt-1">{errors.foto}</p>
+                            )}
                         </div>
 
                         {/* BUTTON */}

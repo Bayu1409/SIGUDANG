@@ -35,19 +35,18 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => 'required|string|in:admin,superadmin',
         ]);
-
-        $role = ($request->password === 'superadmin123') ? 'superadmin' : 'admin';
  
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $role,
+            'role' => $request->role,
         ]);
 
         \App\Services\LogService::log(
-            "Pendaftaran akun baru sebagai " . strtoupper($role), 
+            "Pendaftaran akun baru sebagai " . strtoupper($request->role), 
             'User', 
             $user->id, 
             ['name' => $user->name, 'email' => $user->email], 

@@ -55,16 +55,23 @@ class BarangController extends Controller
         'nama_barang' => 'required',
         'kategori_id' => 'required',
         'satuan_id' => 'required',
+        'foto' => 'nullable|image|max:2048',
     ]);
 
     // Generate kode barang otomatis
     $kode = 'BRG-' . strtoupper(Str::random(5));
+
+    $fotoPath = null;
+    if ($request->hasFile('foto')) {
+        $fotoPath = $request->file('foto')->store('barang', 'public');
+    }
 
     $barang = Barang::create([
         'kode_barang' => $kode,
         'nama_barang' => $request->nama_barang,
         'kategori_id' => $request->kategori_id,
         'satuan_id' => $request->satuan_id,
+        'foto' => $fotoPath,
         'supplier_id' => null, // sementara
         'batas_minimum' => $request->batas_minimum ?? 0,
         'nilai_konversi' => $request->nilai_konversi ?? 1,
@@ -74,7 +81,7 @@ class BarangController extends Controller
 
     return redirect()
         ->route('barang.index')
-        ->with('message', 'Barang berhasil ditambahkan');
+        ->with('message', "Barang \"{$barang->nama_barang}\" berhasil ditambahkan.");
 }
     public function edit($id)
     {
@@ -97,12 +104,22 @@ class BarangController extends Controller
         'nama_barang' => 'required',
         'kategori_id' => 'required',
         'satuan_id' => 'required',
+        'foto' => 'nullable|image|max:2048',
     ]);
 
     $barang = Barang::findOrFail($id);
     
     // Simpan data lama untuk perbandingan
     $oldData = $barang->only(['nama_barang', 'kode_barang', 'kategori_id', 'satuan_id', 'batas_minimum', 'nilai_konversi']);
+
+    $fotoPath = $barang->foto;
+    if ($request->hasFile('foto')) {
+        // Hapus foto lama jika ada
+        if ($barang->foto && \Illuminate\Support\Facades\Storage::disk('public')->exists($barang->foto)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($barang->foto);
+        }
+        $fotoPath = $request->file('foto')->store('barang', 'public');
+    }
 
     $barang->update([
         'kode_barang' => $request->kode_barang,
@@ -111,6 +128,7 @@ class BarangController extends Controller
         'satuan_id' => $request->satuan_id,
         'batas_minimum' => $request->batas_minimum ?? 0,
         'nilai_konversi' => $request->nilai_konversi ?? 1,
+        'foto' => $fotoPath,
     ]);
 
     // Ambil data yang berubah
@@ -128,7 +146,7 @@ class BarangController extends Controller
 
     return redirect()
         ->route('barang.index')
-        ->with('message', 'Barang berhasil diupdate');
+        ->with('message', "Data barang \"{$barang->nama_barang}\" berhasil diperbarui.");
 }
 
     public function destroy($id)
@@ -147,7 +165,7 @@ class BarangController extends Controller
 
         LogService::log("Menghapus barang: {$nama}", 'Barang', $id);
 
-        return redirect()->route('barang.index')->with('message', 'Barang berhasil dihapus');
+        return redirect()->route('barang.index')->with('message', "Barang \"{$nama}\" berhasil dihapus dari sistem.");
     }
 
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\ActivityLog;
 use App\Services\LogService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,8 +14,24 @@ class UserController extends Controller
 {
     public function index()
     {
+        $users = User::latest()->get()->map(function ($user) {
+            // Superadmin tidak boleh dihapus
+            if ($user->role === 'superadmin') {
+                $user->can_delete = false;
+                $user->delete_reason = 'Akun Superadmin tidak dapat dihapus.';
+                return $user;
+            }
+            // Hanya cek riwayat TRANSAKSI (bukan login)
+            $hasTransaksi = ActivityLog::where('user_id', $user->id)
+                ->whereIn('model', ['BarangMasuk', 'BarangKeluar'])
+                ->exists();
+            $user->can_delete = !$hasTransaksi;
+            $user->delete_reason = $hasTransaksi ? 'Memiliki riwayat transaksi barang.' : null;
+            return $user;
+        });
+
         return Inertia::render('User/Index', [
-            'users' => User::latest()->get(),
+            'users' => $users,
         ]);
     }
 
@@ -37,12 +54,12 @@ class UserController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
-            'email_verified_at' => now(), // Auto-verify new users created by Admin
+            'email_verified_at' => now(),
         ]);
 
         LogService::log("Membuat user baru: {$user->name} ({$user->role})", 'User', $user->id);
 
-        return redirect()->route('users.index')->with('message', 'User berhasil ditambahkan.');
+        return redirect()->route('users.index')->with('message', "Akun petugas \"{$user->name}\" berhasil ditambahkan.");
     }
 
     public function edit(User $user)
@@ -66,6 +83,7 @@ class UserController extends Controller
         }
 
         $oldRole = $user->role;
+        $oldName = $user->name;
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -74,21 +92,41 @@ class UserController extends Controller
 
         LogService::log("Memperbarui user: {$user->name}. Role: {$oldRole} -> {$user->role}", 'User', $user->id);
 
-        return redirect()->route('users.index')->with('message', 'User berhasil diperbarui.');
+        $roleChanged = $oldRole !== $validated['role'];
+        $msg = $roleChanged
+            ? "Data petugas \"{$user->name}\" berhasil diperbarui. Role diubah dari {$oldRole} menjadi {$user->role}."
+            : "Data petugas \"{$user->name}\" berhasil diperbarui.";
+
+        return redirect()->route('users.index')->with('message', $msg);
     }
 
     public function destroy(User $user)
     {
         $name = $user->name;
         $id = $user->id;
-        
+
         if ($id === auth()->id()) {
             return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
+
+        // Superadmin tidak boleh dihapus
+        if ($user->role === 'superadmin') {
+            return back()->with('error', "Akun Superadmin \"{$name}\" tidak dapat dihapus.");
+        }
+
+        // Cek apakah user memiliki riwayat TRANSAKSI (BarangMasuk/BarangKeluar)
+        $hasTransaksi = ActivityLog::where('user_id', $id)
+            ->whereIn('model', ['BarangMasuk', 'BarangKeluar'])
+            ->exists();
+
+        if ($hasTransaksi) {
+            return back()->with('error', "Akun petugas \"{$name}\" tidak dapat dihapus karena memiliki riwayat transaksi barang di sistem.");
         }
 
         $user->delete();
         LogService::log("Menghapus user: {$name}", 'User', $id);
 
-        return redirect()->route('users.index')->with('message', 'User berhasil dihapus.');
+        return redirect()->route('users.index')->with('message', "Akun petugas \"{$name}\" berhasil dihapus dari sistem.");
     }
 }
+

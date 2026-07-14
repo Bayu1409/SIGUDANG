@@ -1,11 +1,12 @@
 import InputError from '@/Components/InputError';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Lock, Mail, Package, User } from 'lucide-react';
+import { Lock, Mail, Package, User, Shield } from 'lucide-react';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         email: '',
+        role: 'admin',
         password: '',
         password_confirmation: '',
     });
@@ -78,6 +79,27 @@ export default function Register() {
                                 />
                             </div>
                             <InputError message={errors.email} className="mt-1" />
+                        </div>
+
+                        {/* Hak Akses (Role) */}
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+                                Hak Akses (Role)
+                            </label>
+                            <div className="relative">
+                                <Shield className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                <select
+                                    id="role"
+                                    name="role"
+                                    value={data.role}
+                                    onChange={(e) => setData('role', e.target.value)}
+                                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white appearance-none cursor-pointer"
+                                >
+                                    <option value="admin">Admin</option>
+                                    <option value="superadmin">Super Admin</option>
+                                </select>
+                            </div>
+                            <InputError message={errors.role} className="mt-1" />
                         </div>
 
                         {/* Password */}

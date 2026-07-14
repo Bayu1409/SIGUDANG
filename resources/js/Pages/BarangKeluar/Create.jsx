@@ -78,11 +78,11 @@ export default function Create({ barang, selectedBarangId }) {
             const cleanId = identifier.trim().toLowerCase();
 
             // Cari berdasarkan Nama (prioritas) atau Kode
-            const foundBarang = barang.find(b => 
-              b.nama_barang.trim().toLowerCase() === cleanId || 
+            const foundBarang = barang.find(b =>
+              b.nama_barang.trim().toLowerCase() === cleanId ||
               b.kode_barang.trim().toLowerCase() === cleanId
             );
-            
+
             if (foundBarang) {
               newItems.push({
                 barang_id: foundBarang.id,
@@ -165,9 +165,9 @@ export default function Create({ barang, selectedBarangId }) {
           </a>
           <label className={`flex-1 md:flex-none cursor-pointer text-center px-6 py-3 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 ${isImporting ? "bg-slate-200 text-slate-500 cursor-not-allowed" : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-lg shadow-emerald-200"}`}>
             {isImporting ? (
-               <><div className="w-4 h-4 border-2 border-slate-400 border-t-slate-600 rounded-full animate-spin"></div> Memproses...</>
+              <><div className="w-4 h-4 border-2 border-slate-400 border-t-slate-600 rounded-full animate-spin"></div> Memproses...</>
             ) : (
-               <><Import className="w-4 h-4" /> Import Sekarang</>
+              <><Import className="w-4 h-4" /> Import Sekarang</>
             )}
             <input type="file" className="hidden" accept=".csv" onChange={handleImport} disabled={isImporting} />
           </label>
@@ -184,7 +184,7 @@ export default function Create({ barang, selectedBarangId }) {
           <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2">
             {errors_import.map((err, i) => (
               <li key={i} className="text-xs text-rose-600 flex items-start gap-2 bg-white/50 p-2 rounded-lg">
-                <span className="font-bold">#{i+1}</span>
+                <span className="font-bold">#{i + 1}</span>
                 {err}
               </li>
             ))}
@@ -259,7 +259,7 @@ export default function Create({ barang, selectedBarangId }) {
               className="flex items-center gap-2 px-4 py-2 bg-rose-600 text-white rounded-xl font-bold text-xs shadow-lg shadow-rose-200 hover:bg-slate-900 transition-all active:scale-95"
             >
               <Plus className="w-4 h-4" />
-              Tambah Baris
+              Tambah Barang
             </button>
           </div>
 

@@ -143,7 +143,21 @@ export default function AdminLayout({ children, header }) {
                   {flash.message ? <CheckCircle className="w-5 h-5 text-emerald-600" /> : <AlertCircle className="w-5 h-5 text-rose-600" />}
                 </div>
                 <div className="flex-1 pt-0.5 text-left">
-                  <p className="text-sm font-bold">{flash.message ? 'Berhasil Diperbarui' : 'Terjadi Kesalahan'}</p>
+                  <p className="text-sm font-bold">
+                    {flash.message
+                      ? flash.message.toLowerCase().includes('dihapus')
+                        ? 'Berhasil Dihapus'
+                        : flash.message.toLowerCase().includes('ditambahkan')
+                        ? 'Berhasil Ditambahkan'
+                        : flash.message.toLowerCase().includes('diperbarui')
+                        ? 'Berhasil Diperbarui'
+                        : flash.message.toLowerCase().includes('disimpan')
+                        ? 'Berhasil Disimpan'
+                        : flash.message.toLowerCase().includes('registrasi')
+                        ? 'Registrasi Berhasil'
+                        : 'Berhasil'
+                      : 'Terjadi Kesalahan'}
+                  </p>
                   <p className="text-xs opacity-70 mt-1 leading-relaxed">{flash.message || flash.error}</p>
                 </div>
                 <button onClick={() => setShowFlash(false)} className="hover:bg-slate-200/50 p-1.5 rounded-xl transition-colors">

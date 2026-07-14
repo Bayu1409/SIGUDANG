@@ -12,6 +12,7 @@ const Label = ({ children, required }) => (
 
 export default function Create({ kategoris = [], satuans = [] }) {
     const [showConfirm, setShowConfirm] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState(null);
 
     const { data, setData, post, processing, errors } = useForm({
         nama_barang: "",
@@ -20,6 +21,7 @@ export default function Create({ kategoris = [], satuans = [] }) {
         stok: "",
         batas_minimum: 0,
         nilai_konversi: 1,
+        foto: null,
     });
 
     const handleSatuanChange = (e) => {
@@ -107,6 +109,20 @@ export default function Create({ kategoris = [], satuans = [] }) {
                                 ))}
                             </select>
                         </div>
+                        {/* harga */}
+                        <div>
+                            <Label required>Harga</Label>
+                            <input
+                                type="text"
+                                className={`w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.nama_barang ? "border-red-500" : ""}`}
+                                value={data.harga}
+                                onChange={(e) => setData("harga", e.target.value)}
+                                placeholder="Contoh: 20.000"
+                            />
+                            {errors.harga && (
+                                <p className="text-red-500 text-xs mt-1">{errors.harga}</p>
+                            )}
+                        </div>
 
                         {/* Batas Minimum & Konversi */}
                         <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-lg border border-slate-200">
@@ -136,6 +152,33 @@ export default function Create({ kategoris = [], satuans = [] }) {
                                     Otomatis: Pack=100, Kodi=20
                                 </p>
                             </div>
+                        </div>
+
+                        {/* Foto Barang */}
+                        <div>
+                            <Label>Foto Barang</Label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    setData("foto", file);
+                                    if (file) {
+                                        setPreviewUrl(URL.createObjectURL(file));
+                                    } else {
+                                        setPreviewUrl(null);
+                                    }
+                                }}
+                            />
+                            {previewUrl && (
+                                <div className="mt-2 w-32 h-32 border rounded overflow-hidden">
+                                    <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                                </div>
+                            )}
+                            {errors.foto && (
+                                <p className="text-red-500 text-xs mt-1">{errors.foto}</p>
+                            )}
                         </div>
 
                         <div className="flex gap-2 mt-4">
